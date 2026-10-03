@@ -1,0 +1,26 @@
+# Dependencies and Expo output
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Generated native folders
+/ios/
+/android/
+
+# Local environment and debug files
+.env*.local
+*.tsbuildinfo
+*.log
+
+# Platform files and signing material
+.DS_Store
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
