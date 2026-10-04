@@ -14,6 +14,10 @@
 - Keep product rules and calculations separate from React Native presentation
   code in `src/domain/`.
 - Use `src/domain/uv/` for UV categories and other UV-specific mappings.
+- Keep editable definitions (thresholds, labels, rule tables) in readable JSON
+  beside small TypeScript interpreters. Validate definitions before using them.
+  Keep calculations and algorithms in TypeScript; use this data/logic split when
+  the content is naturally a mapping or configuration.
 - Use `src/domain/outing/` for time-window calculations and outing summaries.
 - Use `src/domain/guidance/` later for practical protection rules and wording.
 - Use `src/domain/daylight/` later for dawn, sunrise, sunset, and dusk logic.

@@ -1,0 +1,7 @@
+[
+  { "key": "low", "label": "Low", "minimumUvInclusive": 0 },
+  { "key": "moderate", "label": "Moderate", "minimumUvInclusive": 3 },
+  { "key": "high", "label": "High", "minimumUvInclusive": 6 },
+  { "key": "very-high", "label": "Very high", "minimumUvInclusive": 8 },
+  { "key": "extreme", "label": "Extreme", "minimumUvInclusive": 11 }
+]

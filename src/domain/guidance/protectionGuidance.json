@@ -1,0 +1,39 @@
+{
+  "levels": [
+    {
+      "key": "low",
+      "categories": ["low"],
+      "headline": "UV is low",
+      "explanation": "For most people, routine sun protection is generally not needed at low UV levels.",
+      "actions": ["Bright reflective surroundings, such as fresh snow, can increase UV exposure."]
+    },
+    {
+      "key": "protection",
+      "categories": ["moderate", "high"],
+      "headline": "Sun protection is recommended",
+      "explanation": "At these UV levels, unprotected skin and eyes can be harmed. Protection helps reduce exposure.",
+      "actions": [
+        "Seek shade when UV is strongest.",
+        "Cover skin with clothing, and wear a brimmed hat and UV-protective sunglasses.",
+        "Use broad-spectrum sunscreen on skin clothing does not cover; follow its label."
+      ]
+    },
+    {
+      "key": "extra-protection",
+      "categories": ["very-high", "extreme"],
+      "headline": "Extra protection is important",
+      "explanation": "UV is very strong during this outing, so unprotected skin and eyes can be harmed more quickly.",
+      "actions": [
+        "Seek shade and limit exposure when UV is strongest.",
+        "Cover skin with clothing, and wear a brimmed hat and UV-protective sunglasses.",
+        "Use broad-spectrum sunscreen on skin clothing does not cover; follow its label."
+      ]
+    }
+  ],
+  "shadeMessages": [
+    { "key": "open-sun", "message": "Your outing is mostly exposed to open sun, so shade may be limited." },
+    { "key": "mostly-sun", "message": "Your outing includes mostly sun with some shaded sections; protect yourself during exposed parts." },
+    { "key": "mixed-sun-and-shade", "message": "Your outing alternates between sun and shade. Shade helps, but scattered and reflected UV can still reach you." },
+    { "key": "overhead-cover", "message": "Overhead cover helps reduce exposure, but it does not block all scattered or reflected UV." }
+  ]
+}

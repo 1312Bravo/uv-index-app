@@ -1,6 +1,7 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
+import { getProtectionGuidance } from '../../domain/guidance/getProtectionGuidance';
 import { useHourlyForecast } from '../forecast/useHourlyForecast';
 import { summarizeOutingForecast, type OutingForecastSummary } from '../../domain/outing/calculateOutingForecast';
 import type { TimePlan } from '../../domain/outing/timePlan';
@@ -61,6 +62,9 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
   );
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
+  const guidance = summary
+    ? getProtectionGuidance(summary.highestCategory.key, plan.shade)
+    : null;
 
   return (
     <View style={styles.section}>
@@ -91,6 +95,17 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
             </View>
           </View>
 
+          {guidance && (
+            <View style={styles.guidance}>
+              <Text style={styles.subheading}>{guidance.headline}</Text>
+              <Text style={styles.guidanceText}>{guidance.explanation}</Text>
+              {guidance.actions.map((action) => (
+                <Text key={action} style={styles.guidanceAction}>• {action}</Text>
+              ))}
+              <Text style={styles.shadeMessage}>{guidance.shadeMessage}</Text>
+            </View>
+          )}
+
           <Text style={styles.subheading}>UV and temperature by hour</Text>
           <ForecastRows forecast={forecast} summary={summary} />
           <Text style={styles.source}>Open-Meteo forecast data</Text>
@@ -111,6 +126,10 @@ const styles = StyleSheet.create({
   summaryLabel: { color: '#696969', fontSize: 12 },
   summaryValue: { color: '#151515', fontSize: 21, fontWeight: '600', marginTop: 10 },
   summaryDetail: { color: '#696969', fontSize: 12, marginTop: 3 },
+  guidance: { marginTop: 8 },
+  guidanceText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 8 },
+  guidanceAction: { color: '#333333', fontSize: 13, lineHeight: 19, marginTop: 8 },
+  shadeMessage: { color: '#696969', fontSize: 12, lineHeight: 18, marginTop: 12 },
   subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28 },
   rows: { marginTop: 12 },
   rowHeader: { borderBottomColor: '#D6D6D6', borderBottomWidth: 1, flexDirection: 'row', paddingBottom: 8 },

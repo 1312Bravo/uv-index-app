@@ -17,6 +17,10 @@
 - Temperature is context only, not part of UV risk or protection calculations.
 - Attribute Open-Meteo in the app and revisit licensing before commercial use.
 - Forecast values are estimates, not a measurement of a person's UV exposure.
+- For category lookup, round the raw UV Index to the nearest whole number:
+  fractional parts below .5 round down, and .5 or above round up. Keep the
+  forecast value itself unchanged. This is the user's chosen classification
+  convention, not a separately verified rounding requirement from a source.
 - For a selected outing, include every forecast hour whose one-hour interval
   overlaps the outing. Show those hourly UV and temperature values, the maximum
   UV Index, its standard category, and the forecast temperature range.

@@ -29,3 +29,21 @@ before any repository guidance.
 - Keep modules focused by responsibility and entry files small. After meaningful
   feature work, review the affected code for duplication, oversized files, and
   awkward boundaries; make small, scoped refactors when needed.
+
+## Domain authoring convention
+
+- Apply the editable-data / interpreter separation to all future domain work.
+- Store editable mappings, thresholds, labels, recommendation text, and rule
+  tables in readable JSON beside the TypeScript code that interprets them.
+- Keep types, validation, calculations, and algorithms in focused TypeScript
+  modules. A pure calculation or type definition does not need a JSON companion.
+- Validate editable definitions before use; document field meanings, units,
+  boundary behavior, and stable identifiers so they can be edited confidently.
+- Domain code returns structured results and stays independent of UI and API
+  services. Features handle rendering and app wiring.
+- Keep rule rationale and sources in `notes/`, and editing instructions in
+  `docs/`. Follow `src/domain/uv/` as the initial example.
+- For UV science, category, or protection-guidance research, use
+  `prompts/uv-evidence-guidance-reviewer.md` as the research and review brief.
+  It supports evidence review; it does not replace authoritative sources or
+  automatically approve a product rule.

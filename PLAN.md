@@ -102,8 +102,8 @@ calculation, supported platform versions, and the final visual polish.
   with the outlook tab selected by default.
 - [x] Add the selected-outing hourly UV and temperature forecast plus its highest
   UV Index category.
-- [ ] Implement practical protection guidance using the structured outing result
-  and selected shade; do not numerically reduce the forecast without evidence.
+- [x] Implement general protection guidance using the outing's rounded UV
+  category and selected shade; keep forecast UV unchanged.
 
 ## Decisions
 
@@ -173,6 +173,17 @@ calculation, supported platform versions, and the final visual polish.
 - What licensing and service capacity will a commercial release need?
 
 ## Progress
+
+- Added a reusable UV evidence and guidance review prompt with sourcing,
+  uncertainty, and product-choice requirements.
+- Researched public-health protection guidance and documented source-backed
+  groupings, shade limitations, and draft app rules in
+  `notes/protection-guidance-research.md`.
+- Added editable protection guidance under `src/domain/guidance/`; the chosen
+  rule triggers guidance from the rounded category, so UV 2.5 is Moderate.
+
+- Moved UV category definitions into editable JSON with a separate validated
+  TypeScript lookup; adopted this pattern for future domain rule tables.
 
 - Separated app composition, domain types/rules, external services, and UI
   features. Removed domain imports from feature folders and documented the
