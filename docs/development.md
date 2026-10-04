@@ -4,10 +4,10 @@ This project uses one Expo app for Android and web. The current screen lets you
 search for a place or use your device location. After selecting one, it shows
 five earlier hourly values, Now, and eighteen future hours in a horizontally
 scrollable UV and temperature chart. The chart can cross midnight.
-The first page keeps this overview focused. Use **Plan an outing** to open a
-second page where the planner supports Now or a scheduled start, duration
-presets including 3 hours, custom minutes, or an explicit end time. Android
-uses date/time dialogs; web uses a browser date/time control.
+The first page keeps this overview focused. Use the **Plan an Outing** tab to
+open the planner, which supports Now or a scheduled start, duration presets
+including 3 hours, custom minutes, or an explicit end time. Android uses
+date/time dialogs; web uses a browser date/time control.
 
 ## Android phone with Expo Go
 

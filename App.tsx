@@ -1,17 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { HourlyUvChart } from './src/features/forecast/HourlyUvChart';
-import { LocationPicker, type SelectedLocation } from './src/features/location/LocationPicker';
+import { LocationPicker } from './src/features/location/LocationPicker';
+import { formatLocationCoordinates, getLocationName, type SelectedLocation } from './src/features/location/locationTypes';
+import { TopTabs, type AppPage } from './src/features/navigation/TopTabs';
+import { OutingForecast } from './src/features/outing/OutingForecast';
 import { TimePlanner, type TimePlan } from './src/features/planning/TimePlanner';
-
-type Page = 'overview' | 'planner';
 
 export default function App() {
   const [location, setLocation] = useState<SelectedLocation | null>(null);
   const [timePlan, setTimePlan] = useState<TimePlan | null>(null);
-  const [page, setPage] = useState<Page>('overview');
+  const [page, setPage] = useState<AppPage>('location');
   const latitude = location?.source === 'device' ? location.latitude : location?.place.latitude;
   const longitude = location?.source === 'device' ? location.longitude : location?.place.longitude;
 
@@ -23,35 +24,30 @@ export default function App() {
           <Text style={styles.subtitle}>Plan your time outside based on the UV Index.</Text>
         </View>
 
-        {page === 'overview' ? (
-          <>
+        <TopTabs activePage={page} hasLocation={location !== null} onSelect={setPage} />
+
+        <View style={page === 'location' ? undefined : styles.hidden}>
             <LocationPicker onSelect={(nextLocation) => {
               setLocation(nextLocation);
-              setPage('overview');
             }} />
-            {latitude !== undefined && longitude !== undefined && (
-              <>
-                <HourlyUvChart key={`${latitude},${longitude}`} latitude={latitude} longitude={longitude} />
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => setPage('planner')}
-                  style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
-                >
-                  <Text style={styles.primaryButtonText}>Plan an outing</Text>
-                </Pressable>
-              </>
-            )}
-          </>
-        ) : (
+        </View>
+
+        {location && page !== 'location' && (
+          <View style={styles.locationContext}>
+            <Text style={styles.locationName}>{getLocationName(location)}</Text>
+            <Text style={styles.locationCoordinates}>{formatLocationCoordinates(location)}</Text>
+          </View>
+        )}
+
+        {page === 'outlook' && latitude !== undefined && longitude !== undefined && (
+          <HourlyUvChart key={`${latitude},${longitude}`} latitude={latitude} longitude={longitude} />
+        )}
+        {page === 'plan' && (
           <>
-            <Pressable accessibilityRole="button" onPress={() => setPage('overview')} style={styles.backButton}>
-              <Text style={styles.backButtonText}>← Back to overview</Text>
-            </Pressable>
-            <View style={styles.pageIntro}>
-              <Text style={styles.pageTitle}>Plan an outing</Text>
-              <Text style={styles.pageSubtitle}>Choose when you expect to be outside.</Text>
-            </View>
             <TimePlanner onChange={setTimePlan} />
+            {timePlan && latitude !== undefined && longitude !== undefined && (
+              <OutingForecast latitude={latitude} longitude={longitude} plan={timePlan} />
+            )}
           </>
         )}
       </ScrollView>
@@ -75,7 +71,26 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 52,
+    marginBottom: 0,
+  },
+  hidden: {
+    display: 'none',
+  },
+  locationContext: {
+    borderBottomColor: '#EEEEEE',
+    borderBottomWidth: 1,
+    marginTop: 24,
+    paddingBottom: 12,
+  },
+  locationName: {
+    color: '#151515',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  locationCoordinates: {
+    color: '#999999',
+    fontSize: 12,
+    marginTop: 3,
   },
   title: {
     color: '#151515',
@@ -89,43 +104,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     textAlign: 'center',
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-    marginBottom: 24,
-  },
-  backButtonText: {
-    color: '#555555',
-    fontSize: 14,
-  },
-  pageIntro: {
-    marginBottom: 4,
-  },
-  pageTitle: {
-    color: '#151515',
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  pageSubtitle: {
-    color: '#696969',
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 6,
-  },
-  primaryButton: {
-    alignItems: 'center',
-    backgroundColor: '#151515',
-    borderRadius: 10,
-    justifyContent: 'center',
-    marginTop: 32,
-    minHeight: 48,
-  },
-  primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  buttonPressed: {
-    opacity: 0.75,
   },
 });

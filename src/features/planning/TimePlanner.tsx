@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DateTimeField } from './DateTimeField';
+import { getShadeLabel, SHADE_OPTIONS, type ShadeLevel } from './shadeOptions';
 
 export type TimePlan = {
   start: Date;
   end: Date;
   durationMinutes: number;
+  shade: ShadeLevel;
 };
 
 type Props = {
@@ -15,6 +17,7 @@ type Props = {
 
 type StartMode = 'now' | 'scheduled';
 type EndMode = 'duration' | 'end-time';
+type OpenSection = 'start' | 'end' | 'duration' | 'shade' | null;
 
 const DURATION_OPTIONS = [30, 60, 120, 180, 240];
 
@@ -35,14 +38,42 @@ function nextHour(): Date {
   return value;
 }
 
-function ChoiceButton({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) {
+function SelectorRow({
+  expanded,
+  label,
+  onPress,
+  value,
+}: {
+  expanded: boolean;
+  label: string;
+  onPress: () => void;
+  value: string;
+}) {
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.choice, active && styles.choiceActive, pressed && styles.buttonPressed]}
+      style={({ pressed }) => [styles.selectorRow, pressed && styles.buttonPressed]}
     >
-      <Text style={[styles.choiceText, active && styles.choiceTextActive]}>{label}</Text>
+      <Text style={styles.selectorLabel}>{label}</Text>
+      <View style={styles.selectorValueWrap}>
+        <Text style={styles.selectorValue}>{value}</Text>
+        <Text style={styles.selectorChevron}>{expanded ? '⌃' : '⌄'}</Text>
+      </View>
+    </Pressable>
+  );
+}
+
+function SelectorOption({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ checked: active }}
+      onPress={onPress}
+      style={({ pressed }) => [styles.selectorOption, pressed && styles.buttonPressed]}
+    >
+      <Text style={[styles.selectorOptionText, active && styles.selectorOptionTextActive]}>{label}</Text>
+      {active && <Text style={styles.checkmark}>✓</Text>}
     </Pressable>
   );
 }
@@ -55,7 +86,9 @@ export function TimePlanner({ onChange }: Props) {
   const [isCustomDuration, setIsCustomDuration] = useState(false);
   const [customDuration, setCustomDuration] = useState('');
   const [endTime, setEndTime] = useState<Date | null>(null);
+  const [shade, setShade] = useState<ShadeLevel | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [openSection, setOpenSection] = useState<OpenSection>(null);
 
   useEffect(() => {
     const now = new Date();
@@ -102,10 +135,16 @@ export function TimePlanner({ onChange }: Props) {
       return;
     }
 
+    if (!shade) {
+      setError(null);
+      onChange(null);
+      return;
+    }
+
     const durationMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
     setError(null);
-    onChange({ start, end, durationMinutes });
-  }, [customDuration, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode]);
+    onChange({ start, end, durationMinutes, shade });
+  }, [customDuration, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, shade, startMode]);
 
   const selectedDuration = duration !== null
     ? duration
@@ -117,18 +156,33 @@ export function TimePlanner({ onChange }: Props) {
     <View style={styles.section}>
       <Text style={styles.heading}>When are you going outside?</Text>
 
-      <Text style={styles.label}>Start</Text>
-      <View style={styles.choices}>
-        <ChoiceButton active={startMode === 'now'} label="Now" onPress={() => setStartMode('now')} />
-        <ChoiceButton
-          active={startMode === 'scheduled'}
-          label="Choose start time"
-          onPress={() => {
-            setStartMode('scheduled');
-            if (!scheduledStart) setScheduledStart(nextHour());
-          }}
-        />
-      </View>
+      <SelectorRow
+        expanded={openSection === 'start'}
+        label="Start"
+        onPress={() => setOpenSection(openSection === 'start' ? null : 'start')}
+        value={startMode === 'now' ? 'Now' : 'Choose a time'}
+      />
+      {openSection === 'start' && (
+        <View style={styles.selectorOptions}>
+          <SelectorOption
+            active={startMode === 'now'}
+            label="Now"
+            onPress={() => {
+              setStartMode('now');
+              setOpenSection(null);
+            }}
+          />
+          <SelectorOption
+            active={startMode === 'scheduled'}
+            label="Choose a start time"
+            onPress={() => {
+              setStartMode('scheduled');
+              if (!scheduledStart) setScheduledStart(nextHour());
+              setOpenSection(null);
+            }}
+          />
+        </View>
+      )}
 
       {startMode === 'scheduled' && (
         <DateTimeField
@@ -140,36 +194,67 @@ export function TimePlanner({ onChange }: Props) {
         />
       )}
 
-      <Text style={styles.label}>End</Text>
-      <View style={styles.choices}>
-        <ChoiceButton active={endMode === 'duration'} label="Choose duration" onPress={() => setEndMode('duration')} />
-        <ChoiceButton active={endMode === 'end-time'} label="Set end time" onPress={() => setEndMode('end-time')} />
-      </View>
+      <SelectorRow
+        expanded={openSection === 'end'}
+        label="End"
+        onPress={() => setOpenSection(openSection === 'end' ? null : 'end')}
+        value={endMode === 'duration' ? 'Duration' : 'End time'}
+      />
+      {openSection === 'end' && (
+        <View style={styles.selectorOptions}>
+          <SelectorOption
+            active={endMode === 'duration'}
+            label="Choose a duration"
+            onPress={() => {
+              setEndMode('duration');
+              setOpenSection(null);
+            }}
+          />
+          <SelectorOption
+            active={endMode === 'end-time'}
+            label="Set an end time"
+            onPress={() => {
+              setEndMode('end-time');
+              setOpenSection(null);
+            }}
+          />
+        </View>
+      )}
 
       {endMode === 'duration' ? (
         <>
-          <View style={styles.choices}>
-            {DURATION_OPTIONS.map((minutes) => (
-              <ChoiceButton
-                key={minutes}
-                active={duration === minutes}
-                label={formatDuration(minutes)}
+          <SelectorRow
+            expanded={openSection === 'duration'}
+            label="Duration"
+            onPress={() => setOpenSection(openSection === 'duration' ? null : 'duration')}
+            value={selectedDuration ? formatDuration(selectedDuration) : isCustomDuration ? 'Custom' : 'Choose a duration'}
+          />
+          {openSection === 'duration' && (
+            <View style={styles.selectorOptions}>
+              {DURATION_OPTIONS.map((minutes) => (
+                <SelectorOption
+                  key={minutes}
+                  active={duration === minutes}
+                  label={formatDuration(minutes)}
+                  onPress={() => {
+                    setDuration(minutes);
+                    setIsCustomDuration(false);
+                    setCustomDuration('');
+                    setOpenSection(null);
+                  }}
+                />
+              ))}
+              <SelectorOption
+                active={isCustomDuration}
+                label="Custom"
                 onPress={() => {
-                  setDuration(minutes);
-                  setIsCustomDuration(false);
-                  setCustomDuration('');
+                  setDuration(null);
+                  setIsCustomDuration(true);
+                  setOpenSection(null);
                 }}
               />
-            ))}
-            <ChoiceButton
-              active={isCustomDuration}
-              label="Custom"
-              onPress={() => {
-                setDuration(null);
-                setIsCustomDuration(true);
-              }}
-            />
-          </View>
+            </View>
+          )}
           {isCustomDuration && (
             <TextInput
               accessibilityLabel="Custom duration in minutes"
@@ -192,6 +277,28 @@ export function TimePlanner({ onChange }: Props) {
         />
       )}
 
+      <SelectorRow
+        expanded={openSection === 'shade'}
+        label="Shade"
+        onPress={() => setOpenSection(openSection === 'shade' ? null : 'shade')}
+        value={shade ? getShadeLabel(shade) : 'Choose shade'}
+      />
+      {openSection === 'shade' && (
+        <View style={styles.selectorOptions}>
+          {SHADE_OPTIONS.map((option) => (
+            <SelectorOption
+              key={option.value}
+              active={shade === option.value}
+              label={option.label}
+              onPress={() => {
+                setShade(option.value);
+                setOpenSection(null);
+              }}
+            />
+          ))}
+        </View>
+      )}
+
       {error && <Text style={styles.error}>{error}</Text>}
       {!error && endMode === 'duration' && selectedDuration && (
         <Text style={styles.summary}>
@@ -210,13 +317,17 @@ export function TimePlanner({ onChange }: Props) {
 
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
-  heading: { color: '#151515', fontSize: 18, fontWeight: '600', marginBottom: 20 },
-  label: { color: '#555555', fontSize: 13, fontWeight: '600', marginBottom: 8, marginTop: 16 },
-  choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  choice: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, minHeight: 42, justifyContent: 'center', paddingHorizontal: 12 },
-  choiceActive: { backgroundColor: '#F1F1F1', borderColor: '#151515' },
-  choiceText: { color: '#555555', fontSize: 13 },
-  choiceTextActive: { color: '#151515', fontWeight: '600' },
+  heading: { color: '#151515', fontSize: 18, fontWeight: '600', marginBottom: 12 },
+  selectorRow: { alignItems: 'center', borderBottomColor: '#D6D6D6', borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', minHeight: 50, paddingVertical: 12 },
+  selectorLabel: { color: '#151515', fontSize: 14 },
+  selectorValueWrap: { alignItems: 'center', flexDirection: 'row', gap: 10 },
+  selectorValue: { color: '#696969', fontSize: 14 },
+  selectorChevron: { color: '#696969', fontSize: 17, lineHeight: 17 },
+  selectorOptions: { borderBottomColor: '#D6D6D6', borderBottomWidth: 1, paddingLeft: 16 },
+  selectorOption: { alignItems: 'center', borderBottomColor: '#EEEEEE', borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', minHeight: 44, paddingRight: 4 },
+  selectorOptionText: { color: '#696969', fontSize: 14 },
+  selectorOptionTextActive: { color: '#151515', fontWeight: '600' },
+  checkmark: { color: '#151515', fontSize: 15, marginRight: 2 },
   buttonPressed: { opacity: 0.65 },
   input: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, color: '#151515', fontSize: 14, marginTop: 10, minHeight: 46, paddingHorizontal: 12 },
   error: { color: '#9C3D32', fontSize: 13, lineHeight: 19, marginTop: 12 },

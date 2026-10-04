@@ -8,5 +8,8 @@
   the user chooses a result from the list.
 - Place results come from GeoNames via Open-Meteo and receive in-app attribution.
 - The free geocoding endpoint is not suitable for commercial release without a licence change.
+- When device location is selected, use the keyless BigDataCloud client-side
+  reverse-geocoding endpoint for a best-effort locality label. Keep the exact
+  coordinates visible and fall back to `Current location` if the lookup fails.
 - Selected coordinates feed the Open-Meteo UV and temperature forecast. The app
   does not persist them.

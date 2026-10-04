@@ -96,9 +96,14 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Connect selected location to the rolling UV and temperature chart.
 - [x] Add Now/scheduled start, duration presets including 3 hours, custom duration,
   and explicit end-time mode.
-- [x] Move the planner to a second page reached from the location/chart overview.
+- [x] Move the planner to a third tab reached after Location and UV Outlook.
 - [x] Add native Android and browser date/time pickers.
-- [ ] Implement shade and the first outing recommendation flow.
+- [x] Add text-only `UV Outlook` and `Plan an Outing` tabs below the app header,
+  with the outlook tab selected by default.
+- [x] Add the selected-outing hourly UV and temperature forecast plus its highest
+  UV Index category.
+- [ ] Implement practical protection guidance using the structured outing result
+  and selected shade; do not numerically reduce the forecast without evidence.
 
 ## Decisions
 
@@ -114,6 +119,9 @@ calculation, supported platform versions, and the final visual polish.
 - Offer both location methods on Android and web.
 - Use Open-Meteo geocoding and forecasts for keyless non-commercial prototyping,
   with GeoNames/Open-Meteo attribution. Revisit licensing before commercial release.
+- Use a keyless BigDataCloud client-side reverse-geocoding lookup for a best-effort
+  locality label when the user chooses device location. Keep coordinates visible
+  and fall back to `Current location` if the lookup fails.
 - Show place suggestions while typing after three characters and a short pause;
   selecting a suggestion confirms the place without a separate Search button.
 - Request foreground device location only after the user taps the button; do not
@@ -124,10 +132,15 @@ calculation, supported platform versions, and the final visual polish.
   preselect a duration or end time.
 - Provide duration presets of 30 minutes, 1 hour, 2 hours, 3 hours, and 4 hours,
   plus custom minutes. Allow the user to switch to an explicit end time instead.
+- Present planner choices as compact selector rows with vertically revealed
+  options, rather than groups of boxed buttons. Keep only one option list open.
 - Show a minimal horizontal UV chart with five preceding hours, Now, and eighteen
   following hours in the location's time zone. Allow the window to cross midnight
-  and label day changes. Show temperature and UV labels above each hourly bar.
-  Keep it available without a duration selection. Add daylight markers later.
+  and label day changes. Show compact temperature and UV labels above each hourly
+  bar, plus the current local weekday, date, and time. Keep the initial viewport
+  slightly into the earlier-hours window so Now is left of center with more
+  upcoming hours visible; all five earlier hours remain available by scrolling
+  left. Keep it available without a duration selection. Add daylight markers later.
 - Use four shade choices: open sun throughout; mostly sun with short shaded
   stretches; about half sun and half shade; overhead cover for most of the outing.
 - Avoid turning the shade choice into an unsupported numerical UV reduction.
@@ -141,10 +154,17 @@ calculation, supported platform versions, and the final visual polish.
   twilight or darkness, and keep daylight comparisons distinct.
 - Use a minimal, neutral visual style with clear typography and little decoration.
 - Build one Expo codebase for Android and web, checking both throughout development.
+- Use text-only top tabs rather than boxed navigation buttons; underline the active tab.
+- Use three top tabs in order: Location, UV Outlook, and Plan an Outing. Keep the
+  dependent tabs visible but inactive until a location is selected, then show the
+  selected place and coordinates in both dependent tabs.
 - Use English for the first version.
 - Do not include accounts or history in the first version.
 - Start with a neutral, straightforward visual style.
 - Use the installed Codex skills under `C:\Users\Urh\.codex\skills`.
+- Keep product rules and calculations in `src/domain/`, separate from UI
+  features. Begin with UV mappings and outing calculations; add guidance,
+  daylight, and model areas as those capabilities are implemented.
 
 ## Open Questions
 
@@ -165,6 +185,16 @@ calculation, supported platform versions, and the final visual polish.
 - Changed manual place search to a compact suggestion list while typing.
 - Added real Open-Meteo UV and temperature values with loading and error states.
 - Changed the forecast to a horizontally scrollable 24-bin chart centered near
-  Now, including a local-day rollover label.
+  Now, including a local-day rollover label. Tightened the bins and set the initial
+  viewport so Now sits left of center while more future bins remain visible. Added
+  a live current local weekday, date, and time label above the chart.
 - Added the first time-planning controls: Now or scheduled start, duration presets
   including 3 hours, custom duration, and explicit end-time mode.
+- Replaced planner button groups with compact accordion-style selector rows for
+  start, end mode, and duration.
+- Added the four-option shade selector. A complete time plan now includes the
+  selected shade level; no shade assumption is made when it is still unset.
+- Added a neutral selected-outing result with overlapping hourly UV and
+  temperature values, a temperature range, and the highest standard UV category.
+- Made Location the first tab and moved UV Outlook and Plan an Outing into the
+  second and third tabs, with selected location context shown in both.

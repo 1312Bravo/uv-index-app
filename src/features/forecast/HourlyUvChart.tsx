@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { getHourlyForecast, type ForecastHour, type HourlyForecast } from './getHourlyForecast';
+import type { ForecastHour } from './getHourlyForecast';
+import { useHourlyForecast } from './useHourlyForecast';
 
 type Props = {
   latitude: number;
   longitude: number;
 };
+
+const BIN_WIDTH = 30;
+const BIN_GAP = 0;
+const INITIAL_SCROLL_OFFSET = (BIN_WIDTH + BIN_GAP) * 2;
 
 function formatHour(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
@@ -23,6 +28,18 @@ function formatDay(time: number, timezone: string): string {
     month: 'short',
     timeZone: timezone,
   }).format(new Date(time * 1000));
+}
+
+function formatCurrentDateTime(time: number, timezone: string): string {
+  return new Intl.DateTimeFormat('en', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: timezone,
+  }).format(new Date(time));
 }
 
 function HourBin({ hour, timezone, scale, showDay }: {
@@ -53,29 +70,18 @@ function HourBin({ hour, timezone, scale, showDay }: {
 }
 
 export function HourlyUvChart({ latitude, longitude }: Props) {
-  const [forecast, setForecast] = useState<HourlyForecast | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { forecast, error, loading } = useHourlyForecast(
+    latitude,
+    longitude,
+    'Could not load the UV forecast. Try another location or try again later.',
+  );
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+  const chartRef = useRef<ScrollView | null>(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-    setForecast(null);
-    setError(null);
-    setLoading(true);
-
-    getHourlyForecast(latitude, longitude, controller.signal)
-      .then((result) => {
-        if (!controller.signal.aborted) setForecast(result);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setError('Could not load the UV forecast. Try another location or try again later.');
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-
-    return () => controller.abort();
-  }, [latitude, longitude]);
+    const timer = setInterval(() => setCurrentTime(Date.now()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   const scale = forecast ? Math.max(8, ...forecast.hours.map((hour) => hour.uv)) : 8;
 
@@ -86,9 +92,14 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
       {error && <Text style={styles.message}>{error}</Text>}
       {forecast && (
         <>
-          <Text style={styles.caption}>Previous 5 hours · Now · Next 18 hours</Text>
-          <Text style={styles.hint}>Swipe to see later hours · local time</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator style={styles.chart}>
+          <Text style={styles.currentTime}>{formatCurrentDateTime(currentTime, forecast.timezone)}</Text>
+          <ScrollView
+            ref={chartRef}
+            horizontal
+            onContentSizeChange={() => chartRef.current?.scrollTo({ x: INITIAL_SCROLL_OFFSET, animated: false })}
+            showsHorizontalScrollIndicator
+            style={styles.chart}
+          >
             <View style={styles.bins}>
               {forecast.hours.map((hour, index) => {
                 const day = formatDay(hour.time, forecast.timezone);
@@ -107,8 +118,8 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
               })}
             </View>
           </ScrollView>
-          <Text style={styles.legend}>Temperature °C above · UV Index below · bar height = UV Index</Text>
-          <Text style={styles.source}>Open-Meteo model data. Earlier hours are not observed UV; values do not measure personal exposure.</Text>
+          <Text style={styles.legend}>Temperature above · UV Index below</Text>
+          <Text style={styles.source}>Open-Meteo forecast data</Text>
         </>
       )}
     </View>
@@ -118,23 +129,22 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
 const styles = StyleSheet.create({
   section: { marginTop: 40 },
   heading: { color: '#151515', fontSize: 18, fontWeight: '600' },
-  caption: { color: '#696969', fontSize: 13, marginTop: 6 },
-  hint: { color: '#999999', fontSize: 12, marginTop: 6 },
   loading: { alignSelf: 'flex-start', marginTop: 20 },
   message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16 },
   chart: { marginTop: 22 },
-  bins: { alignItems: 'flex-end', flexDirection: 'row', gap: 5 },
-  bin: { alignItems: 'center', paddingHorizontal: 3, width: 49 },
+  bins: { alignItems: 'flex-end', flexDirection: 'row', gap: BIN_GAP },
+  bin: { alignItems: 'center', paddingHorizontal: 1, width: BIN_WIDTH },
   currentBin: { backgroundColor: '#F5F5F5', borderRadius: 5 },
-  temperature: { color: '#696969', fontSize: 11, marginBottom: 5 },
-  uv: { color: '#151515', fontSize: 12, marginBottom: 4 },
-  barArea: { borderBottomColor: '#D6D6D6', borderBottomWidth: 1, height: 114, justifyContent: 'flex-end', width: 26 },
-  bar: { backgroundColor: '#606060', width: 26 },
+  temperature: { color: '#696969', fontSize: 10, marginBottom: 4 },
+  uv: { color: '#151515', fontSize: 11, marginBottom: 3 },
+  currentTime: { color: '#696969', fontSize: 12, marginTop: 6 },
+  barArea: { borderBottomColor: '#D6D6D6', borderBottomWidth: 1, height: 114, justifyContent: 'flex-end', width: 16 },
+  bar: { backgroundColor: '#606060', borderRadius: 3, width: 16 },
   pastBar: { backgroundColor: '#B8B8B8' },
   currentBar: { backgroundColor: '#222222' },
-  hour: { color: '#696969', fontSize: 10, marginTop: 7, textAlign: 'center' },
+  hour: { color: '#696969', fontSize: 9, marginTop: 6, textAlign: 'center' },
   currentText: { color: '#151515', fontWeight: '600' },
-  day: { color: '#999999', fontSize: 9, marginTop: 3, minHeight: 20, textAlign: 'center' },
+  day: { color: '#999999', fontSize: 8, marginTop: 3, minHeight: 20, textAlign: 'center' },
   legend: { color: '#696969', fontSize: 11, marginTop: 12 },
-  source: { color: '#999999', fontSize: 11, lineHeight: 16, marginTop: 18 },
+  source: { color: '#999999', fontSize: 11, marginTop: 10 },
 });

@@ -12,3 +12,15 @@
   `datetime-local` control on web.
 - The first controls use the device's local time. Location-specific timezone
   handling should be completed before the recommendation flow is finalized.
+- Show Start, End, and Duration as compact rows with the selected value visible;
+  tapping a row reveals its choices vertically, with only one list open at a time.
+- Shade is a required four-option selection in the same compact selector style:
+  open sun, mostly sun, half sun and shade, or overhead cover.
+- The planner now produces a complete `TimePlan` only after start, end/duration,
+  and shade are selected. The first result uses only the time window for its
+  forecast; shade is retained for the later guidance layer.
+- Practical protection guidance should be a separate, testable mapping from the
+  structured outing result: highest UV category plus shade and daylight context.
+  It should explain what the category means and suggest actions such as covering
+  exposed skin, protecting eyes, or seeking shade, without pretending shade is a
+  precise numerical correction to the forecast.

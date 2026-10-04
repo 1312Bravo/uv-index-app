@@ -1,5 +1,5 @@
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -9,11 +9,11 @@ import {
   View,
 } from 'react-native';
 
+import { formatLocationCoordinates, getLocationName, type SelectedLocation } from './locationTypes';
+import { reverseGeocodePlace } from './reverseGeocode';
 import { formatPlaceName, searchPlaces, type Place } from './searchPlaces';
 
-export type SelectedLocation =
-  | { source: 'device'; latitude: number; longitude: number }
-  | { source: 'place'; place: Place };
+export type { SelectedLocation } from './locationTypes';
 
 type Props = {
   onSelect: (location: SelectedLocation | null) => void;
@@ -27,6 +27,7 @@ export function LocationPicker({ onSelect }: Props) {
   const [isLocating, setIsLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const locationRequest = useRef(0);
 
   useEffect(() => {
     const term = query.trim();
@@ -66,6 +67,7 @@ export function LocationPicker({ onSelect }: Props) {
   }, [query, selected?.source]);
 
   async function useDeviceLocation() {
+    const requestId = ++locationRequest.current;
     setIsLocating(true);
     setError(null);
     setSelected(null);
@@ -91,6 +93,17 @@ export function LocationPicker({ onSelect }: Props) {
       };
       setSelected(location);
       onSelect(location);
+
+      try {
+        const placeName = await reverseGeocodePlace(location.latitude, location.longitude);
+        if (requestId === locationRequest.current && placeName) {
+          const resolvedLocation: SelectedLocation = { ...location, placeName };
+          setSelected(resolvedLocation);
+          onSelect(resolvedLocation);
+        }
+      } catch {
+        // Keep the coordinates when the approximate place lookup is unavailable.
+      }
       setResults([]);
       setHasSearched(false);
     } catch {
@@ -110,12 +123,6 @@ export function LocationPicker({ onSelect }: Props) {
     setError(null);
   }
 
-  const selectedLabel = selected?.source === 'device'
-    ? `Current location (${selected.latitude.toFixed(4)}°, ${selected.longitude.toFixed(4)}°)`
-    : selected?.source === 'place'
-      ? formatPlaceName(selected.place)
-      : null;
-
   return (
     <View>
       <Text style={styles.heading}>Location</Text>
@@ -124,6 +131,7 @@ export function LocationPicker({ onSelect }: Props) {
         accessibilityLabel="Search for a place"
         autoCapitalize="words"
         onChangeText={(value) => {
+          locationRequest.current += 1;
           setQuery(value);
           setResults([]);
           setHasSearched(false);
@@ -178,10 +186,15 @@ export function LocationPicker({ onSelect }: Props) {
         )}
       </Pressable>
 
-      {selectedLabel && <Text style={styles.selected}>Selected: {selectedLabel}</Text>}
+      {selected && (
+        <View style={styles.selected}>
+          <Text style={styles.selectedName}>{getLocationName(selected)}</Text>
+          <Text style={styles.selectedCoordinates}>{formatLocationCoordinates(selected)}</Text>
+        </View>
+      )}
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <Text style={styles.attribution}>Place data: GeoNames via Open-Meteo</Text>
+      <Text style={styles.attribution}>Place search: Open-Meteo · device labels: BigDataCloud</Text>
     </View>
   );
 }
@@ -243,12 +256,9 @@ const styles = StyleSheet.create({
     marginVertical: 14,
     textAlign: 'center',
   },
-  selected: {
-    color: '#555555',
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 16,
-  },
+  selected: { marginTop: 16 },
+  selectedName: { color: '#555555', fontSize: 14, lineHeight: 20 },
+  selectedCoordinates: { color: '#999999', fontSize: 12, marginTop: 3 },
   message: {
     color: '#666666',
     fontSize: 14,
