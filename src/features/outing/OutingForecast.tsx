@@ -1,9 +1,9 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import type { HourlyForecast } from '../forecast/getHourlyForecast';
+import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
 import { useHourlyForecast } from '../forecast/useHourlyForecast';
 import { summarizeOutingForecast, type OutingForecastSummary } from '../../domain/outing/calculateOutingForecast';
-import type { TimePlan } from '../planning/TimePlanner';
+import type { TimePlan } from '../../domain/outing/timePlan';
 
 type Props = {
   latitude: number;

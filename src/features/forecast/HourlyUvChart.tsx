@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import type { ForecastHour } from './getHourlyForecast';
+import type { ForecastHour } from '../../domain/forecast/forecastTypes';
 import { useHourlyForecast } from './useHourlyForecast';
 
 type Props = {

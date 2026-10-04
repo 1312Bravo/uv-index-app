@@ -174,6 +174,10 @@ calculation, supported platform versions, and the final visual polish.
 
 ## Progress
 
+- Separated app composition, domain types/rules, external services, and UI
+  features. Removed domain imports from feature folders and documented the
+  dependency direction in `docs/project-structure.md`.
+
 - Repository instruction file created.
 - Planning started before project scaffolding.
 - Installed the stable Expo TypeScript starter and web dependencies using pnpm.

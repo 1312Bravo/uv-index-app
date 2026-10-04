@@ -9,11 +9,10 @@ import {
   View,
 } from 'react-native';
 
-import { formatLocationCoordinates, getLocationName, type SelectedLocation } from './locationTypes';
-import { reverseGeocodePlace } from './reverseGeocode';
-import { formatPlaceName, searchPlaces, type Place } from './searchPlaces';
-
-export type { SelectedLocation } from './locationTypes';
+import type { Place, SelectedLocation } from '../../domain/location/locationTypes';
+import { reverseGeocodePlace } from '../../services/location/reverseGeocode';
+import { searchPlaces } from '../../services/location/searchPlaces';
+import { formatLocationCoordinates, formatPlaceName, getLocationName } from './formatLocation';
 
 type Props = {
   onSelect: (location: SelectedLocation | null) => void;

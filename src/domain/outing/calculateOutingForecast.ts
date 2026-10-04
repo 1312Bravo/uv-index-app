@@ -1,4 +1,4 @@
-import type { ForecastHour, HourlyForecast } from '../../features/forecast/getHourlyForecast';
+import type { ForecastHour, HourlyForecast } from '../forecast/forecastTypes';
 import { getUvCategory, type UvCategoryInfo } from '../uv/uvCategories';
 
 export type OutingForecastSummary = {

@@ -1,8 +1,11 @@
-import { formatPlaceName, type Place } from './searchPlaces';
+import type { Place, SelectedLocation } from '../../domain/location/locationTypes';
 
-export type SelectedLocation =
-  | { source: 'device'; latitude: number; longitude: number; placeName?: string }
-  | { source: 'place'; place: Place };
+export function formatPlaceName(place: Place): string {
+  const parts = [place.name];
+  if (place.admin1 && place.admin1 !== place.name) parts.push(place.admin1);
+  parts.push(place.country);
+  return parts.join(', ');
+}
 
 export function getLocationName(location: SelectedLocation): string {
   if (location.source === 'device') return location.placeName ?? 'Current location';

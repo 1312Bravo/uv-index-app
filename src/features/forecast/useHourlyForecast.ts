@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { getHourlyForecast, type HourlyForecast } from './getHourlyForecast';
+import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
+import { getHourlyForecast } from '../../services/forecast/getHourlyForecast';
 
 type HourlyForecastState = {
   forecast: HourlyForecast | null;

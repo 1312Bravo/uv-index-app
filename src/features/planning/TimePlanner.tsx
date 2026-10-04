@@ -2,14 +2,8 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DateTimeField } from './DateTimeField';
-import { getShadeLabel, SHADE_OPTIONS, type ShadeLevel } from './shadeOptions';
-
-export type TimePlan = {
-  start: Date;
-  end: Date;
-  durationMinutes: number;
-  shade: ShadeLevel;
-};
+import { getShadeLabel, SHADE_OPTIONS, type ShadeLevel } from '../../domain/outing/shadeOptions';
+import type { TimePlan } from '../../domain/outing/timePlan';
 
 type Props = {
   onChange: (plan: TimePlan | null) => void;

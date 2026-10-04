@@ -1,14 +1,4 @@
-export type ForecastHour = {
-  time: number;
-  uv: number;
-  temperature: number;
-  period: 'past' | 'now' | 'future';
-};
-
-export type HourlyForecast = {
-  timezone: string;
-  hours: ForecastHour[];
-};
+import type { ForecastHour, HourlyForecast } from '../../domain/forecast/forecastTypes';
 
 function isNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);

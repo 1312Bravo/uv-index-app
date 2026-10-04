@@ -1,11 +1,4 @@
-export type Place = {
-  id: number;
-  name: string;
-  admin1?: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-};
+import type { Place } from '../../domain/location/locationTypes';
 
 export async function searchPlaces(query: string, signal?: AbortSignal): Promise<Place[]> {
   const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en`;
@@ -33,13 +26,4 @@ export async function searchPlaces(query: string, signal?: AbortSignal): Promise
     typeof item.latitude === 'number' &&
     typeof item.longitude === 'number'
   ));
-}
-
-export function formatPlaceName(place: Place): string {
-  const parts = [place.name];
-  if (place.admin1 && place.admin1 !== place.name) {
-    parts.push(place.admin1);
-  }
-  parts.push(place.country);
-  return parts.join(', ');
 }
