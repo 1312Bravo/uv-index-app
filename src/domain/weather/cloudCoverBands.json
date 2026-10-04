@@ -1,0 +1,44 @@
+[
+  {
+    "key": "clear",
+    "label": "Clear",
+    "minimumPercentInclusive": 0,
+    "maximumPercentInclusive": 0,
+    "description": "The forecast estimates no cloud cover."
+  },
+  {
+    "key": "mostly-clear",
+    "label": "Mostly clear",
+    "minimumPercentInclusive": 1,
+    "maximumPercentInclusive": 25,
+    "description": "A small part of the sky is forecast to be covered by clouds."
+  },
+  {
+    "key": "partly-cloudy",
+    "label": "Partly cloudy",
+    "minimumPercentInclusive": 26,
+    "maximumPercentInclusive": 50,
+    "description": "Clouds are forecast across about a quarter to half of the sky."
+  },
+  {
+    "key": "mostly-cloudy",
+    "label": "Mostly cloudy",
+    "minimumPercentInclusive": 51,
+    "maximumPercentInclusive": 75,
+    "description": "Clouds are forecast across most of the sky, with some clearer areas."
+  },
+  {
+    "key": "very-cloudy",
+    "label": "Very cloudy",
+    "minimumPercentInclusive": 76,
+    "maximumPercentInclusive": 99,
+    "description": "Nearly all of the sky is forecast to be covered by clouds."
+  },
+  {
+    "key": "overcast",
+    "label": "Overcast",
+    "minimumPercentInclusive": 100,
+    "maximumPercentInclusive": 100,
+    "description": "The forecast estimates the whole sky to be covered by clouds."
+  }
+]

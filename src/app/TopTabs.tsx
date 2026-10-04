@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export type AppPage = 'location' | 'outlook' | 'plan';
+export type AppPage = 'location' | 'outlook' | 'plan' | 'info';
 
 type Props = {
   activePage: AppPage;
@@ -32,6 +32,14 @@ export function TopTabs({ activePage, hasLocation, onSelect }: Props) {
       >
         <Text style={[styles.label, !hasLocation && styles.disabledLabel, activePage === 'plan' && styles.activeLabel]}>Plan an Outing</Text>
       </Pressable>
+      <Pressable
+        accessibilityRole="tab"
+        accessibilityState={{ selected: activePage === 'info' }}
+        onPress={() => onSelect('info')}
+        style={styles.tab}
+      >
+        <Text style={[styles.label, activePage === 'info' && styles.activeLabel]}>Info</Text>
+      </Pressable>
     </View>
   );
 }
@@ -45,13 +53,13 @@ const styles = StyleSheet.create({
   },
   tab: {
     alignItems: 'center',
-    minWidth: 104,
+    flex: 1,
     paddingBottom: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 2,
   },
   label: {
     color: '#777777',
-    fontSize: 14,
+    fontSize: 11,
     paddingBottom: 7,
   },
   disabledLabel: {

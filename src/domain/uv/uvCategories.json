@@ -1,7 +1,32 @@
 [
-  { "key": "low", "label": "Low", "minimumUvInclusive": 0 },
-  { "key": "moderate", "label": "Moderate", "minimumUvInclusive": 3 },
-  { "key": "high", "label": "High", "minimumUvInclusive": 6 },
-  { "key": "very-high", "label": "Very high", "minimumUvInclusive": 8 },
-  { "key": "extreme", "label": "Extreme", "minimumUvInclusive": 11 }
+  {
+    "key": "low",
+    "label": "Low",
+    "minimumUvInclusive": 0,
+    "meaning": "The lowest exposure category. WHO guidance generally recommends sun protection from UV Index 3 and above."
+  },
+  {
+    "key": "moderate",
+    "label": "Moderate",
+    "minimumUvInclusive": 3,
+    "meaning": "UV is high enough that protection is recommended, especially around the middle of the day."
+  },
+  {
+    "key": "high",
+    "label": "High",
+    "minimumUvInclusive": 6,
+    "meaning": "The potential for harm from unprotected sun exposure is higher. Seek shade and protect skin and eyes."
+  },
+  {
+    "key": "very-high",
+    "label": "Very high",
+    "minimumUvInclusive": 8,
+    "meaning": "Unprotected skin and eyes can be harmed quickly. Extra protection and limiting strong midday sun are important."
+  },
+  {
+    "key": "extreme",
+    "label": "Extreme",
+    "minimumUvInclusive": 11,
+    "meaning": "The highest category. Unprotected skin and eyes can be harmed very quickly; minimize exposure and use extra protection."
+  }
 ]

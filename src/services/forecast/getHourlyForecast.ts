@@ -12,8 +12,8 @@ export async function getHourlyForecast(
   const params = new URLSearchParams({
     latitude: String(latitude),
     longitude: String(longitude),
-    current: 'uv_index,temperature_2m',
-    hourly: 'uv_index,temperature_2m',
+    current: 'uv_index,temperature_2m,cloud_cover',
+    hourly: 'uv_index,temperature_2m,cloud_cover',
     timezone: 'auto',
     timeformat: 'unixtime',
     past_days: '1',
@@ -30,7 +30,8 @@ export async function getHourlyForecast(
     typeof data.timezone !== 'string' ||
     !Array.isArray(data.hourly?.time) ||
     !Array.isArray(data.hourly?.uv_index) ||
-    !Array.isArray(data.hourly?.temperature_2m)
+    !Array.isArray(data.hourly?.temperature_2m) ||
+    !Array.isArray(data.hourly?.cloud_cover)
   ) {
     throw new Error('Forecast data is incomplete.');
   }
@@ -47,11 +48,15 @@ export async function getHourlyForecast(
     const time = times[index];
     const hourlyUv = data.hourly.uv_index[index];
     const hourlyTemperature = data.hourly.temperature_2m[index];
+    const hourlyCloudCover = data.hourly.cloud_cover[index];
     const current = data.current;
     const useCurrent = index === currentIndex &&
       isNumber(current?.uv_index) && isNumber(current?.temperature_2m);
     const uv = useCurrent ? current.uv_index : hourlyUv;
     const temperature = useCurrent ? current.temperature_2m : hourlyTemperature;
+    const cloudCover = useCurrent && isNumber(current?.cloud_cover)
+      ? current.cloud_cover
+      : isNumber(hourlyCloudCover) ? hourlyCloudCover : null;
 
     if (!isNumber(time) || !isNumber(uv) || !isNumber(temperature)) {
       throw new Error('The hourly UV forecast is incomplete.');
@@ -61,6 +66,7 @@ export async function getHourlyForecast(
       time,
       uv,
       temperature,
+      cloudCover,
       period: index < currentIndex ? 'past' : index === currentIndex ? 'now' : 'future',
     });
   }

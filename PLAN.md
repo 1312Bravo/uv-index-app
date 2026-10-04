@@ -31,6 +31,14 @@ helps people plan outdoor time around the current and forecast UV index.
 - Show civil dawn, sunrise, sunset, and civil dusk for the selected location.
 - Show forecast outdoor temperature next to UV for context; do not use temperature
   as a UV-risk input or infer clothing from it.
+- Show hourly cloud cover as separate weather context; use the provider's regular
+  UV forecast as the UV value and never apply an additional cloud-percentage discount.
+- Use the same compact hourly UV bar chart in the outlook and outing result, with
+  cloud-cover percentage and temperature above each bar.
+- Keep a final, always-available Info tab with the UV category mapping and a
+  plain-language cloud-cover percentage guide.
+- Present Info topics as vertically stacked disclosures, with none expanded at
+  first and no more than one topic open at a time.
 - Keep the interface minimal, with a small number of clear inputs and an easy-to-read result.
 
 ## Critical Review
@@ -104,6 +112,12 @@ calculation, supported platform versions, and the final visual polish.
   UV Index category.
 - [x] Implement general protection guidance using the outing's rounded UV
   category and selected shade; keep forecast UV unchanged.
+- [x] Add hourly cloud cover as separate context and use a shared hourly bar chart
+  for the outlook and selected outing.
+- [x] Add an always-available final Info tab explaining UV categories, decimal
+  category rounding, and cloud-cover percentages.
+- [x] Group Info explanations under vertically stacked topics, collapsed by
+  default.
 
 ## Decisions
 
@@ -145,6 +159,8 @@ calculation, supported platform versions, and the final visual polish.
   stretches; about half sun and half shade; overhead cover for most of the outing.
 - Avoid turning the shade choice into an unsupported numerical UV reduction.
 - Show temperature as forecast context. Do not infer clothing from temperature.
+- Show cloud-cover percentage alongside hourly temperature and UV as weather
+  context only. Keep it distinct from route shade and do not use it to adjust UV.
 - Explain what the UV Index measures in a short introductory description.
 - Explain the selected UV category with practical action and a reason in the result.
 - Compare future earlier and later time windows of equal duration using forecast
@@ -155,9 +171,10 @@ calculation, supported platform versions, and the final visual polish.
 - Use a minimal, neutral visual style with clear typography and little decoration.
 - Build one Expo codebase for Android and web, checking both throughout development.
 - Use text-only top tabs rather than boxed navigation buttons; underline the active tab.
-- Use three top tabs in order: Location, UV Outlook, and Plan an Outing. Keep the
-  dependent tabs visible but inactive until a location is selected, then show the
-  selected place and coordinates in both dependent tabs.
+- Use four top tabs in order: Location, UV Outlook, Plan an Outing, and Info.
+  Keep UV Outlook and Plan an Outing visible but inactive until a location is
+  selected, then show the selected place and coordinates in those tabs. Info is
+  always available and does not require a selected location.
 - Use English for the first version.
 - Do not include accounts or history in the first version.
 - Start with a neutral, straightforward visual style.
@@ -213,3 +230,9 @@ calculation, supported platform versions, and the final visual polish.
   temperature values, a temperature range, and the highest standard UV category.
 - Made Location the first tab and moved UV Outlook and Plan an Outing into the
   second and third tabs, with selected location context shown in both.
+- Added Open-Meteo hourly cloud-cover percentages as separate forecast context,
+  and reused the UV bar chart for the selected outing. Cloud cover does not
+  numerically alter the returned UV Index or route-shade guidance.
+- Added a final Info tab backed by the validated UV category definitions and a
+  validated, editable cloud-cover description table. Documented scientific
+  sources separately from app-chosen cloud-label bands.

@@ -7,24 +7,28 @@ export type UvCategoryInfo = {
   label: string;
 };
 
-type CategoryDefinition = UvCategoryInfo & { minimumUvInclusive: number };
+export type UvCategoryDefinition = UvCategoryInfo & {
+  minimumUvInclusive: number;
+  meaning: string;
+};
 
 function isCategoryKey(key: string): key is UvCategory {
   return ['low', 'moderate', 'high', 'very-high', 'extreme'].includes(key);
 }
 
 // Check editable data once so a malformed table cannot silently misclassify UV.
-const categories: CategoryDefinition[] = definitions.map((definition, index) => {
-  const { key, label, minimumUvInclusive } = definition;
+const categories: UvCategoryDefinition[] = definitions.map((definition, index) => {
+  const { key, label, minimumUvInclusive, meaning } = definition;
   if (
     !isCategoryKey(key) || !label.trim() ||
+    !meaning.trim() ||
     !Number.isFinite(minimumUvInclusive) ||
     (index === 0 ? minimumUvInclusive !== 0 : minimumUvInclusive <= definitions[index - 1].minimumUvInclusive) ||
     definitions.slice(0, index).some((previous) => previous.key === key)
   ) {
     throw new Error(`Invalid UV category definition at row ${index + 1}.`);
   }
-  return { key, label, minimumUvInclusive };
+  return { key, label, minimumUvInclusive, meaning };
 });
 
 if (categories.length !== 5) throw new Error('UV categories must contain all five category keys.');
@@ -37,4 +41,8 @@ export function getUvCategory(uv: number): UvCategoryInfo {
   // Each row applies until the next row's minimum; the final row has no upper limit.
   const category = categories.findLast((entry) => roundedUv >= entry.minimumUvInclusive)!;
   return { key: category.key, label: category.label };
+}
+
+export function getUvCategoryDefinitions(): UvCategoryDefinition[] {
+  return categories.map((category) => ({ ...category }));
 }

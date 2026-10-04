@@ -5,11 +5,12 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { SelectedLocation } from '../domain/location/locationTypes';
 import type { TimePlan } from '../domain/outing/timePlan';
 import { HourlyUvChart } from '../features/forecast/HourlyUvChart';
+import { InfoScreen } from '../features/info/InfoScreen';
 import { LocationPicker } from '../features/location/LocationPicker';
-import { formatLocationCoordinates, getLocationName } from '../features/location/formatLocation';
-import { TopTabs, type AppPage } from './TopTabs';
 import { OutingForecast } from '../features/outing/OutingForecast';
 import { TimePlanner } from '../features/planning/TimePlanner';
+import { formatLocationCoordinates, getLocationName } from '../features/location/formatLocation';
+import { TopTabs, type AppPage } from './TopTabs';
 
 export function UvScoutApp() {
   const [location, setLocation] = useState<SelectedLocation | null>(null);
@@ -32,7 +33,7 @@ export function UvScoutApp() {
           <LocationPicker onSelect={setLocation} />
         </View>
 
-        {location && page !== 'location' && (
+        {location && page !== 'location' && page !== 'info' && (
           <View style={styles.locationContext}>
             <Text style={styles.locationName}>{getLocationName(location)}</Text>
             <Text style={styles.locationCoordinates}>{formatLocationCoordinates(location)}</Text>
@@ -50,6 +51,7 @@ export function UvScoutApp() {
             )}
           </>
         )}
+        {page === 'info' && <InfoScreen />}
       </ScrollView>
       <StatusBar style="dark" />
     </View>

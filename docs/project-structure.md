@@ -12,8 +12,10 @@ src/
     outing/                   Time plan, shade choices, forecast calculations
     guidance/protectionGuidance.json Editable guidance levels and shade wording
     guidance/getProtectionGuidance.ts Validates and interprets guidance data
-    uv/uvCategories.json      Editable UV category definitions
+    uv/uvCategories.json      Editable UV categories and explanations
     uv/getUvCategory.ts       Validates and interprets the category table
+    weather/cloudCoverBands.json Editable cloud-cover descriptions
+    weather/getCloudCoverBand.ts Validates and interprets cloud-cover bands
   services/                   External requests and response parsing
     forecast/                 Open-Meteo forecasts
     location/                 Place search and reverse geocoding
@@ -22,6 +24,7 @@ src/
     location/                 Location selection and display formatting
     planning/                 Time and shade inputs, platform date/time picker
     outing/                   Outing forecast result
+    info/                     UV and cloud-cover explanation screen
 notes/                        Durable decisions and requirements
   protection-guidance-research.md Sources and proposed guidance rules
 docs/                         Run instructions and implementation guides
@@ -44,7 +47,8 @@ This lets calculations run independently of the UI and the weather provider.
 ## Where to put the next change
 
 For UV categories, edit `src/domain/uv/uvCategories.json`. Each row contains a
-stable `key`, a displayed `label`, and `minimumUvInclusive`. The minimum belongs
+stable `key`, a displayed `label`, `minimumUvInclusive`, and a plain-language
+`meaning`. The minimum belongs
 to that category after rounding the raw UV Index to the nearest whole number,
 with .5 rounding up: 2.4 becomes 2 (Low), and 2.5 becomes 3 (Moderate).
 The displayed forecast retains its decimal value. Each category continues
@@ -53,6 +57,12 @@ Keep all five keys unique, the first minimum at zero, and rows in increasing
 threshold order. Labels and thresholds are editable; keys are stable app
 identifiers. Changing the set of keys also requires updating the TypeScript type.
 The interpreter checks the table and rejects invalid UV inputs.
+
+For the Info screen's cloud-cover ranges, edit
+`src/domain/weather/cloudCoverBands.json`. The ranges must be unique, consecutive
+integer percentages that cover 0–100. Their labels and descriptions are UV
+Scout's simplified wording, not an official meteorological scale. Keep the
+percentage meaning (sky area covered) separate from UV exposure and route shade.
 
 Follow this pattern for future editable domain mappings and guidance content:
 JSON holds the definitions, TypeScript validates and interprets them, and UI
@@ -65,6 +75,7 @@ bundled into the app; edits need a development reload or a new published build.
 | Input controls, chart styling, display formatting | `src/features/` |
 | API URL, provider parsing, request handling | `src/services/` |
 | UV thresholds, shade definitions, outing calculations | `src/domain/` |
+| Category and cloud-cover explanations | `src/domain/` and `src/features/info/` |
 | Explanation of an accepted product rule | `notes/` |
 | How to run or extend the app | `docs/` |
 
