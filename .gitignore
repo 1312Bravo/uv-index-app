@@ -1,26 +1,51 @@
-# Dependencies and Expo output
+# Dependencies
 node_modules/
-.expo/
-dist/
-web-build/
-expo-env.d.ts
 
-# Generated native folders
+# Expo and generated app output
+.expo/
+.expo-*/
+/dist/
+/web-build/
+/coverage/
+expo-env.d.ts
+*.tsbuildinfo
+
+# Expo prebuild / native build output
 /ios/
 /android/
+*.apk
+*.aab
+*.ipa
 
-# Local environment and debug files
-.env*.local
-*.tsbuildinfo
-*.log
+# Local environment files (commit only sanitized examples)
+.env*
+!.env.example
 
-# Platform files and signing material
-.DS_Store
-.kotlin/
-*.orig.*
+# Signing keys, certificates, and provisioning profiles
 *.jks
+*.keystore
 *.p8
 *.p12
+*.pfx
 *.key
-*.mobileprovision
 *.pem
+*.mobileprovision
+
+# Local editor, OS, and temporary files
+.DS_Store
+Thumbs.db
+.idea/
+*.orig.*
+*.rej
+*.swp
+
+# Logs and crash dumps
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.stackdump
+
+# User-provided attachments kept for Codex conversations, not app assets
+.codex-remote-attachments/

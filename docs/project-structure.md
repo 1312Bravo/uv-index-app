@@ -8,6 +8,7 @@ src/
     TopTabs.tsx
   domain/                     Product knowledge and shared data types
     forecast/forecastTypes.ts
+    daylight/                  Civil dawn, sunrise, sunset, and civil dusk calculations
     location/locationTypes.ts
     outing/                   Time plan, shade choices, forecast calculations
     guidance/protectionGuidance.json Editable guidance levels and shade wording
@@ -27,6 +28,7 @@ src/
     info/                     UV and cloud-cover explanation screen
 notes/                        Durable decisions and requirements
   protection-guidance-research.md Sources and proposed guidance rules
+  data-sources.md             Source register: what we use and where
 docs/                         Run instructions and implementation guides
 prompts/                      Reusable research and review briefs
 PLAN.md                       Product scope, progress, open decisions
@@ -74,21 +76,33 @@ bundled into the app; edits need a development reload or a new published build.
 | Tab order, app layout, shared screen state | `src/app/` |
 | Input controls, chart styling, display formatting | `src/features/` |
 | API URL, provider parsing, request handling | `src/services/` |
-| UV thresholds, shade definitions, outing calculations | `src/domain/` |
+| UV thresholds, shade definitions, outing and daylight calculations | `src/domain/` |
 | Category and cloud-cover explanations | `src/domain/` and `src/features/info/` |
 | Explanation of an accepted product rule | `notes/` |
+| External data/evidence source and its use | `notes/data-sources.md` |
 | How to run or extend the app | `docs/` |
 
 For research on UV science or practical protection advice, use the review brief
 in `prompts/uv-evidence-guidance-reviewer.md`. It requires citations and a clear
 split between published evidence and UV Scout's product choices.
 
+External data and evidence provenance belongs in `notes/data-sources.md`.
+Keep a central entry for every provider or scientific reference, including the
+code/data paths where it is used, interpretation, attribution/licensing, and
+limits; add a focused research note for substantive evidence reviews.
+
+Daylight times are calculated in `src/domain/daylight/` from the selected
+location and local forecast dates. The feature chart positions the markers and
+sun on the same scrollable time scale as its hourly bins. The calculation is
+independent of UI and API services; see `notes/daylight-research.md` for event
+definitions, method, and limitations.
+
 Protection guidance follows this pattern: editable messages and category groups
 live in `src/domain/guidance/protectionGuidance.json`; TypeScript validates and
 maps the rounded category and selected shade into a structured result; the outing
 feature renders it. Sources and rationale are recorded in
-`notes/protection-guidance-research.md`. Create daylight or model folders when
-implementing those capabilities.
+`notes/protection-guidance-research.md`. Create additional domain folders when
+implementing new capabilities.
 
 This structure pass preserves existing behavior, including the rolling forecast
 window and device-local planner inputs. Changes to forecast coverage, time-zone

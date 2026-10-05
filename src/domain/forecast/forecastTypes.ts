@@ -1,3 +1,5 @@
+import type { DaylightEvents } from '../daylight/daylightTypes';
+
 export type ForecastHour = {
   time: number;
   uv: number;
@@ -9,4 +11,5 @@ export type ForecastHour = {
 export type HourlyForecast = {
   timezone: string;
   hours: ForecastHour[];
+  daylight: DaylightEvents[];
 };

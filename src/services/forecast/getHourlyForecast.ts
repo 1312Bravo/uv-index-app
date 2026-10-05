@@ -1,4 +1,5 @@
 import type { ForecastHour, HourlyForecast } from '../../domain/forecast/forecastTypes';
+import { getDaylightEvents, getLocalDateKey } from '../../domain/daylight/getDaylightEvents';
 
 function isNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
@@ -71,5 +72,8 @@ export async function getHourlyForecast(
     });
   }
 
-  return { timezone: data.timezone, hours };
+  const dates = [...new Set(hours.map(({ time }) => getLocalDateKey(time, data.timezone)))];
+  const daylight = dates.map((date) => getDaylightEvents(date, latitude, longitude));
+
+  return { timezone: data.timezone, hours, daylight };
 }

@@ -60,14 +60,16 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
         <>
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>Highest UV Index</Text>
+              <Text style={styles.summaryLabel}>Peak UV Index</Text>
               <Text style={styles.summaryValue}>{summary.highestUv.toFixed(1)}</Text>
-              <Text style={styles.summaryDetail}>{summary.highestCategory.label}</Text>
+              <Text style={styles.summaryDetail}>
+                {summary.highestCategory.label} · {summary.averageUv.toFixed(1)} average
+              </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>Temperature</Text>
-              <Text style={styles.summaryValue}>{formatTemperatureRange(summary)}</Text>
-              <Text style={styles.summaryDetail}>Forecast range</Text>
+              <Text style={styles.summaryLabel}>Average temperature</Text>
+              <Text style={styles.summaryValue}>{Math.round(summary.averageTemperature)}°C</Text>
+              <Text style={styles.summaryDetail}>Range {formatTemperatureRange(summary)}</Text>
             </View>
           </View>
 
@@ -83,7 +85,16 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
           )}
 
           <Text style={styles.subheading}>UV, clouds and temperature by hour</Text>
-          <HourlyUvBarChart hours={summary.hours} timezone={forecast.timezone} />
+          <HourlyUvBarChart
+            hours={forecast.hours}
+            timezone={forecast.timezone}
+            daylight={forecast.daylight}
+            sunTime={plan.start.getTime() / 1000}
+            selectedRange={{
+              start: plan.start.getTime() / 1000,
+              end: plan.end.getTime() / 1000,
+            }}
+          />
           <Text style={styles.source}>Open-Meteo forecast data</Text>
         </>
       )}

@@ -1,5 +1,7 @@
 # Practical protection guidance: evidence and proposed app rules
 
+See the [source register](data-sources.md) for source-to-code mappings.
+
 **Status:** First general guidance rules are implemented. The cited sources and
 rationale below remain the record for review and future edits.
 

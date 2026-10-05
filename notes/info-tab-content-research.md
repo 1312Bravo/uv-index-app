@@ -1,5 +1,7 @@
 # Info Tab Content: Evidence and Product Choices
 
+See the [source register](data-sources.md) for source-to-code mappings.
+
 ## UV Index
 
 **Source-backed:** WHO describes the UV Index as an indicator of the level of

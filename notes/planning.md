@@ -20,7 +20,11 @@
   and shade are selected. The first result uses only the time window for its
   forecast; shade is retained for the later guidance layer.
 - Practical protection guidance should be a separate, testable mapping from the
-  structured outing result: highest UV category plus shade and daylight context.
+  structured outing result: peak UV category plus shade and daylight context.
   It should explain what the category means and suggest actions such as covering
   exposed skin, protecting eyes, or seeking shade, without pretending shade is a
   precise numerical correction to the forecast.
+- Summarize an outing with peak and duration-weighted average UV, using only the
+  peak category for guidance; show average temperature and the forecast range.
+- The outing chart highlights every overlapping selected hour equally and adds
+  up to three equally many faint context hours before and after when available.

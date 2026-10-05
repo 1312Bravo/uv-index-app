@@ -21,6 +21,14 @@ before any repository guidance.
 - Consult `PLAN.md` when deciding product scope or implementing the current MVP;
   update it when a meaningful decision or milestone changes.
 - Keep run instructions and implementation notes in `docs/`.
+- Record every external data provider, evidence source, or scientific method that
+  informs app behavior in `notes/data-sources.md`. State what comes from the
+  source, where it is used in code/data, how it is transformed or interpreted,
+  and its attribution, licensing, and limitations when relevant. Link detailed
+  evidence notes from the register; update both when introducing or changing a
+  source. Clearly distinguish source-backed facts from UV Scout product choices.
+  Include the source publication/version and date checked when available,
+  especially for changing API terms or public-health guidance.
 - Keep secrets, generated files, and build output out of source control.
 - Inspect existing files before editing and preserve user work.
 - Before implementing a meaningful product or architecture choice that remains

@@ -47,6 +47,8 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
           <HourlyUvBarChart
             hours={forecast.hours}
             timezone={forecast.timezone}
+            daylight={forecast.daylight}
+            sunTime={currentTime / 1000}
             initialScrollOffset={INITIAL_SCROLL_OFFSET}
           />
           <Text style={styles.source}>Open-Meteo forecast data</Text>

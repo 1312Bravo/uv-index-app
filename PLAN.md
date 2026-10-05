@@ -40,6 +40,8 @@ helps people plan outdoor time around the current and forecast UV index.
 - Present Info topics as vertically stacked disclosures, with none expanded at
   first and no more than one topic open at a time.
 - Keep the interface minimal, with a small number of clear inputs and an easy-to-read result.
+- Maintain a source register that identifies the origin, app usage, code/data
+  location, and relevant limitations for external data and evidence.
 
 ## Critical Review
 
@@ -110,6 +112,9 @@ calculation, supported platform versions, and the final visual polish.
   with the outlook tab selected by default.
 - [x] Add the selected-outing hourly UV and temperature forecast plus its highest
   UV Index category.
+- [x] Add duration-weighted average UV and temperature summaries while keeping
+  guidance based on peak UV; highlight the whole outing with balanced faint chart
+  context around it.
 - [x] Implement general protection guidance using the outing's rounded UV
   category and selected shade; keep forecast UV unchanged.
 - [x] Add hourly cloud cover as separate context and use a shared hourly bar chart
@@ -118,6 +123,12 @@ calculation, supported platform versions, and the final visual polish.
   category rounding, and cloud-cover percentages.
 - [x] Group Info explanations under vertically stacked topics, collapsed by
   default.
+- [x] Add a shared daylight track with civil dawn, sunrise, sunset, and civil
+  dusk markers above the hourly bars in UV Outlook and Plan an Outing.
+- [x] Show one time-dependent celestial icon on the forecast timeline: sun by
+  day and moon at night, each following its matching arc.
+- [x] Add a central source register and require it to be updated when app data
+  providers, scientific evidence, or calculation references are introduced.
 
 ## Decisions
 
@@ -169,6 +180,9 @@ calculation, supported platform versions, and the final visual polish.
 - Show civil dawn, sunrise, sunset, and civil dusk. Mark comparisons that include
   twilight or darkness, and keep daylight comparisons distinct.
 - Use a minimal, neutral visual style with clear typography and little decoration.
+- Calculate daylight events for the forecast location and local date; align the
+  event markers, paired day/night arcs, and time-dependent sun/moon icon with
+  hourly chart bins.
 - Build one Expo codebase for Android and web, checking both throughout development.
 - Use text-only top tabs rather than boxed navigation buttons; underline the active tab.
 - Use four top tabs in order: Location, UV Outlook, Plan an Outing, and Info.
@@ -179,6 +193,9 @@ calculation, supported platform versions, and the final visual polish.
 - Do not include accounts or history in the first version.
 - Start with a neutral, straightforward visual style.
 - Use the installed Codex skills under `C:\Users\Urh\.codex\skills`.
+- Record external sources and how they inform app data or behavior in
+  `notes/data-sources.md`; keep detailed research in topic-specific notes and
+  distinguish evidence from UV Scout's own product choices.
 - Keep product rules and calculations in `src/domain/`, separate from UI
   features. Begin with UV mappings and outing calculations; add guidance,
   daylight, and model areas as those capabilities are implemented.
@@ -226,8 +243,10 @@ calculation, supported platform versions, and the final visual polish.
   start, end mode, and duration.
 - Added the four-option shade selector. A complete time plan now includes the
   selected shade level; no shade assumption is made when it is still unset.
-- Added a neutral selected-outing result with overlapping hourly UV and
-  temperature values, a temperature range, and the highest standard UV category.
+- Added a selected-outing result with peak and duration-weighted average UV,
+  average temperature and range, with guidance still based on peak UV. The
+  outing chart highlights all selected hours and uses equal, faint context
+  buffers on each side when forecast data allows.
 - Made Location the first tab and moved UV Outlook and Plan an Outing into the
   second and third tabs, with selected location context shown in both.
 - Added Open-Meteo hourly cloud-cover percentages as separate forecast context,
@@ -236,3 +255,8 @@ calculation, supported platform versions, and the final visual polish.
 - Added a final Info tab backed by the validated UV category definitions and a
   validated, editable cloud-cover description table. Documented scientific
   sources separately from app-chosen cloud-label bands.
+- Added a reusable daylight calculation and aligned dawn/sunrise/sunset/dusk
+  markers above both hourly charts. Added paired grayscale day and night arcs
+  with one selected-time icon: sun by day, moon at night. Documented that the
+  moon is illustrative only, plus astronomical sources and polar-latitude
+  limitations.
