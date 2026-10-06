@@ -81,14 +81,18 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
               {recommendation.coverageMessage && (
                 <Text style={styles.coverageText}>{recommendation.coverageMessage}</Text>
               )}
-              <Text style={styles.subheading}>{recommendation.headline}</Text>
+              <Text style={styles.recommendationSectionHeading}>WHO guidance</Text>
+              <Text style={styles.sectionNote}>{recommendation.whoGuidanceNote}</Text>
+              <Text style={styles.guidanceHeadline}>{recommendation.headline}</Text>
               <Text style={styles.guidanceText}>{recommendation.explanation}</Text>
-              <Text style={styles.exposureHeading}>UV during your outing</Text>
-              {recommendation.exposureObservations.map((observation) => (
-                <Text key={observation} style={styles.exposureText}>{observation}</Text>
-              ))}
               {recommendation.actions.map((action) => (
                 <Text key={action} style={styles.guidanceAction}>• {action}</Text>
+              ))}
+
+              <Text style={styles.recommendationSectionHeading}>UV Scout insight</Text>
+              <Text style={styles.sectionNote}>{recommendation.uvScoutInsightNote}</Text>
+              {recommendation.exposureObservations.map((observation) => (
+                <Text key={observation} style={styles.exposureText}>{observation}</Text>
               ))}
               {recommendation.reapplicationReminder && (
                 <Text style={styles.reapplicationText}>{recommendation.reapplicationReminder}</Text>
@@ -128,9 +132,11 @@ const styles = StyleSheet.create({
   summaryDetail: { color: '#696969', fontSize: 12, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: '#696969', fontSize: 12, marginTop: 8, textAlign: 'center' },
   guidance: { marginTop: 8 },
+  recommendationSectionHeading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 24, textAlign: 'center' },
+  guidanceHeadline: { color: '#151515', fontSize: 16, fontWeight: '600', marginTop: 12, textAlign: 'center' },
+  sectionNote: { color: '#858585', fontSize: 11, lineHeight: 16, marginTop: 6, textAlign: 'center' },
   coverageText: { color: '#555555', fontSize: 12, lineHeight: 18, marginTop: 14, textAlign: 'center' },
   guidanceText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 8 },
-  exposureHeading: { color: '#333333', fontSize: 13, fontWeight: '600', marginTop: 16 },
   exposureText: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 7 },
   guidanceAction: { color: '#333333', fontSize: 13, lineHeight: 19, marginTop: 8 },
   reapplicationText: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 14 },

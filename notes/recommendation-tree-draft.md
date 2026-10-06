@@ -41,6 +41,10 @@ Related evidence and factor inventory:
   3+, show a conditional sunscreen reminder. This is a UV Scout product trigger
   based on general reapplication guidance; it does not track application or
   create a personal timer.
+- Present the layers separately as **WHO guidance** and **UV Scout insight**.
+  Explain that UV Scout applies general WHO UV-level guidance to the outing's
+  peak, while the profile is a forecast-based insight rather than personal dose
+  or individualized health risk.
 
 ## Evidence versus UV Scout choices
 

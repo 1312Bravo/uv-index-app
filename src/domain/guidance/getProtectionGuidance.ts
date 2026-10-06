@@ -7,6 +7,8 @@ type UvBandKey = 'below-3' | '3-to-8' | '8-plus';
 
 export type OutingRecommendation = {
   level: GuidanceLevelKey;
+  whoGuidanceNote: string;
+  uvScoutInsightNote: string;
   headline: string;
   explanation: string;
   actions: string[];
@@ -83,6 +85,8 @@ function validateDefinitions() {
   }
 
   if (
+    !definitions.messages.whoGuidanceNote.trim() ||
+    !definitions.messages.uvScoutInsightNote.trim() ||
     !definitions.messages.coverageIncomplete.trim() ||
     !definitions.messages.noElevatedUv.trim() ||
     !definitions.messages.bandDuration.trim() ||
@@ -200,6 +204,8 @@ export function getOutingRecommendation(summary: OutingForecastSummary): OutingR
 
   return {
     level: level.key as GuidanceLevelKey,
+    whoGuidanceNote: definitions.messages.whoGuidanceNote,
+    uvScoutInsightNote: definitions.messages.uvScoutInsightNote,
     headline: level.headline,
     explanation: level.explanation,
     actions: [...level.actions],

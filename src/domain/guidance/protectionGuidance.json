@@ -36,6 +36,8 @@
     }
   ],
   "messages": {
+    "whoGuidanceNote": "WHO gives general protection guidance by UV Index level. UV Scout applies the relevant level to your outing's highest forecast value; this is not personalized medical advice.",
+    "uvScoutInsightNote": "UV Scout summarizes the forecast pattern and applies its own reminder rule. This is not a measure of your personal exposure or health risk; use it as one consideration, not a guarantee.",
     "coverageIncomplete": "The forecast covers about {coveredDuration} of this {plannedDuration} outing. Conditions during the uncovered part are unknown.",
     "noElevatedUv": "No covered forecast time reaches UV Index 3.",
     "bandDuration": "For about {duration}, {bandLabel}.",

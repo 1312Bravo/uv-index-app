@@ -28,8 +28,10 @@ helps people plan outdoor time around the current and forecast UV index.
 - The result combines a standard UV category, a forecast over the selected time,
   and practical guidance. The WHO reference remains based on the outing's raw
   peak; an initial UV Scout profile reports time in UV bands and incomplete
-  forecast coverage. Default planning requires no extra protection-context
-  choices; unknown conditions stay conditional.
+  forecast coverage. Present these as separate `WHO guidance` and `UV Scout
+  insight` sections, with a small note explaining the source and limits of each.
+  Default planning requires no extra protection-context choices; unknown
+  conditions stay conditional.
 - Introduce what the UV Index measures in a short explanation near the start
   of the app; explain the selected UV category and precautions in each result.
 - Compare equally long earlier and later outings using forecast UV, but only
@@ -271,6 +273,9 @@ calculation, supported platform versions, and the final visual polish.
 - Removed the shade selector from the planner. Use general shade advice without
   adjusting forecast UV or claiming route-specific shade; defer optional
   “Tailor this advice” inputs.
+- Label the two outing result layers `WHO guidance` and `UV Scout insight`, and
+  explain that the first applies general WHO UV-level guidance to the outing
+  peak while the second is a forecast summary, not a personal-risk estimate.
 - Researched public-health protection guidance and documented source-backed
   groupings, shade limitations, and draft app rules in
   `notes/protection-guidance-research.md`.
