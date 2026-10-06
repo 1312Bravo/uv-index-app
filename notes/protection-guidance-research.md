@@ -1,6 +1,13 @@
 # Practical protection guidance: evidence and proposed app rules
 
 See the [source register](data-sources.md) for source-to-code mappings.
+For the wider list of recommendation inputs, their effects, and future rule
+design, see [recommendation-model research](recommendation-model-research.md).
+
+This note documents the WHO-aligned reference baseline. The separate, future
+UV Scout outing-specific recommendation model is being researched in the linked
+factor review; it may add context but must not misrepresent or override the WHO
+reference.
 
 **Status:** First general guidance rules are implemented. The cited sources and
 rationale below remain the record for review and future edits.
@@ -47,9 +54,9 @@ as information, consistent with the user's preference.
 
 | Outing UV level | Evidence-aligned message direction | Shade-aware detail |
 | --- | --- | --- |
-| Low (rounded category 0–2) | Explain that forecast UV is lower than at moderate and higher levels. Avoid saying exposure is completely safe or that protection is never useful. | Shade adds protection but does not eliminate scattered or reflected UV. Mention bright surroundings only if the app has reliable context for them. |
-| Moderate or High (3–7) | Explain that protection is recommended. Encourage seeking shade when UV is strongest, covering skin with clothing, protecting eyes, and using broad-spectrum sunscreen on uncovered skin. | When the outing includes exposed sections, emphasize protection during those sections. Explain that overhead cover helps but indirect UV can remain. |
-| Very High or Extreme (8+) | Explain that extra protection is warranted. Emphasize shade, covering clothing, a brimmed hat, eye protection, and sunscreen on uncovered skin. WHO advises avoiding outdoor exposure around midday at these values; phrase this as guidance without telling this user to choose a different start time. | Make clear that overhead cover helps but is not complete protection, especially with scattered UV or reflective surfaces. |
+| Raw UV below 3 | Explain that the forecast remains below WHO's general protection threshold. Do not say exposure is completely safe or that protection is never useful. | Shade adds protection but does not eliminate scattered or reflected UV. Mention bright surroundings only if the app has reliable context for them. |
+| Raw UV from 3 to below 8 | Explain that protection is recommended. Encourage seeking shade when UV is strongest, covering skin with clothing, protecting eyes, and using broad-spectrum sunscreen on uncovered skin. | When the outing includes exposed sections, emphasize protection during those sections. Explain that overhead cover helps but indirect UV can remain. |
+| Raw UV 8 or higher | Explain that extra protection is warranted. Emphasize shade, covering clothing, a brimmed hat, eye protection, and sunscreen on uncovered skin. WHO advises avoiding outdoor exposure around midday at these values; phrase this as guidance without telling this user to choose a different start time. | Make clear that overhead cover helps but is not complete protection, especially with scattered UV or reflective surfaces. |
 
 Use hourly values to show how UV changes through the selected outing. Do not
 infer personal dose, time-to-sunburn, or a safe exposure duration from forecast
@@ -58,23 +65,23 @@ changes UV risk or that sunscreen extends safe outdoor time.
 
 The forecast currently samples one value per hour. Describe this as an
 hour-by-hour planning overview, not minute-accurate protection timing. If an
-outing includes an hour at or above the eventual protection threshold, make that
-period visible. Guidance follows the rounded category by product decision: 2.5
-rounds to Moderate and triggers the protection guidance band.
+outing includes an hour at or above the protection threshold, make that period
+visible. Apply action thresholds to raw forecast values: protection starts at
+3, and extra protection starts at 8.
 
 ## Editable data shape in the app
 
 Guidance definitions live in `src/domain/guidance/protectionGuidance.json`.
-Each level has a stable key, the UV category keys it covers, a headline, an
-explanation, and actions. Shade messages map each planner shade key to a short
-context note. Keep sources and rationale here; keep concise editable wording in
-the JSON.
+Each level has a stable key, a minimum raw UV value, a headline, an explanation,
+and actions. A level applies until the next level's minimum; the final level has
+no upper bound. Shade messages map each planner shade key to a short context
+note. Keep sources and rationale here; keep concise editable wording in JSON.
 
 ```json
 [
   {
     "key": "protection",
-    "categories": ["moderate", "high"],
+    "minimumUvInclusive": 3,
     "headline": "Sun protection is recommended",
     "explanation": "At these UV levels, unprotected skin and eyes can be harmed. Protection helps reduce exposure.",
     "actions": ["Seek shade when UV is strongest.", "Cover skin and protect eyes."]
@@ -93,10 +100,13 @@ WHO states that protection is recommended at UVI 3 and above. UV Scout rounds
 decimals to the nearest integer for category selection, with `.5` rounding up.
 So 2.5 is labelled Moderate even though the raw value is below 3.
 
-Use the displayed category: guidance begins at rounded Moderate, so 2.5 triggers
-protection. The public-health source threshold is UVI 3; treating 2.5 as
-actionable is UV Scout's conservative product choice, consistent with its
-rounding convention. The original decimal remains displayed.
+Use the raw forecast value for action thresholds: general protection guidance
+begins at 3, and extra-protection guidance begins at 8. Category labels continue
+to round to the nearest whole number with `.5` upward for display, so 2.5 may
+still be labelled Moderate while the recommendation correctly remains below the
+WHO threshold. The UI explains this distinction. This follows WHO's published
+threshold rather than the earlier UV Scout choice to trigger from the rounded
+category; keep the original decimal visible.
 
 ## Scope limits and next decisions
 

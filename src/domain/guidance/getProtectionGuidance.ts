@@ -1,6 +1,5 @@
 import definitions from './protectionGuidance.json';
 import type { ShadeLevel } from '../outing/shadeOptions';
-import type { UvCategory } from '../uv/getUvCategory';
 
 export type GuidanceLevelKey = 'low' | 'protection' | 'extra-protection';
 
@@ -12,7 +11,6 @@ export type ProtectionGuidance = {
   shadeMessage?: string;
 };
 
-const uvCategories: UvCategory[] = ['low', 'moderate', 'high', 'very-high', 'extreme'];
 const shadeLevels: ShadeLevel[] = ['open-sun', 'mostly-sun', 'mixed-sun-and-shade', 'overhead-cover'];
 const guidanceLevels: GuidanceLevelKey[] = ['low', 'protection', 'extra-protection'];
 
@@ -21,28 +19,25 @@ function isOneOf<T extends string>(value: string, options: T[]): value is T {
 }
 
 function validateDefinitions() {
-  const usedCategories = new Set<string>();
   const usedShadeLevels = new Set<string>();
   const usedGuidanceLevels = new Set<string>();
 
-  for (const level of definitions.levels) {
+  for (const [index, level] of definitions.levels.entries()) {
     if (!isOneOf(level.key, guidanceLevels) || usedGuidanceLevels.has(level.key)) {
       throw new Error(`Invalid or duplicate guidance level: ${level.key}.`);
     }
     usedGuidanceLevels.add(level.key);
+    if (
+      !Number.isFinite(level.minimumUvInclusive) ||
+      (index === 0
+        ? level.minimumUvInclusive !== 0
+        : level.minimumUvInclusive <= definitions.levels[index - 1].minimumUvInclusive)
+    ) {
+      throw new Error(`Invalid UV threshold for guidance level ${level.key}.`);
+    }
     if (!level.headline.trim() || !level.explanation.trim() || level.actions.length === 0) {
       throw new Error(`Guidance level ${level.key} is missing user-facing content.`);
     }
-    for (const category of level.categories) {
-      if (!isOneOf(category, uvCategories) || usedCategories.has(category)) {
-        throw new Error(`Invalid or duplicate UV category in guidance: ${category}.`);
-      }
-      usedCategories.add(category);
-    }
-  }
-
-  if (uvCategories.some((category) => !usedCategories.has(category))) {
-    throw new Error('Every UV category must map to a protection guidance level.');
   }
   if (guidanceLevels.some((level) => !usedGuidanceLevels.has(level))) {
     throw new Error('All three protection guidance levels must be defined.');
@@ -61,14 +56,18 @@ function validateDefinitions() {
 
 validateDefinitions();
 
-// Select baseline guidance from the rounded category, adding shade context when provided.
-export function getProtectionGuidance(category: UvCategory, shade?: ShadeLevel): ProtectionGuidance {
-  const level = definitions.levels.find((candidate) => candidate.categories.includes(category));
+// WHO protection guidance starts at raw UVI 3; category rounding is display-only.
+export function getProtectionGuidance(uv: number, shade?: ShadeLevel): ProtectionGuidance {
+  if (!Number.isFinite(uv) || uv < 0) throw new Error('UV Index must be a finite, non-negative number.');
+
+  const level = definitions.levels.findLast((candidate) => uv >= candidate.minimumUvInclusive);
   const shadeMessage = shade
     ? definitions.shadeMessages.find((candidate) => candidate.key === shade)?.message
     : undefined;
 
-  if (!level || (shade && !shadeMessage)) throw new Error('No protection guidance is defined for this outing.');
+  if (!level || (shade && !shadeMessage)) {
+    throw new Error('No protection guidance is defined for this outing.');
+  }
 
   return {
     level: level.key as GuidanceLevelKey,

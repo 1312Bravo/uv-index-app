@@ -9,7 +9,7 @@
     "key": "moderate",
     "label": "Moderate",
     "minimumUvInclusive": 3,
-    "meaning": "UV is high enough that protection is recommended, especially around the middle of the day."
+    "meaning": "A moderate UV category. UV Scout's protection guidance is based on the raw forecast and begins at 3."
   },
   {
     "key": "high",

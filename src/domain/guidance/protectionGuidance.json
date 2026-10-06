@@ -2,14 +2,14 @@
   "levels": [
     {
       "key": "low",
-      "categories": ["low"],
-      "headline": "UV is low",
-      "explanation": "For most people, routine sun protection is generally not needed at low UV levels.",
+      "minimumUvInclusive": 0,
+      "headline": "Below the protection threshold",
+      "explanation": "WHO recommends sun protection from a raw UV Index of 3. This outing's peak remains below that threshold.",
       "actions": ["Bright reflective surroundings, such as fresh snow, can increase UV exposure."]
     },
     {
       "key": "protection",
-      "categories": ["moderate", "high"],
+      "minimumUvInclusive": 3,
       "headline": "Sun protection is recommended",
       "explanation": "At these UV levels, unprotected skin and eyes can be harmed. Protection helps reduce exposure.",
       "actions": [
@@ -20,7 +20,7 @@
     },
     {
       "key": "extra-protection",
-      "categories": ["very-high", "extreme"],
+      "minimumUvInclusive": 8,
       "headline": "Extra protection is important",
       "explanation": "UV is very strong during this outing, so unprotected skin and eyes can be harmed more quickly.",
       "actions": [

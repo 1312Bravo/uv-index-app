@@ -119,8 +119,8 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add duration-weighted average UV and temperature summaries while keeping
   guidance based on peak UV; highlight the whole outing with balanced faint chart
   context around it.
-- [x] Implement general protection guidance using the outing's rounded UV
-  category and selected shade; keep forecast UV unchanged.
+- [x] Implement general protection guidance using the raw outing peak UV and
+  selected shade, with action thresholds separate from display-category rounding.
 - [x] Add hourly cloud cover as separate context and use a shared hourly bar chart
   for the outlook and selected outing.
 - [x] Add an always-available final Info tab explaining UV categories, decimal
@@ -225,11 +225,20 @@ calculation, supported platform versions, and the final visual polish.
 
 - Added a reusable UV evidence and guidance review prompt with sourcing,
   uncertainty, and product-choice requirements.
+- Expanded the guidance research into a factor-by-factor recommendation model
+  note. It records which inputs set UV protection, which only tailor actions,
+  and which remain out of scope; app rules still need product review.
+- Expanded that review with a distinct WHO reference track and a proposed
+  UV Scout outing-specific model, including duration-by-UV exposure, sunscreen
+  amount/application/reapplication, shade, clothing, and conditional context.
+  Added comparative WHO, FDA, and AAD sources; the second tree is not yet built.
 - Researched public-health protection guidance and documented source-backed
   groupings, shade limitations, and draft app rules in
   `notes/protection-guidance-research.md`.
 - Added editable protection guidance under `src/domain/guidance/`; the chosen
-  rule triggers guidance from the rounded category, so UV 2.5 is Moderate.
+  rule uses the raw outing peak: protection begins at UV 3 and extra protection
+  at 8, following WHO. Display categories still round separately, so 2.5 can
+  display as Moderate while remaining below the protection threshold.
 
 - Moved UV category definitions into editable JSON with a separate validated
   TypeScript lookup; adopted this pattern for future domain rule tables.

@@ -97,10 +97,12 @@ sun on the same scrollable time scale as its hourly bins. The calculation is
 independent of UI and API services; see `notes/daylight-research.md` for event
 definitions, method, and limitations.
 
-Protection guidance follows this pattern: editable messages and category groups
+Protection guidance follows this pattern: editable messages and raw-UV thresholds
 live in `src/domain/guidance/protectionGuidance.json`; TypeScript validates and
-maps the rounded category and selected shade into a structured result; the outing
-feature renders it. Sources and rationale are recorded in
+maps the unrounded peak UV value and selected shade into a structured result.
+Display-category rounding is separate from WHO-aligned action thresholds; for
+example, a displayed Moderate value of 2.5 remains below the protection trigger
+of raw UVI 3. The outing feature renders the result. Sources and rationale are recorded in
 `notes/protection-guidance-research.md`. Create additional domain folders when
 implementing new capabilities.
 

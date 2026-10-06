@@ -22,6 +22,9 @@ Sources:
 **Product choice:** UV Scout keeps the forecast decimal visible and rounds it to
 the nearest integer for category selection, with .5 rounded up. The Info tab
 states this explicitly because it changes category boundaries for decimals.
+Recommendation thresholds use the unrounded forecast: general protection starts
+at raw UVI 3 and extra protection at 8. A value such as 2.5 can therefore show
+the Moderate category while remaining below the protection threshold.
 
 ## Cloud cover
 

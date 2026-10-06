@@ -39,7 +39,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
   const guidance = summary
-    ? getProtectionGuidance(summary.highestCategory.key, plan.shade)
+    ? getProtectionGuidance(summary.highestUv, plan.shade)
     : null;
 
   return (

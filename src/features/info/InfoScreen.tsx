@@ -60,7 +60,10 @@ function UvIndexExplanation() {
       <Text style={styles.note}>
         UV Scout keeps the decimal forecast visible, then rounds to the nearest
         whole number to choose a category; .5 rounds up (for example, 2.5 is
-        Moderate). This rounding is an app convention.
+        Moderate). Protection guidance follows the unrounded value and begins at
+        3, in line with WHO guidance, so 2.5 can show a Moderate category while
+        remaining below the protection threshold. Category rounding is an app
+        convention.
       </Text>
       <SourceLink
         label="WHO · The ultraviolet (UV) index"
