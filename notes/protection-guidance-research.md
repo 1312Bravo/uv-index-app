@@ -4,10 +4,10 @@ See the [source register](data-sources.md) for source-to-code mappings.
 For the wider list of recommendation inputs, their effects, and future rule
 design, see [recommendation-model research](recommendation-model-research.md).
 
-This note documents the WHO-aligned reference baseline. The separate, future
-UV Scout outing-specific recommendation model is being researched in the linked
-factor review; it may add context but must not misrepresent or override the WHO
-reference.
+This note documents the WHO-aligned reference baseline. UV Scout's outing
+profile now adds forecast-duration and completeness context while keeping the
+WHO peak reference separate; it is not a personal dose or validated health-risk
+model.
 
 **Status:** First general guidance rules are implemented. The cited sources and
 rationale below remain the record for review and future edits.
@@ -15,9 +15,9 @@ rationale below remain the record for review and future edits.
 ## Decision this research supports
 
 For a planned outing, explain the highest forecast UV category, what it implies,
-and practical ways to protect skin and eyes. Use the selected shade description
-to tailor the explanation without changing the forecast value. Keep hourly UV
-values visible so the user can see how it changes during the outing.
+and practical ways to protect skin and eyes. The planner does not ask users to
+classify route shade; it gives concise general shade advice by default. Hourly
+UV remains visible throughout the outing.
 
 ## Evidence reviewed
 
@@ -44,19 +44,20 @@ For an English-first international app, this draft avoids a numeric SPF
 recommendation. It can say to use broad-spectrum sunscreen on uncovered skin
 and follow the product label and local public-health advice.
 
-**Product choices proposed for discussion:** Use the outing's highest category
-to select one of three action levels; explain the reason in plain language; use
-the shade choice to tailor emphasis; do not reduce forecast UV numerically; do
-not tell users to move their outing to another time. Present timing comparisons
-as information, consistent with the user's preference.
+**Product choices:** Use the outing's highest raw UV value to select one of
+three action levels; explain the reason in plain language; do not reduce
+forecast UV numerically; do not tell users to move their outing to another time.
+The planner has no shade selector; default guidance recommends shade generally
+rather than claiming a route-specific shade condition.
+Present timing comparisons as information, consistent with the user's preference.
 
 ## Proposed guidance behavior
 
-| Outing UV level | Evidence-aligned message direction | Shade-aware detail |
+| Outing UV level | Evidence-aligned message direction | General shade and context detail |
 | --- | --- | --- |
-| Raw UV below 3 | Explain that the forecast remains below WHO's general protection threshold. Do not say exposure is completely safe or that protection is never useful. | Shade adds protection but does not eliminate scattered or reflected UV. Mention bright surroundings only if the app has reliable context for them. |
-| Raw UV from 3 to below 8 | Explain that protection is recommended. Encourage seeking shade when UV is strongest, covering skin with clothing, protecting eyes, and using broad-spectrum sunscreen on uncovered skin. | When the outing includes exposed sections, emphasize protection during those sections. Explain that overhead cover helps but indirect UV can remain. |
-| Raw UV 8 or higher | Explain that extra protection is warranted. Emphasize shade, covering clothing, a brimmed hat, eye protection, and sunscreen on uncovered skin. WHO advises avoiding outdoor exposure around midday at these values; phrase this as guidance without telling this user to choose a different start time. | Make clear that overhead cover helps but is not complete protection, especially with scattered UV or reflective surfaces. |
+| Raw UV below 3 | Explain that the forecast remains below WHO's general protection threshold. Do not say exposure is completely safe or that protection is never useful. | Keep any bright-surface reminder brief and conditional; don't imply the app knows the user's surroundings. |
+| Raw UV from 3 to below 8 | Explain that protection is recommended. Encourage seeking shade when UV is strongest, covering skin with clothing, protecting eyes, and using broad-spectrum sunscreen on uncovered skin. | General shade guidance should note that overhead cover helps but indirect UV can remain. Use a concise “if you're near snow, water, or bright sand” reminder where appropriate. |
+| Raw UV 8 or higher | Explain that extra protection is warranted. Emphasize shade, covering clothing, a brimmed hat, eye protection, and sunscreen on uncovered skin. WHO advises avoiding outdoor exposure around midday at these values; phrase this as guidance without telling this user to choose a different start time. | Give the same concise shade/reflection context without suggesting the user selected or has a particular route condition. |
 
 Use hourly values to show how UV changes through the selected outing. Do not
 infer personal dose, time-to-sunburn, or a safe exposure duration from forecast
@@ -71,28 +72,21 @@ visible. Apply action thresholds to raw forecast values: protection starts at
 
 ## Editable data shape in the app
 
-Guidance definitions live in `src/domain/guidance/protectionGuidance.json`.
-Each level has a stable key, a minimum raw UV value, a headline, an explanation,
-and actions. A level applies until the next level's minimum; the final level has
-no upper bound. Shade messages map each planner shade key to a short context
-note. Keep sources and rationale here; keep concise editable wording in JSON.
+Guidance definitions currently live in `src/domain/guidance/protectionGuidance.json`.
+They contain stable UV-band and protection-level keys, raw-UV thresholds,
+headlines, explanations, actions, profile-message templates, and the reapplication
+trigger. The JSON is validated and interpreted by
+`src/domain/guidance/getProtectionGuidance.ts`; outing overlap and coverage
+calculations are in `src/domain/outing/calculateOutingForecast.ts`; the feature
+renders structured results. Keep sources and rationale here, editable wording
+and thresholds in JSON, and calculations in TypeScript.
 
-```json
-[
-  {
-    "key": "protection",
-    "minimumUvInclusive": 3,
-    "headline": "Sun protection is recommended",
-    "explanation": "At these UV levels, unprotected skin and eyes can be harmed. Protection helps reduce exposure.",
-    "actions": ["Seek shade when UV is strongest.", "Cover skin and protect eyes."]
-  }
-]
-```
-
-The UI should receive a structured level, short explanation, and action list
-from the UV category whether or not shade is selected. Add the shade note only
-when the user provides a shade choice. TypeScript validates the JSON and maps
-the outing forecast and optional shade selection to that result.
+The UI receives a structured protection level, observed UV-duration summary,
+forecast-coverage caveat, action list, and (when its configured condition is met)
+a conditional reapplication reminder. It requires no shade or other extra
+answers. Sweating, swimming, toweling, clothing coverage, and reflective
+surroundings remain unknown and are not inferred. TypeScript validates and maps
+rule data; the feature handles rendering.
 
 ## Resolved product decision: fractional protection trigger
 

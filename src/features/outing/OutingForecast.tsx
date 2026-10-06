@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { getProtectionGuidance } from '../../domain/guidance/getProtectionGuidance';
+import { getOutingRecommendation } from '../../domain/guidance/getProtectionGuidance';
 import { HourlyUvBarChart } from '../forecast/HourlyUvBarChart';
 import { useHourlyForecast } from '../forecast/useHourlyForecast';
 import {
@@ -38,9 +38,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
   );
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
-  const guidance = summary
-    ? getProtectionGuidance(summary.highestUv, plan.shade)
-    : null;
+  const recommendation = summary ? getOutingRecommendation(summary) : null;
 
   return (
     <View style={styles.section}>
@@ -64,7 +62,9 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
             <View style={styles.summaryItem}>
               <Text style={styles.summaryLabel}>UV Index</Text>
               <Text style={styles.summaryValue}>{summary.highestUv.toFixed(1)}</Text>
-              <Text style={styles.summaryDetail}>Peak · {summary.highestCategory.label}</Text>
+              <Text style={styles.summaryDetail}>
+                Peak · {summary.highestCategory.label} · {formatTime(summary.highestUvTime, forecast.timezone)}
+              </Text>
               <Text style={styles.summarySecondary}>Average {summary.averageUv.toFixed(1)}</Text>
             </View>
             <View style={styles.summaryDivider} />
@@ -76,15 +76,22 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
             </View>
           </View>
 
-          {guidance && (
+          {recommendation && (
             <View style={styles.guidance}>
-              <Text style={styles.subheading}>{guidance.headline}</Text>
-              <Text style={styles.guidanceText}>{guidance.explanation}</Text>
-              {guidance.actions.map((action) => (
+              {recommendation.coverageMessage && (
+                <Text style={styles.coverageText}>{recommendation.coverageMessage}</Text>
+              )}
+              <Text style={styles.subheading}>{recommendation.headline}</Text>
+              <Text style={styles.guidanceText}>{recommendation.explanation}</Text>
+              <Text style={styles.exposureHeading}>UV during your outing</Text>
+              {recommendation.exposureObservations.map((observation) => (
+                <Text key={observation} style={styles.exposureText}>{observation}</Text>
+              ))}
+              {recommendation.actions.map((action) => (
                 <Text key={action} style={styles.guidanceAction}>• {action}</Text>
               ))}
-              {guidance.shadeMessage && (
-                <Text style={styles.shadeMessage}>{guidance.shadeMessage}</Text>
+              {recommendation.reapplicationReminder && (
+                <Text style={styles.reapplicationText}>{recommendation.reapplicationReminder}</Text>
               )}
             </View>
           )}
@@ -121,9 +128,12 @@ const styles = StyleSheet.create({
   summaryDetail: { color: '#696969', fontSize: 12, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: '#696969', fontSize: 12, marginTop: 8, textAlign: 'center' },
   guidance: { marginTop: 8 },
+  coverageText: { color: '#555555', fontSize: 12, lineHeight: 18, marginTop: 14, textAlign: 'center' },
   guidanceText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 8 },
+  exposureHeading: { color: '#333333', fontSize: 13, fontWeight: '600', marginTop: 16 },
+  exposureText: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 7 },
   guidanceAction: { color: '#333333', fontSize: 13, lineHeight: 19, marginTop: 8 },
-  shadeMessage: { color: '#696969', fontSize: 12, lineHeight: 18, marginTop: 12 },
+  reapplicationText: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 14 },
   subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });

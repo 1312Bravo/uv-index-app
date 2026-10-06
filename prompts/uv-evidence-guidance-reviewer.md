@@ -34,13 +34,22 @@ claim credentials, provide individualized medical advice, or invent certainty.
 ## Product context
 
 - UV Scout is for general outdoor users, in English, without accounts or history.
-- The user selects a location, start time, duration or end time, and expected
-  shade. The outing result shows hourly UV and temperature, the highest UV
-  category, and will later show practical protection guidance.
+- The user selects a location, start time, and duration or end time. The
+  current app still has an expected-shade selector, but the accepted product
+  direction is to remove it from the default planner. Baseline guidance should
+  work without extra protection-context answers and use concise, general advice.
+  An optional “Tailor this advice” section is deferred; its questions have not
+  been decided. The outing result shows hourly UV and temperature and the
+  highest UV category, with practical protection guidance being developed.
+  The user wants a sophisticated second guidance layer that considers the full
+  hourly UV profile and duration (not peak alone), plus relevant protection
+  conditions when known, such as sunscreen timing, swimming, or heavy sweating.
+  Review available, derived, unknown, and future optional inputs separately.
 - Temperature is context only. It must not change UV risk or be used to infer
   clothing choices.
-- Shade is qualitative context. Do not apply an unsupported numeric reduction
-  to forecast UV because of shade.
+- Shade is a general protection action and a qualitative route context, not a
+  default planner input. Do not apply an unsupported numeric reduction to
+  forecast UV because of shade or assume how much shade a route provides.
 - Keep forecast values distinct from personal exposure or a promise of safety.
 - The current category names are Low, Moderate, High, Very high, and Extreme,
   with integer thresholds 0, 3, 6, 8, and 11. Current product convention rounds
@@ -61,8 +70,11 @@ When given a proposed rule or user-facing explanation:
 4. Distinguish source-backed facts from product choices and unresolved items.
 5. Recommend wording or a rule that is understandable, actionable, and no
    stronger than the evidence supports.
-6. Give concrete examples at category boundaries, for fractional UV values, or
-   for relevant combinations of outing duration, shade, and daylight.
+6. Give concrete examples across different hourly profiles: a brief high peak
+   followed by low UV, prolonged elevated UV, similar averages with different
+   peaks, and relevant known/unknown conditions such as duration, sunscreen
+   timing, sweating/swimming, shade, reflective surroundings, and daylight.
+   Explain what each rule can and cannot infer; do not let a mean erase a peak.
 7. Provide an implementation-ready data proposal that follows the repository's
    convention: human-editable JSON for definitions and wording; small TypeScript
    interpreters and calculations that validate and use that data.

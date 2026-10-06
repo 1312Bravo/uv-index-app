@@ -35,12 +35,15 @@ attribution, and limitations.
   average UV; show average temperature and its minimum–maximum range. Weight each
   hourly value by its overlap with the outing, treating it as representative of
   its one-hour bin. These averages are app-derived summaries, not provider-issued
-  period aggregates. Keep protection guidance based on the peak UV category.
+  period aggregates. Keep protection guidance based on the raw peak; category
+  rounding is for display. Also report approximate time in raw-UV bands and
+  identify incomplete forecast coverage rather than treating missing time as UV 0.
 - In the outing chart, show the full overlapping outing interval in the same
   dark selected style. Add up to three surrounding hourly bins on each side,
   using the same number of context bins before and after where the available
   forecast permits; render these context values faintly.
 - Show the forecast and baseline protection guidance as soon as start and end
-  are selected; shade is optional. Use the peak UV category for baseline actions.
-  If shade is provided, append a shade-specific context note without reducing or
-  reinterpreting the forecast UV values.
+  are selected; no shade input is required. Add a conditional sunscreen
+  reapplication reminder for outings of at least 120 minutes when the covered
+  forecast reaches raw UVI 3+. This is a UV Scout rule, not an individualized
+  reminder or application tracker. See the [recommendation tree](recommendation-tree-draft.md).

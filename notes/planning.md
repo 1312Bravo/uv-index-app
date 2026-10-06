@@ -14,16 +14,15 @@
   handling should be completed before the recommendation flow is finalized.
 - Show Start, End, and Duration as compact rows with the selected value visible;
   tapping a row reveals its choices vertically, with only one list open at a time.
-- Shade is an optional four-option selection in the same compact selector style:
-  open sun, mostly sun, half sun and shade, or overhead cover.
 - The planner produces a `TimePlan` once start and end/duration are selected;
-  shade may remain unspecified. Show the forecast and baseline UV-category
-  guidance immediately, then add a shade-specific note only when shade is chosen.
-- Practical protection guidance should be a separate, testable mapping from the
-  structured outing result: peak UV category, with optional shade and daylight context.
-  It should explain what the category means and suggest actions such as covering
-  exposed skin, protecting eyes, or seeking shade, without pretending shade is a
-  precise numerical correction to the forecast.
+-  show the forecast and guidance immediately without asking about route shade.
+- Practical protection guidance is a separate, testable mapping from the outing
+  forecast: use raw peak UV for the WHO-reference level, then report approximate
+  UV-band duration and forecast completeness. Add the conditional sunscreen
+  reminder only at 120+ minutes when the covered forecast reaches raw UVI 3+.
+  Unknown conditions (such as sweating or swimming) must not be inferred.
+  See the [recommendation tree](recommendation-tree-draft.md) and
+  [factor/evidence review](recommendation-model-research.md).
 - Summarize an outing with peak and duration-weighted average UV, using only the
   peak category for guidance; show average temperature and the forecast range.
 - The outing chart highlights every overlapping selected hour equally and adds

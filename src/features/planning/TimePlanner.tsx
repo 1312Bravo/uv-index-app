@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DateTimeField } from './DateTimeField';
-import { getShadeLabel, SHADE_OPTIONS, type ShadeLevel } from '../../domain/outing/shadeOptions';
 import type { TimePlan } from '../../domain/outing/timePlan';
 
 type Props = {
@@ -11,7 +10,7 @@ type Props = {
 
 type StartMode = 'now' | 'scheduled';
 type EndMode = 'duration' | 'end-time';
-type OpenSection = 'start' | 'end' | 'duration' | 'shade' | null;
+type OpenSection = 'start' | 'end' | 'duration' | null;
 
 const DURATION_OPTIONS = [30, 60, 120, 180, 240];
 
@@ -80,7 +79,6 @@ export function TimePlanner({ onChange }: Props) {
   const [isCustomDuration, setIsCustomDuration] = useState(false);
   const [customDuration, setCustomDuration] = useState('');
   const [endTime, setEndTime] = useState<Date | null>(null);
-  const [shade, setShade] = useState<ShadeLevel | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<OpenSection>(null);
 
@@ -131,8 +129,8 @@ export function TimePlanner({ onChange }: Props) {
 
     const durationMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
     setError(null);
-    onChange({ start, end, durationMinutes, ...(shade ? { shade } : {}) });
-  }, [customDuration, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, shade, startMode]);
+    onChange({ start, end, durationMinutes });
+  }, [customDuration, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode]);
 
   const selectedDuration = duration !== null
     ? duration
@@ -148,7 +146,6 @@ export function TimePlanner({ onChange }: Props) {
     setIsCustomDuration(false);
     setCustomDuration('');
     setEndTime(null);
-    setShade(null);
     setError(null);
     setOpenSection(null);
   }
@@ -288,35 +285,6 @@ export function TimePlanner({ onChange }: Props) {
         />
       )}
 
-      <SelectorRow
-        expanded={openSection === 'shade'}
-        label="Shade (optional)"
-        onPress={() => setOpenSection(openSection === 'shade' ? null : 'shade')}
-        value={shade ? getShadeLabel(shade) : 'Not specified'}
-      />
-      {openSection === 'shade' && (
-        <View style={styles.selectorOptions}>
-          <SelectorOption
-            active={shade === null}
-            label="Not specified"
-            onPress={() => {
-              setShade(null);
-              setOpenSection(null);
-            }}
-          />
-          {SHADE_OPTIONS.map((option) => (
-            <SelectorOption
-              key={option.value}
-              active={shade === option.value}
-              label={option.label}
-              onPress={() => {
-                setShade(option.value);
-                setOpenSection(null);
-              }}
-            />
-          ))}
-        </View>
-      )}
       {error && <Text style={styles.error}>{error}</Text>}
       {!error && endMode === 'duration' && selectedDuration && (
         <Text style={styles.summary}>

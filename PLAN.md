@@ -16,8 +16,9 @@ helps people plan outdoor time around the current and forecast UV index.
 - The first version is for general outdoor users, in English.
 - Location should support device location and user-selected places on Android and web.
 - The first version has no accounts or history.
-- The central flow asks for a place, start time, and duration or end time; shade
-  is optional context for the outing guidance.
+- The central flow asks for a place, start time, and duration or end time. The
+  planner does not ask the user to classify shade; guidance recommends general
+  shade use without treating it as a numeric UV adjustment.
 - Start time defaults to Now. Duration/end time has no default and must be chosen by the user.
 - If the user switches from Now to a scheduled outing, offer only future times
   relative to the current time at the selected location.
@@ -25,7 +26,10 @@ helps people plan outdoor time around the current and forecast UV index.
   the current hour, and eighteen later hourly bins, even before duration is chosen.
   The window may cross into the next local day.
 - The result combines a standard UV category, a forecast over the selected time,
-  and baseline practical guidance; shade adds an optional contextual note.
+  and practical guidance. The WHO reference remains based on the outing's raw
+  peak; an initial UV Scout profile reports time in UV bands and incomplete
+  forecast coverage. Default planning requires no extra protection-context
+  choices; unknown conditions stay conditional.
 - Introduce what the UV Index measures in a short explanation near the start
   of the app; explain the selected UV category and precautions in each result.
 - Compare equally long earlier and later outings using forecast UV, but only
@@ -61,22 +65,36 @@ Start with a location-based MVP:
 
 1. User searches for a place or chooses to share device location on Android or web.
 2. Start time defaults to Now and immediately shows the rolling hourly UV trend.
-   The user may choose a future time. The user must choose a duration for an
-   outing assessment and may optionally choose an expected sun/shade pattern
-   from four clear descriptions ranging from open sun to overhead cover for most
-   of the outing.
-3. The app shows hourly UV and temperature for that period, its highest UV category,
-   and an explanation of what that category means.
-4. The app explains why the selected UV level matters, suggests practical
-   precautions, and compares future earlier/later starts for the same duration.
-5. Daylight markers reveal whether the planned or compared outings include
+   The user may choose a future time and must choose a duration for an outing
+   assessment. Do not require a shade or other protection-context selection.
+3. The app shows hourly UV and temperature for that period, its highest UV
+   category, and an explanation of what that category means.
+4. The WHO reference uses the raw peak. A separate UV Scout guidance layer is
+   designed from the outing's UV profile and duration, with known behavior/context
+   modifiers handled explicitly and unknown conditions phrased conditionally.
+5. The app compares future earlier/later starts for the same duration and
+   explains why the selected UV pattern matters without presenting a personal
+   dose or “safe time” calculation.
+6. Daylight markers reveal whether the planned or compared outings include
    civil twilight or darkness.
 
 Keep the first architecture simple and stateless. Add accounts and history only
 after the core flow has been tested.
 
-## Decisions To Make Before Building
+## Deferred recommendation-model decisions
 
+- Which full-profile metrics matter: peak/time, duration-weighted average,
+  time/proportion in UV bands, longest continuous elevated interval, separate
+  elevated periods, and whether an explicitly labelled UVI-hours ambient proxy
+  is useful or too easy to misread.
+- How sustained exposure changes the UV Scout explanation without replacing or
+  downgrading the separate WHO peak category.
+- Whether a future optional tailoring section collects sunscreen application
+  time, swimming/heavy sweating, clothing coverage, or reflective surroundings.
+- Whether to add optional questions for application time, swimming/heavy sweating,
+  clothing coverage, or reflective surroundings.
+- How to prioritize/deduplicate multiple relevant messages while keeping the
+  result readable and not implying personal dose or safe exposure time.
 - How far ahead planning should work.
 - Whether clothing/skin coverage is an optional detail in version one.
 - Revisit Open-Meteo's commercial licence and capacity before a commercial release.
@@ -90,7 +108,8 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Confirm general outdoor users, English, and no accounts or history.
 - [x] Name the app `UV Scout`.
 - [x] Confirm device location plus manual place selection.
-- [x] Confirm place, start time, duration, and shade as the central planning flow.
+- [x] Confirm place and outing time as the central flow, without requiring a
+  shade selection.
 - [x] Confirm a combined UV category, time-window forecast, and practical guidance.
 - [x] Confirm educational explanations, neutral earlier/later comparisons, and
   dawn/sunrise/sunset/dusk context.
@@ -100,7 +119,7 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Default start time to Now and require the user to select a duration.
 - [x] Show a 5-past / Now / 18-future hourly UV trend before duration is chosen.
 - [x] Choose Open-Meteo for keyless UV and temperature forecasts in the prototype.
-- [ ] Confirm the first recommendation rules and safety wording.
+- [x] Confirm and implement the first recommendation rules and safety wording.
 - [x] Scaffold the Expo project with Android and web support.
 - [x] Add initial run and preview instructions.
 - [x] Add on-demand device location selection with permission and error states.
@@ -114,13 +133,16 @@ calculation, supported platform versions, and the final visual polish.
   with the outlook tab selected by default.
 - [x] Add the selected-outing hourly UV and temperature forecast plus its highest
   UV Index category.
-- [x] Show the outing forecast and baseline UV guidance without requiring shade;
-  add shade-specific context only when a shade option is selected.
+- [x] Show the outing forecast and baseline UV guidance without requiring shade
+  input; give concise general shade guidance.
 - [x] Add duration-weighted average UV and temperature summaries while keeping
   guidance based on peak UV; highlight the whole outing with balanced faint chart
   context around it.
-- [x] Implement general protection guidance using the raw outing peak UV and
-  selected shade, with action thresholds separate from display-category rounding.
+- [x] Implement peak-based protection levels using raw UV, separate from display
+  category rounding.
+- [x] Add the initial outing recommendation profile: duration by UV band,
+  continuous elevated intervals, forecast-coverage caveat, and conditional
+  sunscreen reminder at 120+ minutes when covered peak UV is 3+.
 - [x] Add hourly cloud cover as separate context and use a shared hourly bar chart
   for the outlook and selected outing.
 - [x] Add an always-available final Info tab explaining UV categories, decimal
@@ -159,7 +181,8 @@ calculation, supported platform versions, and the final visual polish.
 - Request foreground device location only after the user taps the button; do not
   persist coordinates in the first version.
 - Use standard UV categories with colors and plain-language labels.
-- Let the user choose start time, duration or end time, and qualitative shade.
+- Let the user choose start time and duration or end time; do not ask for shade
+  in the default planner.
 - Default the start time to Now; provide only future scheduled times and do not
   preselect a duration or end time.
 - Provide duration presets of 30 minutes, 1 hour, 2 hours, 3 hours, and 4 hours,
@@ -173,10 +196,10 @@ calculation, supported platform versions, and the final visual polish.
   slightly into the earlier-hours window so Now is left of center with more
   upcoming hours visible; all five earlier hours remain available by scrolling
   left. Keep it available without a duration selection. Add daylight markers later.
-- Offer four optional shade choices: open sun throughout; mostly sun with short
-  shaded stretches; about half sun and half shade; overhead cover for most of
-  the outing.
-- Avoid turning the shade choice into an unsupported numerical UV reduction.
+- Give concise general advice about seeking shade and explain its limits; do not
+  infer route shade or use a shade multiplier. Do not include a shade selector.
+- Defer optional “Tailor this advice” questions (for example, shade, clothing
+  coverage, swimming/sweating, or reflective surroundings) until later.
 - Show temperature as forecast context. Do not infer clothing from temperature.
 - Show cloud-cover percentage alongside hourly temperature and UV as weather
   context only. Keep it distinct from route shade and do not use it to adjust UV.
@@ -201,8 +224,8 @@ calculation, supported platform versions, and the final visual polish.
   Recalculate for the selected location; if the forecast cannot support a
   selection, explain the issue without silently resetting the planner. Provide
   a clear, explicit reset action. Reset clears only outing choices to their
-  defaults (start time `Now`, no duration/end time, and no shade selection) and
-  keeps the selected location. Persistence across app restarts is a separate
+  defaults (start time `Now`, no duration/end time) and keeps the selected
+  location. Persistence across app restarts is a separate
   decision and is not implied by this behavior.
 - Use English for the first version.
 - Do not include accounts or history in the first version.
@@ -218,7 +241,7 @@ calculation, supported platform versions, and the final visual polish.
 ## Open Questions
 
 - What is the useful maximum forecast horizon for the first version?
-- Should clothing/skin coverage be an optional detail or appear only in advice?
+- Which details, if any, belong in a future optional “Tailor this advice” section?
 - What licensing and service capacity will a commercial release need?
 
 ## Progress
@@ -231,7 +254,23 @@ calculation, supported platform versions, and the final visual polish.
 - Expanded that review with a distinct WHO reference track and a proposed
   UV Scout outing-specific model, including duration-by-UV exposure, sunscreen
   amount/application/reapplication, shade, clothing, and conditional context.
-  Added comparative WHO, FDA, and AAD sources; the second tree is not yet built.
+  Added comparative WHO, FDA, and AAD sources; a first-pass rule flow is now
+  drafted in research notes, not implemented in the app.
+- Expanded the second-model research scope after review: recommendations should
+  distinguish a brief high peak from sustained elevated UV and account for
+  relevant conditions only when known. The factor review documents direct
+  inputs, derived profile metrics, future optional inputs, interactions, and
+  examples.
+- Accepted a provisional first-pass set of forecast-profile measures: peak/time,
+  duration-weighted average, time in UV bands, longest continuous elevated
+  interval, and forecast coverage. Converted this first slice into validated
+  JSON plus a TypeScript interpreter. Added the conditional sunscreen reminder
+  for outings lasting at least 120 minutes when covered forecast UV reaches 3+.
+  The broader proposal remains in `notes/recommendation-tree-draft.md` for
+  deferred factors.
+- Removed the shade selector from the planner. Use general shade advice without
+  adjusting forecast UV or claiming route-specific shade; defer optional
+  “Tailor this advice” inputs.
 - Researched public-health protection guidance and documented source-backed
   groupings, shade limitations, and draft app rules in
   `notes/protection-guidance-research.md`.
@@ -269,9 +308,9 @@ calculation, supported platform versions, and the final visual polish.
   including 3 hours, custom duration, and explicit end-time mode.
 - Replaced planner button groups with compact accordion-style selector rows for
   start, end mode, and duration.
-- Added the four-option shade selector. A time plan no longer requires a shade
-  choice; leaving it unset shows the forecast and baseline guidance, and
-  selecting one adds a shade-specific note.
+- The earlier prototype had a four-option shade selector; it has now been
+  removed so recommendations do not depend on unmeasured, user-selected route
+  shade.
 - Added a selected-outing result with peak and duration-weighted average UV,
   average temperature and range, with guidance still based on peak UV. The
   outing chart highlights all selected hours and uses equal, faint context
