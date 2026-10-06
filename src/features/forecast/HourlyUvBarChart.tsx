@@ -9,16 +9,19 @@ type Props = {
   timezone: string;
   daylight: DaylightEvents[];
   sunTime: number;
-  initialScrollOffset?: number;
+  initialScrollHours?: number;
   selectedRange?: SelectedRange;
 };
 
-const BIN_WIDTH = 30;
+const BIN_WIDTH = 42;
 const BIN_GAP = 0;
-const TRACK_HEIGHT = 152;
-const HORIZON_Y = 88;
-const ARC_HEIGHT = 42;
-const ARC_STEPS = 24;
+const BAR_WIDTH = 16;
+const BAR_AREA_HEIGHT = 78;
+const MAX_BAR_HEIGHT = 58;
+const TRACK_HEIGHT = 112;
+const HORIZON_Y = 68;
+const ARC_HEIGHT = 26;
+const ARC_STEPS = 48;
 const OUTING_CONTEXT_HOURS = 3;
 
 type SelectedRange = { start: number; end: number };
@@ -53,7 +56,6 @@ function formatDay(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
     weekday: 'short',
     day: 'numeric',
-    month: 'short',
     timeZone: timezone,
   }).format(new Date(time * 1000));
 }
@@ -82,29 +84,33 @@ function createArcSegments(
   if (visibleEnd <= visibleStart) return [];
 
   const points = Array.from({ length: ARC_STEPS + 1 }, (_, index) => {
-    const time = visibleStart + (visibleEnd - visibleStart) * index / ARC_STEPS;
+    const time = intervalStart + (intervalEnd - intervalStart) * index / ARC_STEPS;
     const progress = (time - intervalStart) / (intervalEnd - intervalStart);
     const direction = side === 'day' ? -1 : 1;
     return {
+      time,
       x: xForTime(time),
       y: HORIZON_Y + direction * Math.sin(progress * Math.PI) * ARC_HEIGHT,
     };
   });
 
-  return points.slice(1).map((point, index) => {
+  return points.slice(1).flatMap((point, index) => {
+    if (index % 2 !== 0) return [];
+
     const previous = points[index];
+    if (point.time < chartStart || previous.time > chartEnd) return [];
     const dx = point.x - previous.x;
     const dy = point.y - previous.y;
     const length = Math.hypot(dx, dy);
 
-    return {
+    return [{
       key: `${keyPrefix}-${index}`,
       left: (point.x + previous.x) / 2 - length / 2,
       top: (point.y + previous.y) / 2 - 1,
       width: length,
       angle: `${Math.atan2(dy, dx) * 180 / Math.PI}deg`,
       side,
-    };
+    }];
   });
 }
 
@@ -244,7 +250,7 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
   showDay: boolean;
   selectedRange?: SelectedRange;
 }) {
-  const height = Math.max(0, hour.uv / scale * 112);
+  const height = Math.max(0, hour.uv / scale * MAX_BAR_HEIGHT);
   const isSelected = selectedRange !== undefined &&
     hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start;
   const isContext = selectedRange !== undefined && !isSelected;
@@ -265,12 +271,19 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
       accessibilityLabel={`${formatHour(hour.time, timezone)}. UV Index ${hour.uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}${outingDescription}.`}
       accessibilityRole="text"
     >
-      <Text style={[styles.cloudCover, isContext && styles.contextText]}>
+      <Text numberOfLines={1} style={[styles.cloudCover, isContext && styles.contextText]}>
         {hour.cloudCover === null ? '—' : `${Math.round(hour.cloudCover)}%`}
       </Text>
-      <Text style={[styles.temperature, isContext && styles.contextText]}>{Math.round(hour.temperature)}°</Text>
-      <Text style={[styles.uv, isContext && styles.contextText]}>{hour.uv.toFixed(1)}</Text>
+      <Text numberOfLines={1} style={[styles.temperature, isContext && styles.contextText]}>
+        {Math.round(hour.temperature)}°
+      </Text>
       <View style={styles.barArea}>
+        <Text
+          numberOfLines={1}
+          style={[styles.uv, isContext && styles.contextText, { bottom: height + 2 }]}
+        >
+          {hour.uv.toFixed(1)}
+        </Text>
         <View style={[
           styles.bar,
           { height },
@@ -279,15 +292,20 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
             : hour.period === 'past' ? styles.pastBar : hour.period === 'now' ? styles.currentBar : null,
         ]} />
       </View>
-      <Text style={[styles.hour, !selectedRange && hour.period === 'now' && styles.currentText, isContext && styles.contextText]}>
+      <Text
+        numberOfLines={1}
+        style={[styles.hour, !selectedRange && hour.period === 'now' && styles.currentText, isContext && styles.contextText]}
+      >
         {hour.period === 'now' ? 'Now' : formatHour(hour.time, timezone)}
       </Text>
-      <Text style={[styles.day, isContext && styles.contextText]}>{showDay ? formatDay(hour.time, timezone) : ' '}</Text>
+      <Text numberOfLines={1} style={[styles.day, isContext && styles.contextText]}>
+        {showDay ? formatDay(hour.time, timezone) : ' '}
+      </Text>
     </View>
   );
 }
 
-export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialScrollOffset = 0, selectedRange }: Props) {
+export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialScrollHours = 0, selectedRange }: Props) {
   const chartRef = useRef<ScrollView | null>(null);
   const chartHours = getChartHours(hours, selectedRange);
   const scale = Math.max(8, ...chartHours.map((hour) => hour.uv));
@@ -297,9 +315,10 @@ export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialSc
       <ScrollView
         ref={chartRef}
         horizontal
+        contentContainerStyle={styles.chartContent}
         onContentSizeChange={() => {
-          if (initialScrollOffset > 0) {
-            chartRef.current?.scrollTo({ x: initialScrollOffset, animated: false });
+          if (initialScrollHours > 0) {
+            chartRef.current?.scrollTo({ x: initialScrollHours * BIN_WIDTH, animated: false });
           }
         }}
         showsHorizontalScrollIndicator
@@ -330,12 +349,13 @@ export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialSc
 }
 
 const styles = StyleSheet.create({
-  chart: { marginTop: 22 },
+  chart: { marginTop: 10 },
+  chartContent: { flexGrow: 1, justifyContent: 'center' },
   bins: { alignItems: 'flex-end', flexDirection: 'row', gap: BIN_GAP },
   daylightTrack: { position: 'relative' },
-  horizonLine: { backgroundColor: '#E0E0E0', height: 1, position: 'absolute' },
-  dayArcSegment: { backgroundColor: '#444444', borderRadius: 2, height: 2, position: 'absolute' },
-  nightArcSegment: { backgroundColor: '#888888', borderRadius: 2, height: 2, position: 'absolute' },
+  horizonLine: { backgroundColor: '#E7E7E7', height: 1, position: 'absolute' },
+  dayArcSegment: { backgroundColor: '#333333', borderRadius: 2, height: 2, position: 'absolute' },
+  nightArcSegment: { backgroundColor: '#9A9A9A', borderRadius: 2, height: 2, position: 'absolute' },
   timeMarker: { backgroundColor: '#777777', opacity: 0.3, position: 'absolute', top: 34, width: 1 },
   eventMarker: { bottom: 0, position: 'absolute', top: 0, width: 1 },
   eventLine: {
@@ -374,17 +394,31 @@ const styles = StyleSheet.create({
   bin: { alignItems: 'center', paddingHorizontal: 1, width: BIN_WIDTH },
   currentBin: { backgroundColor: '#F5F5F5', borderRadius: 5 },
   selectedBin: { backgroundColor: '#F5F5F5', borderRadius: 5 },
-  cloudCover: { color: '#767676', fontSize: 9, marginBottom: 3 },
-  temperature: { color: '#5F5F5F', fontSize: 11, marginBottom: 4 },
-  uv: { color: '#151515', fontSize: 12, fontWeight: '500', marginBottom: 3 },
-  barArea: { borderBottomColor: '#D6D6D6', borderBottomWidth: 1, height: 114, justifyContent: 'flex-end', width: 16 },
-  bar: { backgroundColor: '#606060', borderRadius: 3, width: 16 },
+  cloudCover: { color: '#767676', fontSize: 9, marginBottom: 1 },
+  temperature: { color: '#5F5F5F', fontSize: 11, marginBottom: 2 },
+  uv: {
+    color: '#151515',
+    fontSize: 12,
+    fontWeight: '500',
+    left: (BAR_WIDTH - BIN_WIDTH) / 2,
+    position: 'absolute',
+    textAlign: 'center',
+    width: BIN_WIDTH,
+  },
+  barArea: {
+    borderBottomColor: '#D6D6D6',
+    borderBottomWidth: 1,
+    height: BAR_AREA_HEIGHT,
+    justifyContent: 'flex-end',
+    width: BAR_WIDTH,
+  },
+  bar: { backgroundColor: '#606060', borderRadius: 3, width: BAR_WIDTH },
   pastBar: { backgroundColor: '#999999' },
   currentBar: { backgroundColor: '#222222' },
   selectedBar: { backgroundColor: '#222222' },
   contextBar: { backgroundColor: '#C8C8C8' },
   contextText: { color: '#767676' },
-  hour: { color: '#5F5F5F', fontSize: 10, marginTop: 6, textAlign: 'center' },
+  hour: { color: '#5F5F5F', fontSize: 10, marginTop: 4, textAlign: 'center', width: BIN_WIDTH },
   currentText: { color: '#151515', fontWeight: '600' },
-  day: { color: '#767676', fontSize: 9, marginTop: 3, minHeight: 20, textAlign: 'center' },
+  day: { color: '#767676', fontSize: 9, marginTop: 2, minHeight: 15, textAlign: 'center' },
 });

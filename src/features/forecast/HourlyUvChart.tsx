@@ -9,7 +9,7 @@ type Props = {
   longitude: number;
 };
 
-const INITIAL_SCROLL_OFFSET = 60;
+const INITIAL_SCROLL_HOURS = 2;
 
 function formatCurrentDateTime(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
@@ -48,7 +48,7 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
             timezone={forecast.timezone}
             daylight={forecast.daylight}
             sunTime={currentTime / 1000}
-            initialScrollOffset={INITIAL_SCROLL_OFFSET}
+            initialScrollHours={INITIAL_SCROLL_HOURS}
           />
           <Text style={styles.currentTime}>{formatCurrentDateTime(currentTime, forecast.timezone)}</Text>
           <Text style={styles.source}>Open-Meteo forecast data</Text>

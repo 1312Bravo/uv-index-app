@@ -60,18 +60,15 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
         <>
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>UV Index</Text>
+              <Text style={styles.summaryLabel}>Peak UV Index</Text>
               <Text style={styles.summaryValue}>{summary.highestUv.toFixed(1)}</Text>
-              <Text style={styles.summaryDetail}>
-                Peak · {summary.highestCategory.label} · {formatTime(summary.highestUvTime, forecast.timezone)}
-              </Text>
-              <Text style={styles.summarySecondary}>Average {summary.averageUv.toFixed(1)}</Text>
+              <Text style={styles.summaryDetail}>{summary.highestCategory.label}</Text>
+              <Text style={styles.summarySecondary}>Average: {summary.averageUv.toFixed(1)}</Text>
             </View>
             <View style={styles.summaryDivider} />
             <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>Temperature</Text>
+              <Text style={styles.summaryLabel}>Average temperature</Text>
               <Text style={styles.summaryValue}>{Math.round(summary.averageTemperature)}°C</Text>
-              <Text style={styles.summaryDetail}>Average</Text>
               <Text style={styles.summarySecondary}>Range {formatTemperatureRange(summary)}</Text>
             </View>
           </View>
@@ -81,22 +78,34 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
               {recommendation.coverageMessage && (
                 <Text style={styles.coverageText}>{recommendation.coverageMessage}</Text>
               )}
-              <Text style={styles.recommendationSectionHeading}>WHO guidance</Text>
-              <Text style={styles.sectionNote}>{recommendation.whoGuidanceNote}</Text>
-              <Text style={styles.guidanceHeadline}>{recommendation.headline}</Text>
-              <Text style={styles.guidanceText}>{recommendation.explanation}</Text>
-              {recommendation.actions.map((action) => (
-                <Text key={action} style={styles.guidanceAction}>• {action}</Text>
-              ))}
+              <View style={styles.guidanceSection}>
+                <Text style={styles.recommendationSectionHeading}>WHO guidance</Text>
+                <Text style={styles.sectionNote}>{recommendation.whoGuidanceNote}</Text>
+                <Text style={styles.guidanceHeadline}>{recommendation.headline}</Text>
+                <Text style={styles.guidanceText}>{recommendation.explanation}</Text>
+                <View style={styles.actionList}>
+                  {recommendation.actions.map((action) => (
+                    <View key={action} style={styles.guidanceActionRow}>
+                      <View style={styles.actionBullet} />
+                      <Text style={styles.guidanceAction}>{action}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
 
-              <Text style={styles.recommendationSectionHeading}>UV Scout insight</Text>
-              <Text style={styles.sectionNote}>{recommendation.uvScoutInsightNote}</Text>
-              {recommendation.exposureObservations.map((observation) => (
-                <Text key={observation} style={styles.exposureText}>{observation}</Text>
-              ))}
-              {recommendation.reapplicationReminder && (
-                <Text style={styles.reapplicationText}>{recommendation.reapplicationReminder}</Text>
-              )}
+              <View style={styles.guidanceDivider} />
+              <View style={styles.guidanceSection}>
+                <Text style={styles.recommendationSectionHeading}>UV Scout insight</Text>
+                <Text style={styles.sectionNote}>{recommendation.uvScoutInsightNote}</Text>
+                <View style={styles.insightList}>
+                  {recommendation.exposureObservations.map((observation) => (
+                    <Text key={observation} style={styles.exposureText}>{observation}</Text>
+                  ))}
+                </View>
+                {recommendation.reapplicationReminder && (
+                  <Text style={styles.reapplicationText}>{recommendation.reapplicationReminder}</Text>
+                )}
+              </View>
             </View>
           )}
 
@@ -131,15 +140,21 @@ const styles = StyleSheet.create({
   summaryValue: { color: '#151515', fontSize: 24, fontWeight: '500', marginTop: 8, textAlign: 'center' },
   summaryDetail: { color: '#696969', fontSize: 12, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: '#696969', fontSize: 12, marginTop: 8, textAlign: 'center' },
-  guidance: { marginTop: 8 },
-  recommendationSectionHeading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 24, textAlign: 'center' },
-  guidanceHeadline: { color: '#151515', fontSize: 16, fontWeight: '600', marginTop: 12, textAlign: 'center' },
-  sectionNote: { color: '#858585', fontSize: 11, lineHeight: 16, marginTop: 6, textAlign: 'center' },
+  guidance: { marginTop: 12 },
+  guidanceSection: { paddingTop: 18 },
+  guidanceDivider: { backgroundColor: '#E5E5E5', height: 1, marginTop: 20 },
+  recommendationSectionHeading: { color: '#151515', fontSize: 15, fontWeight: '600' },
+  guidanceHeadline: { color: '#151515', fontSize: 18, fontWeight: '600', lineHeight: 24, marginTop: 16 },
+  sectionNote: { color: '#858585', fontSize: 11, lineHeight: 16, marginTop: 4 },
   coverageText: { color: '#555555', fontSize: 12, lineHeight: 18, marginTop: 14, textAlign: 'center' },
-  guidanceText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 8 },
-  exposureText: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 7 },
-  guidanceAction: { color: '#333333', fontSize: 13, lineHeight: 19, marginTop: 8 },
-  reapplicationText: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 14 },
+  guidanceText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 6 },
+  actionList: { marginTop: 12 },
+  guidanceActionRow: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 8 },
+  actionBullet: { backgroundColor: '#555555', borderRadius: 3, height: 5, marginRight: 10, marginTop: 7, width: 5 },
+  guidanceAction: { color: '#333333', flex: 1, fontSize: 13, lineHeight: 19 },
+  insightList: { marginTop: 10 },
+  exposureText: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 6 },
+  reapplicationText: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 12 },
   subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });
