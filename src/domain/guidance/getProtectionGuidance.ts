@@ -9,7 +9,7 @@ export type ProtectionGuidance = {
   headline: string;
   explanation: string;
   actions: string[];
-  shadeMessage: string;
+  shadeMessage?: string;
 };
 
 const uvCategories: UvCategory[] = ['low', 'moderate', 'high', 'very-high', 'extreme'];
@@ -61,18 +61,20 @@ function validateDefinitions() {
 
 validateDefinitions();
 
-// Selects guidance for the already-rounded category and adds the chosen shade context.
-export function getProtectionGuidance(category: UvCategory, shade: ShadeLevel): ProtectionGuidance {
+// Select baseline guidance from the rounded category, adding shade context when provided.
+export function getProtectionGuidance(category: UvCategory, shade?: ShadeLevel): ProtectionGuidance {
   const level = definitions.levels.find((candidate) => candidate.categories.includes(category));
-  const shadeMessage = definitions.shadeMessages.find((candidate) => candidate.key === shade)?.message;
+  const shadeMessage = shade
+    ? definitions.shadeMessages.find((candidate) => candidate.key === shade)?.message
+    : undefined;
 
-  if (!level || !shadeMessage) throw new Error('No protection guidance is defined for this outing.');
+  if (!level || (shade && !shadeMessage)) throw new Error('No protection guidance is defined for this outing.');
 
   return {
     level: level.key as GuidanceLevelKey,
     headline: level.headline,
     explanation: level.explanation,
     actions: [...level.actions],
-    shadeMessage,
+    ...(shadeMessage ? { shadeMessage } : {}),
   };
 }

@@ -43,13 +43,11 @@ export function UvScoutApp() {
         {page === 'outlook' && latitude !== undefined && longitude !== undefined && (
           <HourlyUvChart key={`${latitude},${longitude}`} latitude={latitude} longitude={longitude} />
         )}
-        {page === 'plan' && (
-          <>
-            <TimePlanner onChange={setTimePlan} />
-            {timePlan && latitude !== undefined && longitude !== undefined && (
-              <OutingForecast latitude={latitude} longitude={longitude} plan={timePlan} />
-            )}
-          </>
+        <View style={page === 'plan' ? undefined : styles.hidden}>
+          <TimePlanner onChange={setTimePlan} />
+        </View>
+        {page === 'plan' && timePlan && latitude !== undefined && longitude !== undefined && (
+          <OutingForecast latitude={latitude} longitude={longitude} plan={timePlan} />
         )}
         {page === 'info' && <InfoScreen />}
       </ScrollView>
@@ -68,7 +66,7 @@ const styles = StyleSheet.create({
     maxWidth: 520,
     alignSelf: 'center',
     paddingHorizontal: 24,
-    paddingTop: 68,
+    paddingTop: 44,
     paddingBottom: 48,
   },
   header: {
@@ -79,6 +77,7 @@ const styles = StyleSheet.create({
     display: 'none',
   },
   locationContext: {
+    alignItems: 'center',
     borderBottomColor: '#EEEEEE',
     borderBottomWidth: 1,
     marginTop: 24,
@@ -86,11 +85,11 @@ const styles = StyleSheet.create({
   },
   locationName: {
     color: '#151515',
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
   },
   locationCoordinates: {
-    color: '#999999',
+    color: '#777777',
     fontSize: 12,
     marginTop: 3,
   },

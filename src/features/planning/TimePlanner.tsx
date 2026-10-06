@@ -129,15 +129,9 @@ export function TimePlanner({ onChange }: Props) {
       return;
     }
 
-    if (!shade) {
-      setError(null);
-      onChange(null);
-      return;
-    }
-
     const durationMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
     setError(null);
-    onChange({ start, end, durationMinutes, shade });
+    onChange({ start, end, durationMinutes, ...(shade ? { shade } : {}) });
   }, [customDuration, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, shade, startMode]);
 
   const selectedDuration = duration !== null
@@ -146,9 +140,32 @@ export function TimePlanner({ onChange }: Props) {
       ? Number(customDuration) || null
       : null;
 
+  function resetPlanner() {
+    setStartMode('now');
+    setScheduledStart(null);
+    setEndMode('duration');
+    setDuration(null);
+    setIsCustomDuration(false);
+    setCustomDuration('');
+    setEndTime(null);
+    setShade(null);
+    setError(null);
+    setOpenSection(null);
+  }
+
   return (
     <View style={styles.section}>
-      <Text style={styles.heading}>When are you going outside?</Text>
+      <View style={styles.headingRow}>
+        <Text style={styles.heading}>When are you going outside?</Text>
+        <Pressable
+          accessibilityLabel="Reset outing choices"
+          accessibilityRole="button"
+          onPress={resetPlanner}
+          style={({ pressed }) => [styles.resetButton, pressed && styles.buttonPressed]}
+        >
+          <Text style={styles.resetText}>Reset</Text>
+        </Pressable>
+      </View>
 
       <SelectorRow
         expanded={openSection === 'start'}
@@ -273,12 +290,20 @@ export function TimePlanner({ onChange }: Props) {
 
       <SelectorRow
         expanded={openSection === 'shade'}
-        label="Shade"
+        label="Shade (optional)"
         onPress={() => setOpenSection(openSection === 'shade' ? null : 'shade')}
-        value={shade ? getShadeLabel(shade) : 'Choose shade'}
+        value={shade ? getShadeLabel(shade) : 'Not specified'}
       />
       {openSection === 'shade' && (
         <View style={styles.selectorOptions}>
+          <SelectorOption
+            active={shade === null}
+            label="Not specified"
+            onPress={() => {
+              setShade(null);
+              setOpenSection(null);
+            }}
+          />
           {SHADE_OPTIONS.map((option) => (
             <SelectorOption
               key={option.value}
@@ -292,7 +317,6 @@ export function TimePlanner({ onChange }: Props) {
           ))}
         </View>
       )}
-
       {error && <Text style={styles.error}>{error}</Text>}
       {!error && endMode === 'duration' && selectedDuration && (
         <Text style={styles.summary}>
@@ -311,7 +335,10 @@ export function TimePlanner({ onChange }: Props) {
 
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
-  heading: { color: '#151515', fontSize: 18, fontWeight: '600', marginBottom: 12 },
+  headingRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginBottom: 12, minHeight: 28, position: 'relative' },
+  heading: { color: '#151515', flex: 1, fontSize: 18, fontWeight: '600', textAlign: 'center' },
+  resetButton: { paddingHorizontal: 4, paddingVertical: 8, position: 'absolute', right: 0 },
+  resetText: { color: '#696969', fontSize: 12, textDecorationLine: 'underline' },
   selectorRow: { alignItems: 'center', borderBottomColor: '#D6D6D6', borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', minHeight: 50, paddingVertical: 12 },
   selectorLabel: { color: '#151515', fontSize: 14 },
   selectorValueWrap: { alignItems: 'center', flexDirection: 'row', gap: 10 },
@@ -324,7 +351,7 @@ const styles = StyleSheet.create({
   checkmark: { color: '#151515', fontSize: 15, marginRight: 2 },
   buttonPressed: { opacity: 0.65 },
   input: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, color: '#151515', fontSize: 14, marginTop: 10, minHeight: 46, paddingHorizontal: 12 },
-  error: { color: '#9C3D32', fontSize: 13, lineHeight: 19, marginTop: 12 },
-  summary: { color: '#151515', fontSize: 14, lineHeight: 20, marginTop: 14 },
-  hint: { color: '#999999', fontSize: 11, lineHeight: 16, marginTop: 18 },
+  error: { color: '#9C3D32', fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
+  summary: { color: '#151515', fontSize: 14, lineHeight: 20, marginTop: 14, textAlign: 'center' },
+  hint: { color: '#999999', fontSize: 11, lineHeight: 16, marginTop: 18, textAlign: 'center' },
 });

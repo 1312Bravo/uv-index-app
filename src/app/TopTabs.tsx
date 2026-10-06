@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 28,
+    marginTop: 24,
   },
   tab: {
     alignItems: 'center',

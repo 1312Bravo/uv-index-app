@@ -54,22 +54,25 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
       {loading && <ActivityIndicator color="#151515" style={styles.loading} />}
       {error && <Text style={styles.message}>{error}</Text>}
       {forecast && !summary && !loading && (
-        <Text style={styles.message}>No hourly forecast is available for the selected outing yet.</Text>
+        <Text style={styles.message}>
+          The forecast does not cover these outing hours. Adjust the start time or duration and try again.
+        </Text>
       )}
       {forecast && summary && (
         <>
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>Peak UV Index</Text>
+              <Text style={styles.summaryLabel}>UV Index</Text>
               <Text style={styles.summaryValue}>{summary.highestUv.toFixed(1)}</Text>
-              <Text style={styles.summaryDetail}>
-                {summary.highestCategory.label} · {summary.averageUv.toFixed(1)} average
-              </Text>
+              <Text style={styles.summaryDetail}>Peak · {summary.highestCategory.label}</Text>
+              <Text style={styles.summarySecondary}>Average {summary.averageUv.toFixed(1)}</Text>
             </View>
+            <View style={styles.summaryDivider} />
             <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>Average temperature</Text>
+              <Text style={styles.summaryLabel}>Temperature</Text>
               <Text style={styles.summaryValue}>{Math.round(summary.averageTemperature)}°C</Text>
-              <Text style={styles.summaryDetail}>Range {formatTemperatureRange(summary)}</Text>
+              <Text style={styles.summaryDetail}>Average</Text>
+              <Text style={styles.summarySecondary}>Range {formatTemperatureRange(summary)}</Text>
             </View>
           </View>
 
@@ -80,7 +83,9 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
               {guidance.actions.map((action) => (
                 <Text key={action} style={styles.guidanceAction}>• {action}</Text>
               ))}
-              <Text style={styles.shadeMessage}>{guidance.shadeMessage}</Text>
+              {guidance.shadeMessage && (
+                <Text style={styles.shadeMessage}>{guidance.shadeMessage}</Text>
+              )}
             </View>
           )}
 
@@ -104,19 +109,21 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
 
 const styles = StyleSheet.create({
   section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 36, paddingTop: 24 },
-  heading: { color: '#151515', fontSize: 18, fontWeight: '600' },
-  timeRange: { color: '#696969', fontSize: 13, marginTop: 6 },
-  loading: { alignSelf: 'flex-start', marginTop: 20 },
-  message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16 },
-  summaryGrid: { flexDirection: 'row', gap: 12, marginTop: 22 },
-  summaryItem: { backgroundColor: '#F7F7F7', borderRadius: 8, flex: 1, minHeight: 96, padding: 14 },
-  summaryLabel: { color: '#696969', fontSize: 12 },
-  summaryValue: { color: '#151515', fontSize: 21, fontWeight: '600', marginTop: 10 },
-  summaryDetail: { color: '#696969', fontSize: 12, marginTop: 3 },
+  heading: { color: '#151515', fontSize: 18, fontWeight: '600', textAlign: 'center' },
+  timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', marginTop: 7, textAlign: 'center' },
+  loading: { alignSelf: 'center', marginTop: 20 },
+  message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
+  summaryGrid: { alignItems: 'stretch', flexDirection: 'row', marginTop: 22 },
+  summaryItem: { alignItems: 'center', flex: 1, paddingVertical: 4 },
+  summaryDivider: { alignSelf: 'stretch', backgroundColor: '#DDDDDD', marginHorizontal: 14, marginVertical: 3, width: 1 },
+  summaryLabel: { color: '#696969', fontSize: 11, letterSpacing: 0.8, textAlign: 'center', textTransform: 'uppercase' },
+  summaryValue: { color: '#151515', fontSize: 24, fontWeight: '500', marginTop: 8, textAlign: 'center' },
+  summaryDetail: { color: '#696969', fontSize: 12, marginTop: 2, textAlign: 'center' },
+  summarySecondary: { color: '#696969', fontSize: 12, marginTop: 8, textAlign: 'center' },
   guidance: { marginTop: 8 },
   guidanceText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 8 },
   guidanceAction: { color: '#333333', fontSize: 13, lineHeight: 19, marginTop: 8 },
   shadeMessage: { color: '#696969', fontSize: 12, lineHeight: 18, marginTop: 12 },
-  subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28 },
-  source: { color: '#999999', fontSize: 11, marginTop: 14 },
+  subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28, textAlign: 'center' },
+  source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });

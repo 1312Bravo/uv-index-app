@@ -72,7 +72,11 @@ export async function getHourlyForecast(
     });
   }
 
-  const dates = [...new Set(hours.map(({ time }) => getLocalDateKey(time, data.timezone)))];
+  const previousDate = getLocalDateKey(hours[0].time - 86_400, data.timezone);
+  const dates = [...new Set([
+    previousDate,
+    ...hours.map(({ time }) => getLocalDateKey(time, data.timezone)),
+  ])];
   const daylight = dates.map((date) => getDaylightEvents(date, latitude, longitude));
 
   return { timezone: data.timezone, hours, daylight };

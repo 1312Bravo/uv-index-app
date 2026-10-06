@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
+    textAlign: 'center',
   },
   input: {
     borderColor: '#D6D6D6',
@@ -255,23 +256,26 @@ const styles = StyleSheet.create({
     marginVertical: 14,
     textAlign: 'center',
   },
-  selected: { marginTop: 16 },
-  selectedName: { color: '#555555', fontSize: 14, lineHeight: 20 },
-  selectedCoordinates: { color: '#999999', fontSize: 12, marginTop: 3 },
+  selected: { alignItems: 'center', marginTop: 16 },
+  selectedName: { color: '#333333', fontSize: 15, fontWeight: '600', lineHeight: 20, textAlign: 'center' },
+  selectedCoordinates: { color: '#777777', fontSize: 12, marginTop: 3, textAlign: 'center' },
   message: {
     color: '#666666',
     fontSize: 14,
     marginTop: 12,
+    textAlign: 'center',
   },
   error: {
     color: '#9C3D32',
     fontSize: 14,
     lineHeight: 20,
     marginTop: 12,
+    textAlign: 'center',
   },
   attribution: {
     color: '#999999',
     fontSize: 11,
     marginTop: 26,
+    textAlign: 'center',
   },
 });

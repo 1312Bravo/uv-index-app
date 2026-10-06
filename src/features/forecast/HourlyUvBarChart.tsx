@@ -155,15 +155,6 @@ function DaylightTrack({ hours, timezone, daylight, sunTime }: {
       : [];
     return [...dayArc, ...nightArc];
   });
-  const daylightIntervals = orderedDays.flatMap((day) => {
-    const intervalStart = day.civilDawn ?? day.sunrise;
-    const intervalEnd = day.civilDusk ?? day.sunset;
-    if (intervalStart === null || intervalEnd === null || intervalEnd <= intervalStart) return [];
-    const visibleStart = Math.max(start, intervalStart);
-    const visibleEnd = Math.min(end, intervalEnd);
-    if (visibleEnd <= visibleStart) return [];
-    return [{ left: xForTime(visibleStart), width: xForTime(visibleEnd) - xForTime(visibleStart) }];
-  });
   const sunX = xForTime(sunTime);
   const selectedDay = orderedDays.find((day) =>
     day.sunrise !== null && day.sunset !== null && sunTime >= day.sunrise && sunTime < day.sunset,
@@ -190,9 +181,7 @@ function DaylightTrack({ hours, timezone, daylight, sunTime }: {
 
   return (
     <View pointerEvents="none" style={[styles.daylightTrack, { height: TRACK_HEIGHT, width }]}>
-      {daylightIntervals.map((interval, index) => (
-        <View key={`daylight-${index}`} style={[styles.daylightBand, interval, { top: HORIZON_Y }]} />
-      ))}
+      <View style={[styles.horizonLine, { left: 0, top: HORIZON_Y, width }]} />
       {arcSegments.map((segment) => (
         <View
           key={segment.key}
@@ -259,13 +248,23 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
   const isSelected = selectedRange !== undefined &&
     hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start;
   const isContext = selectedRange !== undefined && !isSelected;
+  const cloudCoverDescription = hour.cloudCover === null
+    ? 'unavailable'
+    : `${Math.round(hour.cloudCover)} percent`;
+  const outingDescription = selectedRange
+    ? isSelected ? ', during selected outing' : ', outside selected outing'
+    : '';
   return (
     <View style={[
       styles.bin,
       selectedRange
         ? isSelected && styles.selectedBin
         : hour.period === 'now' && styles.currentBin,
-    ]}>
+    ]}
+      accessible
+      accessibilityLabel={`${formatHour(hour.time, timezone)}. UV Index ${hour.uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}${outingDescription}.`}
+      accessibilityRole="text"
+    >
       <Text style={[styles.cloudCover, isContext && styles.contextText]}>
         {hour.cloudCover === null ? '—' : `${Math.round(hour.cloudCover)}%`}
       </Text>
@@ -326,7 +325,6 @@ export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialSc
           </View>
         </View>
       </ScrollView>
-      <Text style={styles.legend}>Sun by day · moon by night · civil dawn · sunrise · sunset · civil dusk</Text>
     </>
   );
 }
@@ -335,7 +333,7 @@ const styles = StyleSheet.create({
   chart: { marginTop: 22 },
   bins: { alignItems: 'flex-end', flexDirection: 'row', gap: BIN_GAP },
   daylightTrack: { position: 'relative' },
-  daylightBand: { backgroundColor: '#D0D0D0', height: 2, position: 'absolute' },
+  horizonLine: { backgroundColor: '#E0E0E0', height: 1, position: 'absolute' },
   dayArcSegment: { backgroundColor: '#444444', borderRadius: 2, height: 2, position: 'absolute' },
   nightArcSegment: { backgroundColor: '#888888', borderRadius: 2, height: 2, position: 'absolute' },
   timeMarker: { backgroundColor: '#777777', opacity: 0.3, position: 'absolute', top: 34, width: 1 },
@@ -348,7 +346,7 @@ const styles = StyleSheet.create({
     top: HORIZON_Y - 6,
     width: 1,
   },
-  eventLabel: { color: '#555555', fontSize: 9, position: 'absolute', textAlign: 'center', width: 72 },
+  eventLabel: { color: '#4D4D4D', fontSize: 10, position: 'absolute', textAlign: 'center', width: 72 },
   sun: { height: 28, position: 'absolute', width: 28 },
   sunRay: { backgroundColor: '#555555', borderRadius: 1, height: 5, position: 'absolute', width: 2 },
   sunRayTop: { left: 13, top: 0 },
@@ -376,18 +374,17 @@ const styles = StyleSheet.create({
   bin: { alignItems: 'center', paddingHorizontal: 1, width: BIN_WIDTH },
   currentBin: { backgroundColor: '#F5F5F5', borderRadius: 5 },
   selectedBin: { backgroundColor: '#F5F5F5', borderRadius: 5 },
-  cloudCover: { color: '#999999', fontSize: 8, marginBottom: 3 },
-  temperature: { color: '#696969', fontSize: 10, marginBottom: 4 },
-  uv: { color: '#151515', fontSize: 11, marginBottom: 3 },
+  cloudCover: { color: '#767676', fontSize: 9, marginBottom: 3 },
+  temperature: { color: '#5F5F5F', fontSize: 11, marginBottom: 4 },
+  uv: { color: '#151515', fontSize: 12, fontWeight: '500', marginBottom: 3 },
   barArea: { borderBottomColor: '#D6D6D6', borderBottomWidth: 1, height: 114, justifyContent: 'flex-end', width: 16 },
   bar: { backgroundColor: '#606060', borderRadius: 3, width: 16 },
-  pastBar: { backgroundColor: '#B8B8B8' },
+  pastBar: { backgroundColor: '#999999' },
   currentBar: { backgroundColor: '#222222' },
   selectedBar: { backgroundColor: '#222222' },
-  contextBar: { backgroundColor: '#E5E5E5' },
-  contextText: { color: '#B8B8B8' },
-  hour: { color: '#696969', fontSize: 9, marginTop: 6, textAlign: 'center' },
+  contextBar: { backgroundColor: '#C8C8C8' },
+  contextText: { color: '#767676' },
+  hour: { color: '#5F5F5F', fontSize: 10, marginTop: 6, textAlign: 'center' },
   currentText: { color: '#151515', fontWeight: '600' },
-  day: { color: '#999999', fontSize: 8, marginTop: 3, minHeight: 20, textAlign: 'center' },
-  legend: { color: '#696969', fontSize: 10, marginTop: 10 },
+  day: { color: '#767676', fontSize: 9, marginTop: 3, minHeight: 20, textAlign: 'center' },
 });

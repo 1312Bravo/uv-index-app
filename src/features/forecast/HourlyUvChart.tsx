@@ -43,7 +43,6 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
       {error && <Text style={styles.message}>{error}</Text>}
       {forecast && (
         <>
-          <Text style={styles.currentTime}>{formatCurrentDateTime(currentTime, forecast.timezone)}</Text>
           <HourlyUvBarChart
             hours={forecast.hours}
             timezone={forecast.timezone}
@@ -51,6 +50,7 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
             sunTime={currentTime / 1000}
             initialScrollOffset={INITIAL_SCROLL_OFFSET}
           />
+          <Text style={styles.currentTime}>{formatCurrentDateTime(currentTime, forecast.timezone)}</Text>
           <Text style={styles.source}>Open-Meteo forecast data</Text>
         </>
       )}
@@ -59,10 +59,10 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
 }
 
 const styles = StyleSheet.create({
-  section: { marginTop: 40 },
-  heading: { color: '#151515', fontSize: 18, fontWeight: '600' },
-  loading: { alignSelf: 'flex-start', marginTop: 20 },
-  message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16 },
-  currentTime: { color: '#696969', fontSize: 12, marginTop: 6 },
-  source: { color: '#999999', fontSize: 11, marginTop: 10 },
+  section: { marginTop: 32 },
+  heading: { color: '#151515', fontSize: 18, fontWeight: '600', textAlign: 'center' },
+  loading: { alignSelf: 'center', marginTop: 20 },
+  message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
+  currentTime: { color: '#444444', fontSize: 13, fontWeight: '500', marginTop: 8, textAlign: 'center' },
+  source: { color: '#767676', fontSize: 11, marginTop: 10, textAlign: 'center' },
 });

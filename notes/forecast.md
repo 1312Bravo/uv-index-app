@@ -40,6 +40,7 @@ attribution, and limitations.
   dark selected style. Add up to three surrounding hourly bins on each side,
   using the same number of context bins before and after where the available
   forecast permits; render these context values faintly.
-- The first outing result is deliberately neutral: shade is stored with the plan
-  but is not yet used to reduce or reinterpret the forecast. Practical guidance
-  will be a separate layer built on this structured result.
+- Show the forecast and baseline protection guidance as soon as start and end
+  are selected; shade is optional. Use the peak UV category for baseline actions.
+  If shade is provided, append a shade-specific context note without reducing or
+  reinterpreting the forecast UV values.

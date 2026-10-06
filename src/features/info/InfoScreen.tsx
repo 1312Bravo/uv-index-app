@@ -145,8 +145,8 @@ export function InfoScreen() {
 
 const styles = StyleSheet.create({
   section: { marginTop: 32 },
-  heading: { color: '#151515', fontSize: 20, fontWeight: '600' },
-  hint: { color: '#696969', fontSize: 13, marginTop: 7 },
+  heading: { color: '#151515', fontSize: 20, fontWeight: '600', textAlign: 'center' },
+  hint: { color: '#696969', fontSize: 13, marginTop: 7, textAlign: 'center' },
   topics: { marginTop: 18 },
   description: { color: '#555555', fontSize: 13, lineHeight: 20, marginTop: 8 },
   supportingText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 14 },

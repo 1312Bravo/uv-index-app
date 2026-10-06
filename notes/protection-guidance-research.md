@@ -82,9 +82,10 @@ the JSON.
 ]
 ```
 
-The UI should receive a structured level, short explanation, action list, and
-shade note. TypeScript should validate the JSON and map the outing forecast and
-shade selection to that result.
+The UI should receive a structured level, short explanation, and action list
+from the UV category whether or not shade is selected. Add the shade note only
+when the user provides a shade choice. TypeScript validates the JSON and maps
+the outing forecast and optional shade selection to that result.
 
 ## Resolved product decision: fractional protection trigger
 

@@ -16,14 +16,16 @@ helps people plan outdoor time around the current and forecast UV index.
 - The first version is for general outdoor users, in English.
 - Location should support device location and user-selected places on Android and web.
 - The first version has no accounts or history.
-- The central flow asks for a place, start time, duration or end time, and expected shade.
+- The central flow asks for a place, start time, and duration or end time; shade
+  is optional context for the outing guidance.
 - Start time defaults to Now. Duration/end time has no default and must be chosen by the user.
 - If the user switches from Now to a scheduled outing, offer only future times
   relative to the current time at the selected location.
 - With Now selected, show a horizontal UV trend with five earlier hourly bins,
   the current hour, and eighteen later hourly bins, even before duration is chosen.
   The window may cross into the next local day.
-- The result combines a standard UV category, a forecast over the selected time, and practical guidance.
+- The result combines a standard UV category, a forecast over the selected time,
+  and baseline practical guidance; shade adds an optional contextual note.
 - Introduce what the UV Index measures in a short explanation near the start
   of the app; explain the selected UV category and precautions in each result.
 - Compare equally long earlier and later outings using forecast UV, but only
@@ -60,8 +62,9 @@ Start with a location-based MVP:
 1. User searches for a place or chooses to share device location on Android or web.
 2. Start time defaults to Now and immediately shows the rolling hourly UV trend.
    The user may choose a future time. The user must choose a duration for an
-   outing assessment and may choose an expected sun/shade pattern from four
-   clear descriptions ranging from open sun to overhead cover for most of the outing.
+   outing assessment and may optionally choose an expected sun/shade pattern
+   from four clear descriptions ranging from open sun to overhead cover for most
+   of the outing.
 3. The app shows hourly UV and temperature for that period, its highest UV category,
    and an explanation of what that category means.
 4. The app explains why the selected UV level matters, suggests practical
@@ -74,7 +77,6 @@ after the core flow has been tested.
 
 ## Decisions To Make Before Building
 
-- Whether the planner should preserve its selections when returning to the overview.
 - How far ahead planning should work.
 - Whether clothing/skin coverage is an optional detail in version one.
 - Revisit Open-Meteo's commercial licence and capacity before a commercial release.
@@ -112,6 +114,8 @@ calculation, supported platform versions, and the final visual polish.
   with the outlook tab selected by default.
 - [x] Add the selected-outing hourly UV and temperature forecast plus its highest
   UV Index category.
+- [x] Show the outing forecast and baseline UV guidance without requiring shade;
+  add shade-specific context only when a shade option is selected.
 - [x] Add duration-weighted average UV and temperature summaries while keeping
   guidance based on peak UV; highlight the whole outing with balanced faint chart
   context around it.
@@ -127,6 +131,9 @@ calculation, supported platform versions, and the final visual polish.
   dusk markers above the hourly bars in UV Outlook and Plan an Outing.
 - [x] Show one time-dependent celestial icon on the forecast timeline: sun by
   day and moon at night, each following its matching arc.
+- [x] Keep outing choices when switching tabs or changing location, explain
+  when the new forecast cannot cover them, and add Reset for outing choices
+  only while preserving the selected location.
 - [x] Add a central source register and require it to be updated when app data
   providers, scientific evidence, or calculation references are introduced.
 
@@ -166,8 +173,9 @@ calculation, supported platform versions, and the final visual polish.
   slightly into the earlier-hours window so Now is left of center with more
   upcoming hours visible; all five earlier hours remain available by scrolling
   left. Keep it available without a duration selection. Add daylight markers later.
-- Use four shade choices: open sun throughout; mostly sun with short shaded
-  stretches; about half sun and half shade; overhead cover for most of the outing.
+- Offer four optional shade choices: open sun throughout; mostly sun with short
+  shaded stretches; about half sun and half shade; overhead cover for most of
+  the outing.
 - Avoid turning the shade choice into an unsupported numerical UV reduction.
 - Show temperature as forecast context. Do not infer clothing from temperature.
 - Show cloud-cover percentage alongside hourly temperature and UV as weather
@@ -189,6 +197,13 @@ calculation, supported platform versions, and the final visual polish.
   Keep UV Outlook and Plan an Outing visible but inactive until a location is
   selected, then show the selected place and coordinates in those tabs. Info is
   always available and does not require a selected location.
+- Preserve planner selections when switching tabs or changing location.
+  Recalculate for the selected location; if the forecast cannot support a
+  selection, explain the issue without silently resetting the planner. Provide
+  a clear, explicit reset action. Reset clears only outing choices to their
+  defaults (start time `Now`, no duration/end time, and no shade selection) and
+  keeps the selected location. Persistence across app restarts is a separate
+  decision and is not implied by this behavior.
 - Use English for the first version.
 - Do not include accounts or history in the first version.
 - Start with a neutral, straightforward visual style.
@@ -223,6 +238,10 @@ calculation, supported platform versions, and the final visual polish.
   features. Removed domain imports from feature folders and documented the
   dependency direction in `docs/project-structure.md`.
 
+- Kept the outing planner mounted across tab changes so its local selections
+  survive navigation; changing location recalculates the outing forecast.
+  Added Reset to restore Now/no duration/no shade without clearing location.
+
 - Repository instruction file created.
 - Planning started before project scaffolding.
 - Installed the stable Expo TypeScript starter and web dependencies using pnpm.
@@ -241,8 +260,9 @@ calculation, supported platform versions, and the final visual polish.
   including 3 hours, custom duration, and explicit end-time mode.
 - Replaced planner button groups with compact accordion-style selector rows for
   start, end mode, and duration.
-- Added the four-option shade selector. A complete time plan now includes the
-  selected shade level; no shade assumption is made when it is still unset.
+- Added the four-option shade selector. A time plan no longer requires a shade
+  choice; leaving it unset shows the forecast and baseline guidance, and
+  selecting one adds a shade-specific note.
 - Added a selected-outing result with peak and duration-weighted average UV,
   average temperature and range, with guidance still based on peak UV. The
   outing chart highlights all selected hours and uses equal, faint context
