@@ -8,15 +8,15 @@
     {
       "key": "low",
       "minimumUvInclusive": 0,
-      "headline": "Below the protection threshold",
-      "explanation": "The covered forecast stays below UV Index 3, the level at which WHO recommends sun protection. This does not mean there is no UV exposure.",
-      "actions": ["Bright reflective surroundings, such as fresh snow, can increase UV exposure."]
+      "insightHeadline": "The forecast stays below UV Index 3",
+      "insightExplanation": "This does not mean there is no UV exposure.",
+      "actions": ["WHO notes that bright reflective surroundings, such as fresh snow, can increase UV exposure."]
     },
     {
       "key": "protection",
       "minimumUvInclusive": 3,
-      "headline": "Sun protection is recommended",
-      "explanation": "The forecast reaches UV Index 3 or higher. Unprotected skin and eyes can be harmed, and protection helps reduce exposure.",
+      "insightHeadline": "The forecast reaches UV Index 3 or higher",
+      "insightExplanation": "WHO's protection threshold is reached during this outing. The time estimates below show how the forecast varies across the outing.",
       "actions": [
         "Seek shade when UV is strongest.",
         "Cover skin with clothing, and wear a brimmed hat and UV-protective sunglasses.",
@@ -26,8 +26,8 @@
     {
       "key": "extra-protection",
       "minimumUvInclusive": 8,
-      "headline": "Extra protection is important",
-      "explanation": "The forecast reaches UV Index 8 or higher, when unprotected skin and eyes can be harmed more quickly.",
+      "insightHeadline": "The forecast reaches UV Index 8 or higher",
+      "insightExplanation": "Very high or extreme UV is forecast during this outing. The time estimates below show how the forecast varies across the outing.",
       "actions": [
         "Seek shade and limit exposure when UV is strongest.",
         "Cover skin with clothing, and wear a brimmed hat and UV-protective sunglasses.",
@@ -36,10 +36,9 @@
     }
   ],
   "messages": {
-    "whoGuidanceNote": "WHO guidance matched to your outing's peak UV; general, not personal medical advice.",
-    "uvScoutInsightNote": "Approximate forecast insight, not a personal exposure or risk estimate.",
+    "whoGuidanceNote": "Sun protection is recommended from UV Index 3 and above; this is general guidance.",
+    "uvScoutInsightNote": "Approximate outing forecast, not a personal exposure or risk estimate.",
     "coverageIncomplete": "The forecast covers about {coveredDuration} of this {plannedDuration} outing. Conditions during the uncovered part are unknown.",
-    "noElevatedUv": "No covered forecast time reaches UV Index 3.",
     "bandDuration": "For about {duration}, {bandLabel}.",
     "splitExposure": "Elevated UV is split into separate periods; the longest continuous period at UV Index 3 or higher is about {duration}.",
     "splitVeryHighExposure": "UV Index 8 or higher is split into separate periods; the longest continuous period at that level is about {duration}.",

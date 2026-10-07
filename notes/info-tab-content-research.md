@@ -46,3 +46,31 @@ Sources:
 They are not an official meteorological scale. The exact percentage remains
 visible, and the interface says not to interpret it as UV reduction or route
 shade.
+
+## Precipitation amount
+
+**Source-backed:** Open-Meteo's hourly `precipitation` is a sum over the
+preceding hour and can include rain, showers, and snow. The World Meteorological
+Organization's *Guide to Meteorological Instruments and Methods of Observation*
+(WMO-No. 8, seventh edition, 2008) lists rain-rate ranges of below 2.5 mm/h for
+light, 2.5–below 10 mm/h for moderate, 10–below 50 mm/h for heavy, and 50 mm/h
+or more for its highest rain-rate band. Those formal intensity values are based
+on a three-minute measurement period; they are not direct labels for an hourly
+forecast total. The guide itself notes that its term “violent” for the highest
+band can be confusing.
+
+Sources:
+
+- Open-Meteo, Weather Forecast API documentation, `precipitation` variable,
+  https://open-meteo.com/en/docs
+- World Meteorological Organization, *Guide to Meteorological Instruments and
+  Methods of Observation*, WMO-No. 8, seventh edition (2008), Part I, Chapter 14,
+  Annex, https://www.weather.gov/media/epz/mesonet/CWOP-WMO8.pdf
+
+**Product choice:** `src/domain/weather/precipitationRateGuide.json` presents
+these ranges only as an educational rough comparison for one-hour amounts when
+precipitation is rain. UV Scout uses “Very intense rain” instead of the WMO
+guide's potentially confusing highest-band term. The app does not classify
+forecast values automatically: an hourly total cannot show short bursts, the
+provider's total may include snow, and an outing sum spans multiple hours. The
+chart and outing summary keep displaying numeric amounts.

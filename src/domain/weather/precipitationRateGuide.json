@@ -1,0 +1,32 @@
+[
+  {
+    "key": "none",
+    "range": "0 mm",
+    "label": "No precipitation forecast",
+    "description": "No precipitation amount is forecast for this hour."
+  },
+  {
+    "key": "light",
+    "range": "Above 0 to under 2.5 mm",
+    "label": "Light rain",
+    "description": "If it falls steadily as rain for an hour, this is below the WMO moderate-rain range."
+  },
+  {
+    "key": "moderate",
+    "range": "2.5 to under 10 mm",
+    "label": "Moderate rain",
+    "description": "5 mm in one hour is about 5 liters per square meter; if it falls steadily as rain, it is in the WMO moderate-rain range."
+  },
+  {
+    "key": "heavy",
+    "range": "10 to under 50 mm",
+    "label": "Heavy rain",
+    "description": "If it falls steadily as rain for an hour, this is in the WMO heavy-rain range."
+  },
+  {
+    "key": "very-intense",
+    "range": "50 mm or more",
+    "label": "Very intense rain",
+    "description": "UV Scout uses this clearer wording for the highest WMO rain-rate band; the WMO guide notes its original term can be confusing."
+  }
+]

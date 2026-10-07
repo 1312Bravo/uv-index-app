@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getCloudCoverBands } from '../../domain/weather/getCloudCoverBand';
+import { getPrecipitationRateGuide } from '../../domain/weather/getPrecipitationRateGuide';
 import { getUvCategoryDefinitions } from '../../domain/uv/getUvCategory';
 import { InfoAccordion } from './InfoAccordion';
 
 const uvCategories = getUvCategoryDefinitions();
 const cloudCoverBands = getCloudCoverBands();
+const precipitationRateGuide = getPrecipitationRateGuide();
 
-type InfoTopic = 'uv' | 'clouds';
+type InfoTopic = 'uv' | 'clouds' | 'precipitation';
 
 function formatUvRange(index: number): string {
   const category = uvCategories[index];
@@ -115,6 +117,56 @@ function CloudCoverExplanation() {
   );
 }
 
+function PrecipitationExplanation() {
+  return (
+    <>
+      <Text style={styles.metricHeading}>Precipitation chance</Text>
+      <Text style={styles.description}>
+        The percentage is the forecast chance of more than 0.1 mm of precipitation
+        during the hour before the displayed time. It is not the percentage of the
+        hour when it will rain, or the chance of rain at any point during your whole outing.
+      </Text>
+      <Text style={styles.metricHeading}>Expected precipitation amount</Text>
+      <Text style={styles.description}>
+        The amount in millimeters is the forecast total for that preceding hour.
+        It can include rain, showers, and snow; 1 mm is about 1 liter of water per
+        square meter.
+      </Text>
+      <Text style={styles.metricHeading}>What the amount can mean for rain</Text>
+      <Text style={styles.description}>
+        Use these ranges as a rough guide for a single hour, only if the
+        precipitation is rain. A one-hour total does not show how intense a short
+        burst may be.
+      </Text>
+      <View style={styles.list}>
+        {precipitationRateGuide.map((entry) => (
+          <View key={entry.key} style={styles.row}>
+            <View style={styles.rangeColumn}>
+              <Text style={styles.range}>{entry.range}</Text>
+              <Text style={styles.category}>{entry.label}</Text>
+            </View>
+            <Text style={styles.categoryDescription}>{entry.description}</Text>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.note}>
+        In the outing summary, the amount adds only complete forecast hours within
+        your outing. “Peak hourly chance” is the highest single-hour chance in
+        that period, not a combined chance for the outing. The outing total sums
+        multiple hours, so do not classify it with the hourly rain guide above.
+      </Text>
+      <SourceLink
+        label="Open-Meteo · Weather forecast variables"
+        url="https://open-meteo.com/en/docs"
+      />
+      <SourceLink
+        label="WMO · Rain-intensity criteria"
+        url="https://www.weather.gov/media/epz/mesonet/CWOP-WMO8.pdf"
+      />
+    </>
+  );
+}
+
 export function InfoScreen() {
   const [openTopic, setOpenTopic] = useState<InfoTopic | null>(null);
 
@@ -141,6 +193,13 @@ export function InfoScreen() {
         >
           <CloudCoverExplanation />
         </InfoAccordion>
+        <InfoAccordion
+          title="Precipitation"
+          expanded={openTopic === 'precipitation'}
+          onPress={() => toggleTopic('precipitation')}
+        >
+          <PrecipitationExplanation />
+        </InfoAccordion>
       </View>
     </View>
   );
@@ -153,6 +212,7 @@ const styles = StyleSheet.create({
   topics: { marginTop: 18 },
   description: { color: '#555555', fontSize: 13, lineHeight: 20, marginTop: 8 },
   supportingText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 14 },
+  metricHeading: { color: '#333333', fontSize: 13, fontWeight: '600', marginTop: 14 },
   list: { marginTop: 8 },
   row: {
     alignItems: 'flex-start',

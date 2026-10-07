@@ -9,8 +9,8 @@ export type OutingRecommendation = {
   level: GuidanceLevelKey;
   whoGuidanceNote: string;
   uvScoutInsightNote: string;
-  headline: string;
-  explanation: string;
+  insightHeadline: string;
+  insightExplanation: string;
   actions: string[];
   exposureObservations: string[];
   coverageMessage: string | null;
@@ -52,7 +52,7 @@ function validateDefinitions() {
   for (const [index, level] of definitions.levels.entries()) {
     if (
       !isOneOf(level.key, expectedLevelKeys) || usedLevelKeys.has(level.key) ||
-      !level.headline.trim() || !level.explanation.trim() ||
+      !level.insightHeadline.trim() || !level.insightExplanation.trim() ||
       !Number.isFinite(level.minimumUvInclusive) ||
       (index === 0
         ? level.minimumUvInclusive !== 0
@@ -88,7 +88,6 @@ function validateDefinitions() {
     !definitions.messages.whoGuidanceNote.trim() ||
     !definitions.messages.uvScoutInsightNote.trim() ||
     !definitions.messages.coverageIncomplete.trim() ||
-    !definitions.messages.noElevatedUv.trim() ||
     !definitions.messages.bandDuration.trim() ||
     !definitions.messages.splitExposure.trim() ||
     !definitions.messages.splitVeryHighExposure.trim() ||
@@ -151,7 +150,7 @@ function getExposureObservations(summary: OutingForecastSummary): string[] {
   }
 
   const elevatedSeconds = (bandSeconds.get('3-to-8') ?? 0) + (bandSeconds.get('8-plus') ?? 0);
-  if (elevatedSeconds === 0) return [definitions.messages.noElevatedUv];
+  if (elevatedSeconds === 0) return [];
 
   const observations: string[] = [];
   for (const band of definitions.uvBands) {
@@ -206,8 +205,8 @@ export function getOutingRecommendation(summary: OutingForecastSummary): OutingR
     level: level.key as GuidanceLevelKey,
     whoGuidanceNote: definitions.messages.whoGuidanceNote,
     uvScoutInsightNote: definitions.messages.uvScoutInsightNote,
-    headline: level.headline,
-    explanation: level.explanation,
+    insightHeadline: level.insightHeadline,
+    insightExplanation: level.insightExplanation,
     actions: [...level.actions],
     exposureObservations: getExposureObservations(summary),
     coverageMessage,

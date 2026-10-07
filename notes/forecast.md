@@ -33,7 +33,10 @@ attribution, and limitations.
   the preceding hour; `precipitation` is the preceding-hour total in millimeters
   and may include rain, showers, or snow. Display each value under the hour ending
   at that timestamp, explain the timing briefly, and do not combine hourly
-  probabilities into a chance for the entire outing.
+  probabilities into a chance for the entire outing. The Info tab explains both
+  fields and clarifies that the outing's peak hourly chance is not an outing-wide
+  probability. It also gives a cautious guide to hourly rain amounts without
+  applying rain-intensity labels automatically to forecast bins or outing totals.
 - Attribute Open-Meteo in the app and revisit licensing before commercial use.
 - Forecast values are estimates, not a measurement of a person's UV exposure.
 - For category lookup, round the raw UV Index to the nearest whole number:
@@ -48,6 +51,17 @@ attribution, and limitations.
   period aggregates. Keep protection guidance based on the raw peak; category
   rounding is for display. Also report approximate time in raw-UV bands and
   identify incomplete forecast coverage rather than treating missing time as UV 0.
+- Show the outing summary in a compact 2×2 grid: peak and average UV, average and
+  range of temperature, duration-weighted average and range of cloud cover, and
+  expected precipitation with peak hourly chance. Cloud cover remains separate
+  context and never adjusts UV.
+- For the outing precipitation total, sum preceding-hour amounts only when the
+  full one-hour interval is contained within the selected outing; do not prorate
+  partial hours. Show how many complete forecast hours contributed. If no complete
+  interval exists, or any complete interval lacks an amount, show the total as
+  unavailable rather than treating missing data as zero. Show the maximum
+  probability among overlapping preceding-hour intervals separately; do not
+  combine hourly probabilities into an outing-wide chance.
 - In the outing chart, show the full overlapping outing interval in the same
   dark selected style. Add up to three surrounding hourly bins on each side,
   using the same number of context bins before and after where the available

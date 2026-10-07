@@ -28,8 +28,11 @@ helps people plan outdoor time around the current and forecast UV index.
 - The result combines a standard UV category, a forecast over the selected time,
   and practical guidance. The WHO reference remains based on the outing's raw
   peak; an initial UV Scout profile reports time in UV bands and incomplete
-  forecast coverage. Present these as separate `WHO guidance` and `UV Scout
-  insight` sections, with a small note explaining the source and limits of each.
+  forecast coverage. Present these together under `UV guidance for outing`:
+  group WHO's threshold and action list under a `WHO guidance` heading, then
+  separate UV Scout's outing-specific interpretation, coverage caveat, and
+  time-in-UV estimates under a `UV Scout insight` heading. Use consistent body
+  typography within both groups and keep the source and limits clear.
   Default planning requires no extra protection-context choices; unknown
   conditions stay conditional.
 - Introduce what the UV Index measures in a short explanation near the start
@@ -44,6 +47,10 @@ helps people plan outdoor time around the current and forecast UV index.
 - Show hourly precipitation chance and expected amount as separate weather
   context below each chart time. Preserve the provider's preceding-hour meaning;
   do not present combined hourly probabilities as an outing-wide chance.
+- Summarize outings in four compact metrics: UV peak/average, temperature
+  average/range, cloud-cover average/range, and expected precipitation with the
+  peak hourly chance. Sum rain only across complete preceding-hour intervals;
+  do not prorate partial hours or combine probabilities.
 - Use the same compact hourly UV bar chart in the outlook and outing result, with
   cloud-cover percentage and temperature above each bar, and precipitation values
   below each hour label.
@@ -145,6 +152,8 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add duration-weighted average UV and temperature summaries while keeping
   guidance based on peak UV; highlight the whole outing with balanced faint chart
   context around it.
+- [x] Add a 2×2 outing summary for peak/average UV, average/range temperature,
+  average/range cloud cover, and precipitation amount plus peak hourly chance.
 - [x] Implement peak-based protection levels using raw UV, separate from display
   category rounding.
 - [x] Add the initial outing recommendation profile: duration by UV band,
@@ -210,6 +219,11 @@ calculation, supported platform versions, and the final visual polish.
 - Show temperature as forecast context. Do not infer clothing from temperature.
 - Show cloud-cover percentage alongside hourly temperature and UV as weather
   context only. Keep it distinct from route shade and do not use it to adjust UV.
+- Use a 2×2 outing summary for UV, temperature, cloud cover, and precipitation.
+  Weight cloud-cover average by its overlap with the outing and display its
+  observed hourly range. Sum only complete preceding-hour precipitation intervals
+  wholly inside the outing, label the full-hour basis, and show peak hourly chance
+  separately rather than implying a combined outing-wide probability.
 - Explain what the UV Index measures in a short introductory description.
 - Explain the selected UV category with practical action and a reason in the result.
 - Compare future earlier and later time windows of equal duration using forecast
@@ -278,9 +292,11 @@ calculation, supported platform versions, and the final visual polish.
 - Removed the shade selector from the planner. Use general shade advice without
   adjusting forecast UV or claiming route-specific shade; defer optional
   “Tailor this advice” inputs.
-- Label the two outing result layers `WHO guidance` and `UV Scout insight`, and
-  explain that the first applies general WHO UV-level guidance to the outing
-  peak while the second is a forecast summary, not a personal-risk estimate.
+- Present outing advice in one `UV guidance for outing` section, with clearly
+  separated `WHO guidance` and `UV Scout insight` groups. Keep all advice and
+  forecast statements in consistent body typography within both groups, and
+  identify the Scout portion as an approximate forecast summary, not a
+  personal-risk estimate.
 - Researched public-health protection guidance and documented source-backed
   groupings, shade limitations, and draft app rules in
   `notes/protection-guidance-research.md`.
@@ -333,6 +349,13 @@ calculation, supported platform versions, and the final visual polish.
 - Added Open-Meteo hourly precipitation probability and expected precipitation
   amount to both forecast charts as separate, non-UV context. Values retain their
   preceding-hour meaning and are not combined into an outing-wide chance.
+- Added Info-tab notes explaining precipitation chance, expected amount,
+  preceding-hour timing, and outing-summary aggregation. Added an educational
+  hourly rain-rate comparison with explicit limits; it does not classify
+  forecast hourly or outing-total precipitation amounts.
+- Expanded the outing summary into a 2×2 grid with duration-weighted cloud cover,
+  its hourly range, complete-hour precipitation total, and separate peak hourly
+  precipitation chance. Partial precipitation hours are not prorated.
 - Added a final Info tab backed by the validated UV category definitions and a
   validated, editable cloud-cover description table. Documented scientific
   sources separately from app-chosen cloud-label bands.

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DateTimeField } from './DateTimeField';
@@ -16,8 +16,25 @@ const DURATION_OPTIONS = [30, 60, 120, 180, 240];
 
 function formatDuration(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;
-  const hours = minutes / 60;
-  return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (remainingMinutes === 0) return `${hours}h`;
+
+  return `${hours}:${String(remainingMinutes).padStart(2, '0')}`;
+}
+
+function getCustomDurationMinutes(hoursText: string, minutesText: string): number | null {
+  if (hoursText === '' && minutesText === '') return null;
+
+  const hours = hoursText === '' ? 0 : Number(hoursText);
+  const minutes = minutesText === '' ? 0 : Number(minutesText);
+  if (!Number.isInteger(hours) || hours < 0 || !Number.isInteger(minutes) || minutes < 0 || minutes > 59) {
+    return null;
+  }
+
+  const totalMinutes = hours * 60 + minutes;
+  return totalMinutes > 0 ? totalMinutes : null;
 }
 
 function formatTime(value: Date): string {
@@ -77,32 +94,45 @@ export function TimePlanner({ onChange }: Props) {
   const [endMode, setEndMode] = useState<EndMode>('duration');
   const [duration, setDuration] = useState<number | null>(null);
   const [isCustomDuration, setIsCustomDuration] = useState(false);
-  const [customDuration, setCustomDuration] = useState('');
+  const [customHours, setCustomHours] = useState('');
+  const [customMinutes, setCustomMinutes] = useState('');
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<OpenSection>(null);
+
+  const clearPlan = useCallback(() => {
+    onChange(null);
+  }, [onChange]);
 
   useEffect(() => {
     const now = new Date();
     const start = startMode === 'now' ? now : scheduledStart;
     if (!start) {
       setError(null);
-      onChange(null);
+      clearPlan();
       return;
     }
 
     if (startMode === 'scheduled' && start <= now) {
       setError('Choose a start time in the future.');
-      onChange(null);
+      clearPlan();
       return;
     }
 
     let end: Date | null = null;
     if (endMode === 'duration') {
-      const minutes = duration ?? (isCustomDuration ? Number(customDuration) : NaN);
-      if (!Number.isInteger(minutes) || minutes <= 0) {
+      const minutes = duration ?? (isCustomDuration ? getCustomDurationMinutes(customHours, customMinutes) : NaN);
+      if (isCustomDuration && minutes === null) {
+        const enteredMinutes = customMinutes === '' ? 0 : Number(customMinutes);
+        const invalidInput = (customHours !== '' && (!Number.isInteger(Number(customHours)) || Number(customHours) < 0)) ||
+          (customMinutes !== '' && (!Number.isInteger(enteredMinutes) || enteredMinutes < 0 || enteredMinutes > 59));
+        setError(invalidInput ? 'Enter whole hours and minutes from 0 to 59.' : null);
+        clearPlan();
+        return;
+      }
+      if (minutes === null || !Number.isInteger(minutes) || minutes <= 0) {
         setError(null);
-        onChange(null);
+        clearPlan();
         return;
       }
       end = new Date(start.getTime() + minutes * 60 * 1000);
@@ -110,32 +140,33 @@ export function TimePlanner({ onChange }: Props) {
       end = endTime;
       if (!end) {
         setError(null);
-        onChange(null);
+        clearPlan();
         return;
       }
     }
 
     if (end <= start) {
       setError('End time must be after the start time.');
-      onChange(null);
+      clearPlan();
       return;
     }
 
     if (endMode === 'end-time' && end <= now) {
       setError('Choose an end time in the future.');
-      onChange(null);
+      clearPlan();
       return;
     }
 
     const durationMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
     setError(null);
-    onChange({ start, end, durationMinutes });
-  }, [customDuration, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode]);
+    const plan = { start, end, durationMinutes };
+    onChange(plan);
+  }, [clearPlan, customHours, customMinutes, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode]);
 
   const selectedDuration = duration !== null
     ? duration
-    : isCustomDuration
-      ? Number(customDuration) || null
+      : isCustomDuration
+      ? getCustomDurationMinutes(customHours, customMinutes)
       : null;
 
   function resetPlanner() {
@@ -144,7 +175,8 @@ export function TimePlanner({ onChange }: Props) {
     setEndMode('duration');
     setDuration(null);
     setIsCustomDuration(false);
-    setCustomDuration('');
+    setCustomHours('');
+    setCustomMinutes('');
     setEndTime(null);
     setError(null);
     setOpenSection(null);
@@ -247,7 +279,8 @@ export function TimePlanner({ onChange }: Props) {
                   onPress={() => {
                     setDuration(minutes);
                     setIsCustomDuration(false);
-                    setCustomDuration('');
+                    setCustomHours('');
+                    setCustomMinutes('');
                     setOpenSection(null);
                   }}
                 />
@@ -264,15 +297,29 @@ export function TimePlanner({ onChange }: Props) {
             </View>
           )}
           {isCustomDuration && (
-            <TextInput
-              accessibilityLabel="Custom duration in minutes"
-              keyboardType="number-pad"
-              onChangeText={setCustomDuration}
-              placeholder="Custom duration in minutes"
-              placeholderTextColor="#909090"
-              style={styles.input}
-              value={customDuration}
-            />
+            <View style={styles.customDurationInputs}>
+              <TextInput
+                accessibilityLabel="Custom duration hours"
+                keyboardType="number-pad"
+                maxLength={3}
+                onChangeText={setCustomHours}
+                placeholder="Hours"
+                placeholderTextColor="#909090"
+                style={styles.input}
+                value={customHours}
+              />
+              <Text style={styles.durationSeparator}>:</Text>
+              <TextInput
+                accessibilityLabel="Custom duration minutes, 0 to 59"
+                keyboardType="number-pad"
+                maxLength={2}
+                onChangeText={setCustomMinutes}
+                placeholder="Minutes"
+                placeholderTextColor="#909090"
+                style={styles.input}
+                value={customMinutes}
+              />
+            </View>
           )}
         </>
       ) : (
@@ -318,7 +365,9 @@ const styles = StyleSheet.create({
   selectorOptionTextActive: { color: '#151515', fontWeight: '600' },
   checkmark: { color: '#151515', fontSize: 15, marginRight: 2 },
   buttonPressed: { opacity: 0.65 },
-  input: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, color: '#151515', fontSize: 14, marginTop: 10, minHeight: 46, paddingHorizontal: 12 },
+  customDurationInputs: { alignItems: 'center', flexDirection: 'row', gap: 10, marginTop: 10 },
+  input: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, color: '#151515', flex: 1, fontSize: 14, minHeight: 46, paddingHorizontal: 12, textAlign: 'center' },
+  durationSeparator: { color: '#696969', fontSize: 18 },
   error: { color: '#9C3D32', fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
   summary: { color: '#151515', fontSize: 14, lineHeight: 20, marginTop: 14, textAlign: 'center' },
   hint: { color: '#999999', fontSize: 11, lineHeight: 16, marginTop: 18, textAlign: 'center' },
