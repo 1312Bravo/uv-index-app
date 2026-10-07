@@ -14,7 +14,7 @@ export async function getHourlyForecast(
     latitude: String(latitude),
     longitude: String(longitude),
     current: 'uv_index,temperature_2m,cloud_cover',
-    hourly: 'uv_index,temperature_2m,cloud_cover',
+    hourly: 'uv_index,temperature_2m,cloud_cover,precipitation_probability,precipitation',
     timezone: 'auto',
     timeformat: 'unixtime',
     past_days: '1',
@@ -50,6 +50,8 @@ export async function getHourlyForecast(
     const hourlyUv = data.hourly.uv_index[index];
     const hourlyTemperature = data.hourly.temperature_2m[index];
     const hourlyCloudCover = data.hourly.cloud_cover[index];
+    const hourlyPrecipitationProbability = data.hourly.precipitation_probability?.[index];
+    const hourlyPrecipitation = data.hourly.precipitation?.[index];
     const current = data.current;
     const useCurrent = index === currentIndex &&
       isNumber(current?.uv_index) && isNumber(current?.temperature_2m);
@@ -68,6 +70,10 @@ export async function getHourlyForecast(
       uv,
       temperature,
       cloudCover,
+      precipitationProbability: isNumber(hourlyPrecipitationProbability)
+        ? hourlyPrecipitationProbability
+        : null,
+      precipitation: isNumber(hourlyPrecipitation) ? hourlyPrecipitation : null,
       period: index < currentIndex ? 'past' : index === currentIndex ? 'now' : 'future',
     });
   }

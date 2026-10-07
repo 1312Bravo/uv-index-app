@@ -9,7 +9,7 @@ helps people plan outdoor time around the current and forecast UV index.
 
 - An Expo + React Native + TypeScript app is installed, with Android and web
   support. Device location, manual place search, and today's remaining UV trend
-  with temperature are implemented.
+  with temperature, cloud cover, and precipitation context are implemented.
 - The app should support Android and web from the beginning.
 - Open-Meteo is the weather and UV data source for the non-commercial MVP.
 - The initial use case is UV exposure guidance for outdoor activities.
@@ -41,8 +41,12 @@ helps people plan outdoor time around the current and forecast UV index.
   as a UV-risk input or infer clothing from it.
 - Show hourly cloud cover as separate weather context; use the provider's regular
   UV forecast as the UV value and never apply an additional cloud-percentage discount.
+- Show hourly precipitation chance and expected amount as separate weather
+  context below each chart time. Preserve the provider's preceding-hour meaning;
+  do not present combined hourly probabilities as an outing-wide chance.
 - Use the same compact hourly UV bar chart in the outlook and outing result, with
-  cloud-cover percentage and temperature above each bar.
+  cloud-cover percentage and temperature above each bar, and precipitation values
+  below each hour label.
 - Keep a final, always-available Info tab with the UV category mapping and a
   plain-language cloud-cover percentage guide.
 - Present Info topics as vertically stacked disclosures, with none expanded at
@@ -69,8 +73,9 @@ Start with a location-based MVP:
 2. Start time defaults to Now and immediately shows the rolling hourly UV trend.
    The user may choose a future time and must choose a duration for an outing
    assessment. Do not require a shade or other protection-context selection.
-3. The app shows hourly UV and temperature for that period, its highest UV
-   category, and an explanation of what that category means.
+3. The app shows hourly UV, temperature, cloud cover, and precipitation context
+   for that period, its highest UV category, and an explanation of what that
+   category means.
 4. The WHO reference uses the raw peak. A separate UV Scout guidance layer is
    designed from the outing's UV profile and duration, with known behavior/context
    modifiers handled explicitly and unknown conditions phrased conditionally.
@@ -325,6 +330,9 @@ calculation, supported platform versions, and the final visual polish.
 - Added Open-Meteo hourly cloud-cover percentages as separate forecast context,
   and reused the UV bar chart for the selected outing. Cloud cover does not
   numerically alter the returned UV Index or route-shade guidance.
+- Added Open-Meteo hourly precipitation probability and expected precipitation
+  amount to both forecast charts as separate, non-UV context. Values retain their
+  preceding-hour meaning and are not combined into an outing-wide chance.
 - Added a final Info tab backed by the validated UV category definitions and a
   validated, editable cloud-cover description table. Documented scientific
   sources separately from app-chosen cloud-label bands.

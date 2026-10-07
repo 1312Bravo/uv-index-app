@@ -13,8 +13,10 @@ attribution, and limitations.
   before Now, leaving more future bins visible; all five earlier bins remain
   available by scrolling left. The window can cross midnight; show the local date
   at a day change.
-- Each bin shows temperature and UV Index above a UV-height bar, with local hour
-  below it. Earlier hours are model values, not observed personal exposure.
+- Each bin shows cloud cover and temperature above a UV-height bar, with the UV
+  value above the bar. The local hour and day label follow the bar; precipitation
+  chance and expected amount appear in two compact rows below. Earlier hours are
+  model values, not observed personal exposure.
 - Show civil dawn, sunrise, sunset, and civil dusk markers on the same horizontal
   timeline above the bars. Draw an upper daytime arc and a reversed, lower
   nighttime arc in neutral grayscale. Show exactly one moving celestial icon at
@@ -24,6 +26,14 @@ attribution, and limitations.
 - Show the current local weekday, date, and time above the chart so the hourly
   outlook has explicit time context.
 - Temperature is context only, not part of UV risk or protection calculations.
+- Show hourly precipitation probability and expected amount in millimeters below
+  the hourly labels in both outlook and outing charts. These remain weather context
+  and do not change UV values or protection guidance.
+- Open-Meteo's `precipitation_probability` is the chance of more than 0.1 mm in
+  the preceding hour; `precipitation` is the preceding-hour total in millimeters
+  and may include rain, showers, or snow. Display each value under the hour ending
+  at that timestamp, explain the timing briefly, and do not combine hourly
+  probabilities into a chance for the entire outing.
 - Attribute Open-Meteo in the app and revisit licensing before commercial use.
 - Forecast values are estimates, not a measurement of a person's UV exposure.
 - For category lookup, round the raw UV Index to the nearest whole number:

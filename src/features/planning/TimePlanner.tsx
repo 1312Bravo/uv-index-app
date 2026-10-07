@@ -153,7 +153,7 @@ export function TimePlanner({ onChange }: Props) {
   return (
     <View style={styles.section}>
       <View style={styles.headingRow}>
-        <Text style={styles.heading}>When are you going outside?</Text>
+        <Text style={styles.heading}>Plan an outing</Text>
         <Pressable
           accessibilityLabel="Reset outing choices"
           accessibilityRole="button"

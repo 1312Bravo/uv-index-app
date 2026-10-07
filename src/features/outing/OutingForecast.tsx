@@ -109,7 +109,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
             </View>
           )}
 
-          <Text style={styles.subheading}>UV, clouds and temperature by hour</Text>
+          <Text style={styles.subheading}>UV &amp; weather by hour</Text>
           <HourlyUvBarChart
             hours={forecast.hours}
             timezone={forecast.timezone}

@@ -38,7 +38,7 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
 
   return (
     <View style={styles.section}>
-      <Text style={styles.heading}>UV Index by hour</Text>
+      <Text style={styles.heading}>UV &amp; weather by hour</Text>
       {loading && <ActivityIndicator color="#151515" style={styles.loading} />}
       {error && <Text style={styles.message}>{error}</Text>}
       {forecast && (
@@ -63,6 +63,6 @@ const styles = StyleSheet.create({
   heading: { color: '#151515', fontSize: 18, fontWeight: '600', textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
-  currentTime: { color: '#444444', fontSize: 13, fontWeight: '500', marginTop: 8, textAlign: 'center' },
+  currentTime: { color: '#444444', fontSize: 13, fontWeight: '500', marginTop: 14, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 10, textAlign: 'center' },
 });

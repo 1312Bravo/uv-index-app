@@ -5,6 +5,8 @@ export type ForecastHour = {
   uv: number;
   temperature: number;
   cloudCover: number | null;
+  precipitationProbability: number | null;
+  precipitation: number | null;
   period: 'past' | 'now' | 'future';
 };
 
