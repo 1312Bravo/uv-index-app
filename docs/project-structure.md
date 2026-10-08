@@ -25,7 +25,10 @@ src/
     location/                 Place search and reverse geocoding
   features/                   UI components, formatting, React hooks
     forecast/                 Hourly chart and forecast loading hook
-    location/                 Location selection and display formatting
+    location/                 Location search, map selection, and formatting
+      LocationMap.native.tsx  Expo Go native map
+      LocationMap.web.tsx     Leaflet/OpenStreetMap browser map
+      LocationPicker.tsx      Search, device location, and shared selection state
     planning/                 Time inputs and platform date/time picker
     outing/                   Outing forecast result
     info/                     UV and cloud-cover explanation screen

@@ -13,6 +13,7 @@ import type { Place, SelectedLocation } from '../../domain/location/locationType
 import { reverseGeocodePlace } from '../../services/location/reverseGeocode';
 import { searchPlaces } from '../../services/location/searchPlaces';
 import { formatLocationCoordinates, formatPlaceName, getLocationName } from './formatLocation';
+import { LocationMap } from './LocationMap';
 
 type Props = {
   onSelect: (location: SelectedLocation | null) => void;
@@ -113,6 +114,7 @@ export function LocationPicker({ onSelect }: Props) {
   }
 
   function selectPlace(place: Place) {
+    locationRequest.current += 1;
     const location: SelectedLocation = { source: 'place', place };
     setSelected(location);
     onSelect(location);
@@ -122,9 +124,37 @@ export function LocationPicker({ onSelect }: Props) {
     setError(null);
   }
 
+  async function selectMapCoordinates(latitude: number, longitude: number) {
+    const requestId = ++locationRequest.current;
+    const location: SelectedLocation = { source: 'map', latitude, longitude };
+    setSelected(location);
+    onSelect(location);
+    setQuery('');
+    setResults([]);
+    setHasSearched(false);
+    setError(null);
+
+    try {
+      const placeName = await reverseGeocodePlace(latitude, longitude);
+      if (requestId === locationRequest.current && placeName) {
+        const resolvedLocation: SelectedLocation = { ...location, placeName };
+        setSelected(resolvedLocation);
+        onSelect(resolvedLocation);
+      }
+    } catch {
+      // Coordinates remain usable if the optional place label lookup fails.
+    }
+  }
+
   return (
     <View>
       <Text style={styles.heading}>Location</Text>
+
+      <Text style={styles.mapHint}>Tap the map to choose a location</Text>
+      <LocationMap
+        onSelectCoordinates={selectMapCoordinates}
+        selectedLocation={selected}
+      />
 
       <TextInput
         accessibilityLabel="Search for a place"
@@ -204,6 +234,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
+    textAlign: 'center',
+  },
+  mapHint: {
+    color: '#777777',
+    fontSize: 13,
+    marginBottom: 8,
     textAlign: 'center',
   },
   input: {

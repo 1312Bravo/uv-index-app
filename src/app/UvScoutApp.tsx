@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { SelectedLocation } from '../domain/location/locationTypes';
+import { getLocationCoordinates } from '../domain/location/getLocationCoordinates';
 import type { TimePlan } from '../domain/outing/timePlan';
 import { HourlyUvChart } from '../features/forecast/HourlyUvChart';
 import { InfoScreen } from '../features/info/InfoScreen';
@@ -16,8 +17,9 @@ export function UvScoutApp() {
   const [location, setLocation] = useState<SelectedLocation | null>(null);
   const [timePlan, setTimePlan] = useState<TimePlan | null>(null);
   const [page, setPage] = useState<AppPage>('location');
-  const latitude = location?.source === 'device' ? location.latitude : location?.place.latitude;
-  const longitude = location?.source === 'device' ? location.longitude : location?.place.longitude;
+  const coordinates = location ? getLocationCoordinates(location) : null;
+  const latitude = coordinates?.latitude;
+  const longitude = coordinates?.longitude;
 
   return (
     <View style={styles.screen}>

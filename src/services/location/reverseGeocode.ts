@@ -11,7 +11,7 @@ function isReverseGeocodeResponse(value: unknown): value is ReverseGeocodeRespon
 
 export async function reverseGeocodePlace(latitude: number, longitude: number, signal?: AbortSignal): Promise<string | null> {
   const params = new URLSearchParams({
-    lat: String(latitude),
+    latitude: String(latitude),
     localityLanguage: 'en',
     longitude: String(longitude),
   });

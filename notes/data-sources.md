@@ -23,7 +23,19 @@ re-verified that day.
 | [BigDataCloud client-side reverse-geocoding API](https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api) | Best-effort locality/city label derived from the current device coordinates the user chose to share. It labels a place; it does not provide the device coordinates. | `src/services/location/reverseGeocode.ts`, called by the device-location flow in `src/features/location/LocationPicker.tsx`. If lookup fails, the app can keep the generic location label and coordinates. | Provider endpoint and [fair-use policy](https://www.bigdatacloud.com/docs/article/fair-use-policy-for-free-client-side-reverse-geocoding-api) checked 2026-10-05. The policy requires current, permission-based device coordinates and a direct client-side call. BigDataCloud says it receives coordinates alongside request/network signals and uses anonymous pairings to improve IP-geolocation data; account for that in future privacy explanations. The app does not save a location history. Current provider docs name the parameter `latitude`; the implementation currently sends `lat`, so verify endpoint compatibility and align it before relying on this label. See [location notes](location.md). |
 | Device operating-system location services via Expo Location | Coordinates from the device only after the user taps the location control and grants foreground permission. | Device-location flow in `src/features/location/LocationPicker.tsx`; `expo-location` requests coordinates, which are passed to the forecast service. | Accuracy and underlying positioning methods depend on the device and OS. Coordinates are not persisted by the first-version app. |
 
+## Interactive map providers
+
+| Source | Data used and how it is used | Where it enters the app | Attribution, licensing, and limits |
+| --- | --- | --- | --- |
+| [OpenStreetMap standard raster map tiles](https://operations.osmfoundation.org/policies/tiles/) and [Leaflet](https://leafletjs.com/) | Interactive web map; visible tiles provide geographic context and a user tap selects that latitude/longitude for the forecast. | `src/features/location/LocationMap.web.tsx` requests visible tiles from `https://tile.openstreetmap.org/{z}/{x}/{y}.png` and displays OpenStreetMap contributor attribution. | Tile policy checked 2026-10-08. OSM data is open, but public standard tile servers are capacity-limited and best-effort, not a guaranteed production tile service. The browser loads only visible tiles and keeps attribution visible; do not bulk-prefetch or add offline downloads. Select a suitable hosted tile provider before commercial/high-volume release. Tile requests disclose the viewed map area to OSM; selected coordinates are separately sent to the forecast service and, for an optional locality label, BigDataCloud. |
+| Apple Maps / Google Maps through [`react-native-maps`](https://docs.expo.dev/versions/v57.0.0/sdk/map-view/) | Native Android/iOS basemap and gestures in Expo Go; tapping selects coordinates and choosing a search/device location recenters the map. | `src/features/location/LocationMap.native.tsx`; SDK-57-compatible `react-native-maps` 1.27.2. | Expo SDK 57 docs checked 2026-10-08: included in Expo Go. A store-distributed Android build using Google Maps needs additional API-key configuration. Native provider attribution is supplied by its SDK. Review SDK privacy and production configuration before release. |
+
 ## Scientific and public-health evidence
+
+Correction checked 2026-10-08: the BigDataCloud integration now sends the
+documented `latitude` and `longitude` parameters and runs after either explicit
+device-location or map-point selection. The older parameter and device-only
+usage notes in the runtime-provider table above are superseded by this correction.
 
 | Source | Evidence used | Where and how it informs the app | Product choices and caveats |
 | --- | --- | --- | --- |

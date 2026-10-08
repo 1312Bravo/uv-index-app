@@ -1,4 +1,5 @@
 import type { Place, SelectedLocation } from '../../domain/location/locationTypes';
+import { getLocationCoordinates } from '../../domain/location/getLocationCoordinates';
 
 export function formatPlaceName(place: Place): string {
   const parts = [place.name];
@@ -9,11 +10,11 @@ export function formatPlaceName(place: Place): string {
 
 export function getLocationName(location: SelectedLocation): string {
   if (location.source === 'device') return location.placeName ?? 'Current location';
+  if (location.source === 'map') return location.placeName ?? 'Selected map location';
   return formatPlaceName(location.place);
 }
 
 export function formatLocationCoordinates(location: SelectedLocation): string {
-  const latitude = location.source === 'device' ? location.latitude : location.place.latitude;
-  const longitude = location.source === 'device' ? location.longitude : location.place.longitude;
+  const { latitude, longitude } = getLocationCoordinates(location);
   return `${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°`;
 }

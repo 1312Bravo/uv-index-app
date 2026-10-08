@@ -9,4 +9,10 @@ export type Place = {
 
 export type SelectedLocation =
   | { source: 'device'; latitude: number; longitude: number; placeName?: string }
+  | { source: 'map'; latitude: number; longitude: number; placeName?: string }
   | { source: 'place'; place: Place };
+
+export type LocationCoordinates = {
+  latitude: number;
+  longitude: number;
+};

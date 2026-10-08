@@ -14,7 +14,8 @@ helps people plan outdoor time around the current and forecast UV index.
 - Open-Meteo is the weather and UV data source for the non-commercial MVP.
 - The initial use case is UV exposure guidance for outdoor activities.
 - The first version is for general outdoor users, in English.
-- Location should support device location and user-selected places on Android and web.
+- Location should support device location, place search, and map selection on
+  Android and web.
 - The first version has no accounts or history.
 - The central flow asks for a place, start time, and duration or end time. The
   planner does not ask the user to classify shade; guidance recommends general
@@ -138,6 +139,9 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add initial run and preview instructions.
 - [x] Add on-demand device location selection with permission and error states.
 - [x] Add manual place search for Android and web.
+- [x] Add tappable map selection on Android and web, with an unselected
+  Europe-centered default, recentering for search/device selection, and
+  best-effort place labels for tapped coordinates.
 - [x] Connect selected location to the rolling UV and temperature chart.
 - [x] Add Now/scheduled start, duration presets including 3 hours, custom duration,
   and explicit end-time mode.
@@ -188,8 +192,13 @@ calculation, supported platform versions, and the final visual polish.
 - Use Open-Meteo as the initial UV and temperature source. This is an ease-of-
   implementation choice, not a claim of superior forecast accuracy.
 - Serve general outdoor users first; do not require a runner/hiker/cyclist profile.
-- Offer device location and manual place selection.
-- Offer both location methods on Android and web.
+- Offer device location, manual place search, and map-point selection.
+- Offer place search, map selection, and device location on Android and web.
+- Add map selection alongside search and device location. Initially center on
+  Central Europe at a continent-wide zoom without selecting a default forecast
+  location; map taps select exact coordinates, while search/device choices
+  recenter and zoom to their selected coordinates. Keep native and web map
+  implementations separate behind the same selection contract.
 - Use Open-Meteo geocoding and forecasts for keyless non-commercial prototyping,
   with GeoNames/Open-Meteo attribution. Revisit licensing before commercial release.
 - Use a keyless BigDataCloud client-side reverse-geocoding lookup for a best-effort
@@ -269,6 +278,12 @@ calculation, supported platform versions, and the final visual polish.
 - What licensing and service capacity will a commercial release need?
 
 ## Progress
+
+- Added an interactive location map for Android and web. The unselected map
+  opens over Europe; taps select coordinates, and search/device selections
+  recenter it. Native uses `react-native-maps`; web uses Leaflet with attributed
+  OpenStreetMap tiles. Recorded provider policy, attribution, and limitations in
+  `notes/data-sources.md`.
 
 - Added a reusable UV evidence and guidance review prompt with sourcing,
   uncertainty, and product-choice requirements.
