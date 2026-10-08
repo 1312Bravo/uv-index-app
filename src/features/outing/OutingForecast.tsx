@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { getOutingRecommendation } from '../../domain/guidance/getProtectionGuidance';
+import { getUvScoutInsight } from '../../domain/guidance/getUvScoutInsight';
 import { HourlyUvBarChart } from '../forecast/HourlyUvBarChart';
 import { useHourlyForecast } from '../forecast/useHourlyForecast';
 import {
@@ -88,7 +88,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
   );
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
-  const recommendation = summary ? getOutingRecommendation(summary) : null;
+  const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;
 
   return (
     <View style={styles.section}>
@@ -148,45 +148,33 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
             </View>
           </View>
 
-          {recommendation && (
+          {guidance && (
             <View style={styles.guidance}>
               <Text style={styles.guidanceTitle}>UV guidance for outing</Text>
-              <View style={styles.whoGuidance}>
-                <Text style={styles.guidanceGroupHeading}>WHO guidance</Text>
-                <Text style={[styles.guidanceNote, styles.guidanceBodyParagraph]}>
-                  {recommendation.whoGuidanceNote}
-                </Text>
-                <View style={styles.actionList}>
-                  {recommendation.actions.map((action) => (
-                    <Text key={action} style={[styles.guidanceBody, styles.guidanceAction]}>
-                      {action}
-                    </Text>
-                  ))}
-                </View>
-              </View>
-
-              <View style={styles.guidanceDivider} />
               <View style={styles.scoutInsight}>
                 <Text style={styles.guidanceGroupHeading}>UV Scout insight</Text>
                 <Text style={[styles.guidanceNote, styles.guidanceBodyParagraph]}>
-                  {recommendation.uvScoutInsightNote}
+                  {guidance.note}
                 </Text>
-                {recommendation.coverageMessage && (
+                {guidance.coverageMessage && (
                   <Text style={[styles.guidanceBody, styles.guidanceBodyParagraph]}>
-                    {recommendation.coverageMessage}
+                    {guidance.coverageMessage}
                   </Text>
                 )}
                 <Text style={[styles.guidanceBody, styles.guidanceBodyParagraph]}>
-                  {recommendation.insightHeadline}. {recommendation.insightExplanation}
+                  {guidance.headline} {guidance.explanation}
                 </Text>
                 <View style={styles.insightList}>
-                  {recommendation.exposureObservations.map((observation) => (
-                    <Text key={observation} style={styles.guidanceBody}>{observation}</Text>
+                  {guidance.profileDetails.map((detail) => (
+                    <Text key={detail} style={styles.guidanceBody}>{detail}</Text>
+                  ))}
+                  {guidance.practicalGuidance.map((action) => (
+                    <Text key={action} style={styles.guidanceBody}>{action}</Text>
                   ))}
                 </View>
-                {recommendation.reapplicationReminder && (
+                {guidance.reapplicationReminder && (
                   <Text style={[styles.guidanceBody, styles.guidanceBodyParagraph]}>
-                    {recommendation.reapplicationReminder}
+                    {guidance.reapplicationReminder}
                   </Text>
                 )}
               </View>
@@ -228,15 +216,11 @@ const styles = StyleSheet.create({
   summarySecondary: { color: '#696969', fontSize: 13, marginTop: 4, textAlign: 'center' },
   guidance: { marginTop: 12 },
   guidanceTitle: { color: '#151515', fontSize: 17, fontWeight: '600', textAlign: 'center' },
-  whoGuidance: { paddingTop: 14 },
-  guidanceDivider: { backgroundColor: '#E5E5E5', height: 1, marginTop: 14 },
   scoutInsight: { paddingTop: 14 },
   guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19 },
   guidanceBody: { color: '#555555', fontSize: 13, lineHeight: 19 },
   guidanceNote: { color: '#929292', fontSize: 11, lineHeight: 16 },
   guidanceBodyParagraph: { marginTop: 6 },
-  actionList: { marginTop: 6 },
-  guidanceAction: { marginTop: 5 },
   insightList: { marginTop: 6 },
   subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "modelNote": "Descriptive guidance from a location-based hourly forecast. This is not a personal exposure, dose, burn-time, or health-risk estimate.",
+  "uvBands": [
+    { "key": "below-3", "minimumUvInclusive": 0, "maximumUvExclusive": 3, "label": "the UV Index stays below 3" },
+    { "key": "3-to-8", "minimumUvInclusive": 3, "maximumUvExclusive": 8, "label": "the UV Index is from 3 to below 8" },
+    { "key": "8-plus", "minimumUvInclusive": 8, "maximumUvExclusive": null, "label": "the UV Index is 8 or higher" }
+  ],
+  "profileSignals": {
+    "includePeakAndTime": true,
+    "includeDurationWeightedAverage": true,
+    "includeTimeInEachNonzeroBand": true,
+    "includeLongestContinuousAtOrAboveUv": [3, 8],
+    "forecastHourlyPointRepresentsSeconds": 3600,
+    "missingCoverageBreaksContinuity": true
+  },
+  "guidanceTriggers": {
+    "elevatedBandKey": "3-to-8",
+    "extraAttentionBandKey": "8-plus",
+    "coverageToleranceSeconds": 1
+  },
+  "sunscreenReminder": {
+    "minimumPlannedOutingMinutes": 120,
+    "minimumCoveredUvInclusive": 3,
+    "messageKey": "reapplication"
+  },
+  "conditionalContextRules": [
+    {
+      "key": "reflective-surroundings",
+      "whenAnyCoveredUvAtOrAbove": 3,
+      "messageKey": "reflectiveConditions"
+    },
+    {
+      "key": "sunscreen-washed-or-rubbed-off",
+      "whenAnyCoveredUvAtOrAbove": 3,
+      "messageKey": "sunscreenAfterConditions"
+    }
+  ],
+  "forecastCoverage": {
+    "neverFillMissingWithZero": true,
+    "labelProfileAsCoveredForecast": true,
+    "messageKey": "coverageIncomplete"
+  },
+  "factorPolicy": [
+    {
+      "key": "hourly-uv-forecast",
+      "role": "primary-profile-input",
+      "handling": "Use provider raw hourly UV values as the forecast signal; do not apply an additional cloud or shade multiplier."
+    },
+    {
+      "key": "outing-start-end",
+      "role": "profile-window",
+      "handling": "Use actual overlap with each hourly forecast bin, including partial first and last hours."
+    },
+    {
+      "key": "forecast-coverage",
+      "role": "confidence-limitation",
+      "handling": "Calculate profile durations only over covered intervals, break continuity across gaps, and disclose missing periods."
+    },
+    {
+      "key": "temperature-cloud-cover-precipitation",
+      "role": "display-context-only",
+      "handling": "May help describe the outing weather, but never changes UV bands, UV durations, or protection triggers."
+    },
+    {
+      "key": "daylight",
+      "role": "timing-context-only",
+      "handling": "May explain whether an outing overlaps daylight or twilight; darkness is not a health-risk adjustment."
+    },
+    {
+      "key": "route-shade",
+      "role": "not-known-by-default",
+      "handling": "Give general shade advice, but do not infer route shade or apply a numeric shade reduction."
+    },
+    {
+      "key": "clothing-and-eyewear",
+      "role": "not-known-by-default",
+      "handling": "Offer complementary general protection actions; do not infer what the person wears or calculate covered-skin protection."
+    },
+    {
+      "key": "reflective-surfaces",
+      "role": "not-known-by-default",
+      "handling": "When covered UVI reaches 3, mention conditionally that snow, bright sand, or water can add reflected UV; do not infer the surface or apply a numeric multiplier."
+    },
+    {
+      "key": "sunscreen-product-and-use",
+      "role": "not-known-by-default",
+      "handling": "Make sunscreen reminders conditional; do not assume use, application time, amount, or product label."
+    },
+    {
+      "key": "sweat-swimming-toweling",
+      "role": "not-known-by-default",
+      "handling": "When covered UVI reaches 3, remind sunscreen users conditionally to follow product directions after swimming, sweating, or drying off; do not infer the activity or calculate a timer."
+    },
+    {
+      "key": "personal-sensitivity-and-medication",
+      "role": "not-known-by-default",
+      "handling": "Do not collect, infer, or quantify personal vulnerability, skin sensitivity, or medicine-related photosensitivity; this is not an individualized medical model."
+    }
+  ],
+  "evidenceAndProductBoundary": {
+    "sourceBackedConcepts": [
+      "WHO says higher UV Index means greater potential for skin and eye harm and less time before harm can occur.",
+      "WHO recommends sun protection from UV Index 3 and describes clothing, shade, eye protection, and sunscreen for uncovered skin.",
+      "WHO describes sunscreen reapplication every two hours, particularly after sweating, swimming, playing, or outdoor exercise.",
+      "WHO notes that clouds do not always block UV and that snow, sand, and water can reflect UV."
+    ],
+    "uvScoutProductChoices": [
+      "Use raw UVI bands below 3, 3 to below 8, and 8 or higher to describe the forecast profile.",
+      "Use the 120-minute reminder trigger only as a conditional planning reminder, not a personal reapplication timer.",
+      "Keep WHO's general action table in Info; compose separate UV Scout outing guidance from the complete covered profile."
+    ],
+    "notValidatedOrCalculated": [
+      "personal UV dose or accumulated dose",
+      "individual burn time or safe exposure duration",
+      "medical or individualized health-risk score",
+      "numeric effect of clouds, shade, clothing, or reflective surfaces on a person's exposure"
+    ]
+  }
+}

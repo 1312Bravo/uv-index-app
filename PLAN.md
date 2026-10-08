@@ -26,13 +26,12 @@ helps people plan outdoor time around the current and forecast UV index.
   the current hour, and eighteen later hourly bins, even before duration is chosen.
   The window may cross into the next local day.
 - The result combines a standard UV category, a forecast over the selected time,
-  and practical guidance. The WHO reference remains based on the outing's raw
-  peak; an initial UV Scout profile reports time in UV bands and incomplete
-  forecast coverage. Present these together under `UV guidance for outing`:
-  group WHO's threshold and action list under a `WHO guidance` heading, then
-  separate UV Scout's outing-specific interpretation, coverage caveat, and
-  time-in-UV estimates under a `UV Scout insight` heading. Use consistent body
-  typography within both groups and keep the source and limits clear.
+  and practical guidance. Show WHO's general 0–2, 3–7, and 8+ reference table
+  in Info. Keep `UV guidance for outing` as UV Scout's own full-profile
+  interpretation: time in each raw-UV band, peak/time, average, continuity,
+  forecast coverage, and practical context. It is an approximate forecast
+  profile, not personal dose or medical-risk calculation. Do not present the
+  WHO table as an outing-specific algorithm.
   Default planning requires no extra protection-context choices; unknown
   conditions stay conditional.
 - Introduce what the UV Index measures in a short explanation near the start
@@ -83,9 +82,12 @@ Start with a location-based MVP:
 3. The app shows hourly UV, temperature, cloud cover, and precipitation context
    for that period, its highest UV category, and an explanation of what that
    category means.
-4. The WHO reference uses the raw peak. A separate UV Scout guidance layer is
-   designed from the outing's UV profile and duration, with known behavior/context
-   modifiers handled explicitly and unknown conditions phrased conditionally.
+4. WHO's general reference is available in Info. Outing guidance is a separate
+  UV Scout interpretation of the whole covered UV profile: band durations,
+  peak/time, average, continuity, and coverage. Weather variables, daylight,
+  route shade, clothing, and personal conditions are not UV multipliers; only
+   known factors can tailor wording, while unknown reflective/sunscreen-after-
+   conditions may appear only as brief conditional context.
 5. The app compares future earlier/later starts for the same duration and
    explains why the selected UV pattern matters without presenting a personal
    dose or “safe time” calculation.
@@ -95,20 +97,18 @@ Start with a location-based MVP:
 Keep the first architecture simple and stateless. Add accounts and history only
 after the core flow has been tested.
 
-## Deferred recommendation-model decisions
+## Remaining recommendation-model decisions
 
-- Which full-profile metrics matter: peak/time, duration-weighted average,
-  time/proportion in UV bands, longest continuous elevated interval, separate
-  elevated periods, and whether an explicitly labelled UVI-hours ambient proxy
-  is useful or too easy to misread.
-- How sustained exposure changes the UV Scout explanation without replacing or
-  downgrading the separate WHO peak category.
+- Whether the first profile view should include all current details or be
+  simplified after testing with real outing examples.
+- Whether to add separate episode counts or an explicitly labelled UVI-hours
+  ambient proxy; neither is currently shown.
 - Whether a future optional tailoring section collects sunscreen application
   time, swimming/heavy sweating, clothing coverage, or reflective surroundings.
 - Whether to add optional questions for application time, swimming/heavy sweating,
   clothing coverage, or reflective surroundings.
-- How to prioritize/deduplicate multiple relevant messages while keeping the
-  result readable and not implying personal dose or safe exposure time.
+- How to prioritize/deduplicate relevant messages while keeping the result
+  readable and not implying personal dose or safe exposure time.
 - How far ahead planning should work.
 - Whether clothing/skin coverage is an optional detail in version one.
 - Revisit Open-Meteo's commercial licence and capacity before a commercial release.
@@ -159,6 +159,9 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add the initial outing recommendation profile: duration by UV band,
   continuous elevated intervals, forecast-coverage caveat, and conditional
   sunscreen reminder at 120+ minutes when covered peak UV is 3+.
+- [x] Review and broaden UV Scout's recommendation evidence/scenarios; separate
+  active editable policy (`uvScoutRecommendationRules.json`) from user-facing
+  wording and validate the active policy in the domain interpreter.
 - [x] Add hourly cloud cover as separate context and use a shared hourly bar chart
   for the outlook and selected outing.
 - [x] Add an always-available final Info tab explaining UV categories, decimal
@@ -292,18 +295,29 @@ calculation, supported platform versions, and the final visual polish.
 - Removed the shade selector from the planner. Use general shade advice without
   adjusting forecast UV or claiming route-specific shade; defer optional
   “Tailor this advice” inputs.
-- Present outing advice in one `UV guidance for outing` section, with clearly
-  separated `WHO guidance` and `UV Scout insight` groups. Keep all advice and
-  forecast statements in consistent body typography within both groups, and
-  identify the Scout portion as an approximate forecast summary, not a
-  personal-risk estimate.
+- Moved the WHO reference out of the outing result and into the UV section of
+  Info as a static three-band table. The outing presents UV Scout's profile-first
+  interpretation using time in bands, peak/time, average, continuity, coverage,
+  and conditional practical actions. It is approximate, not a personal-risk
+  estimate; the peak no longer selects its overall headline.
+- Keep WHO guidance and UV Scout insight as separate domain systems: separate
+  editable JSON, validation, and interpreters. WHO's interpreter returns the
+  static Info table; UV Scout's interpreter summarizes the outing.
+- Added a compact set of manually traced outing profiles covering low UV,
+  sustained moderate UV, a brief high peak, split elevated periods, partial
+  coverage, weather-context independence, and the two-hour reminder boundary.
+  These are review scenarios, not automated tests or medical thresholds.
 - Researched public-health protection guidance and documented source-backed
   groupings, shade limitations, and draft app rules in
   `notes/protection-guidance-research.md`.
-- Added editable protection guidance under `src/domain/guidance/`; the chosen
-  rule uses the raw outing peak: protection begins at UV 3 and extra protection
-  at 8, following WHO. Display categories still round separately, so 2.5 can
-  display as Moderate while remaining below the protection threshold.
+- Earlier implementation used the outing peak to select protection tiers and
+  composed WHO and Scout outputs together. Superseded on 8 October 2026: WHO is
+  a static Info reference, while UV Scout's outing result uses the whole profile.
+- Kept editable WHO and Scout definitions in separate JSON files with dedicated
+  TypeScript interpreters; the current features consume them independently.
+- Reviewed WHO's published UVI action table and expanded the WHO guidance to
+  cover low UV, midday shade, the stronger 8+ midday advice, broad-spectrum SPF
+  30+, and general reapplication wording. Retained WHO's three action bands.
 
 - Moved UV category definitions into editable JSON with a separate validated
   TypeScript lookup; adopted this pattern for future domain rule tables.

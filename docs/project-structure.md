@@ -11,8 +11,11 @@ src/
     daylight/                  Civil dawn, sunrise, sunset, and civil dusk calculations
     location/locationTypes.ts
     outing/                   Time plan and forecast overlap/coverage calculations
-    guidance/protectionGuidance.json Editable UV bands, guidance and rule text
-    guidance/getProtectionGuidance.ts Validates and interprets recommendation rules
+    guidance/whoGuidance.json WHO thresholds and general protection actions
+    guidance/getWhoGuidance.ts Validates and interprets the WHO reference
+    guidance/uvScoutInsight.json Editable UV Scout wording
+    guidance/uvScoutRecommendationRules.json Active profile/factor policy
+    guidance/getUvScoutInsight.ts Validates and interprets both guidance files
     uv/uvCategories.json      Editable UV categories and explanations
     uv/getUvCategory.ts       Validates and interprets the category table
     weather/cloudCoverBands.json Editable cloud-cover descriptions
@@ -71,23 +74,21 @@ JSON holds the definitions, TypeScript validates and interprets them, and UI
 components render the returned result. Calculations stay in TypeScript. JSON is
 bundled into the app; edits need a development reload or a new published build.
 
-For protection recommendations, edit `src/domain/guidance/protectionGuidance.json`:
-
-- `uvBands` classifies raw UV values using inclusive minimums and exclusive
-  maximums. The last band uses `null` for no upper bound. Keep its stable keys.
-- `levels` maps raw peak UV to the WHO-reference action tier; each tier has an
-  inclusive minimum and editable headline, explanation, and action list.
-- `messages` contains editable observation/caveat text. Keep the placeholders
-  such as `{duration}` and `{bandLabel}` that the TypeScript interpreter fills.
-- `reapplicationRule.minimumOutingMinutes` is in minutes; its UV threshold is a
-  raw UVI value. The current product rule is 120 minutes and UVI 3.
-
-TypeScript checks that UV bands are consecutive and their boundaries match the
-action tiers. Forecast calculations (time-weighted values, time in bands,
-continuous periods, and missing coverage) stay in
-`src/domain/outing/calculateOutingForecast.ts`. Rule rationale and source
-provenance belong in `notes/recommendation-tree-draft.md` and
-`notes/data-sources.md`.
+WHO reference actions and UV Scout's outing interpretation are separate domain
+systems. Edit `src/domain/guidance/whoGuidance.json` for WHO's general note,
+intensity/duration context, raw-UV action thresholds, labels, and action
+wording. The validated interpreter returns the static table for the Info tab;
+it does not select a WHO tier for an outing. Edit
+`src/domain/guidance/uvScoutInsight.json` for Scout's human-readable wording and
+`src/domain/guidance/uvScoutRecommendationRules.json` for active UV bands,
+profile signals, factor roles, coverage behavior, conditional context-message
+triggers, and the reapplication trigger. Raw UVI thresholds and reminder
+duration (minutes) are explicit. Keep stable keys and message placeholders unchanged unless the
+interpreter is updated. `getUvScoutInsight.ts` validates and consumes both
+files. The Info feature renders the WHO table; the outing feature uses UV
+Scout's profile interpreter. Forecast overlap and coverage calculations stay
+in `src/domain/outing/calculateOutingForecast.ts`. Rule rationale and source
+provenance belong in the guidance research notes and `notes/data-sources.md`.
 
 | Change | Home |
 | --- | --- |
@@ -115,14 +116,16 @@ sun on the same scrollable time scale as its hourly bins. The calculation is
 independent of UI and API services; see `notes/daylight-research.md` for event
 definitions, method, and limitations.
 
-Protection recommendations follow this pattern: editable UV bands, messages,
-and rule thresholds live in `src/domain/guidance/protectionGuidance.json`;
-TypeScript validates the JSON and interprets it alongside the raw outing peak,
-time-in-band profile, and forecast coverage. Display-category rounding remains
-separate from WHO-aligned action thresholds; for example, displayed Moderate
-2.5 remains below the protection trigger of raw UVI 3. The outing feature renders
-the structured result. Sources and rationale are in `notes/recommendation-tree-draft.md`,
-`notes/recommendation-model-research.md`, and `notes/protection-guidance-research.md`.
+WHO actions live in `whoGuidance.json` and are interpreted by
+`getWhoGuidance.ts` for the static Info table. UV Scout's outing wording and
+active policy live separately in `uvScoutInsight.json` and
+`uvScoutRecommendationRules.json`, interpreted by `getUvScoutInsight.ts` for
+the outing view. Display-category rounding remains separate
+from WHO-aligned raw-UV action thresholds; for example, displayed Moderate 2.5
+remains below the WHO protection trigger of raw UVI 3. Sources and rationale
+are in `notes/recommendation-tree-draft.md`,
+`notes/recommendation-model-research.md`, and
+`notes/protection-guidance-research.md`.
 
 This structure pass preserves existing behavior, including the rolling forecast
 window and device-local planner inputs. Changes to forecast coverage, time-zone

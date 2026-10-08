@@ -4,10 +4,10 @@ See the [source register](data-sources.md) for source-to-code mappings.
 For the wider list of recommendation inputs, their effects, and future rule
 design, see [recommendation-model research](recommendation-model-research.md).
 
-This note documents the WHO-aligned reference baseline. UV Scout's outing
-profile now adds forecast-duration and completeness context while keeping the
-WHO peak reference separate; it is not a personal dose or validated health-risk
-model.
+This note documents the WHO-aligned reference baseline. The WHO table is shown
+in Info as general guidance; UV Scout's outing section separately interprets
+the full forecast profile using duration, peak/time, continuity, and coverage.
+Neither is a personal dose or validated health-risk model.
 
 **Status:** First general guidance rules are implemented. The cited sources and
 rationale below remain the record for review and future edits.
@@ -23,9 +23,8 @@ UV remains visible throughout the outing.
 
 | Source | Relevant evidence | How it informs UV Scout |
 | --- | --- | --- |
-| [WHO, Radiation: The ultraviolet (UV) index](https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index), 20 June 2022 | Groups 0–2 as Low, 3–7 as a shared protection band, and 8+ as extra protection. Recommends protection from UVI 3; lists shade, clothing, hat, sunglasses, and sunscreen. | Supports grouping our five named categories into three action levels instead of inventing a different action for every category. |
-| [WHO, Ultraviolet radiation](https://www.who.int/news-room/fact-sheets/detail/ultraviolet-radiation), 21 June 2022 | Recommends limiting midday sun, seeking shade, protective clothing, broad-brimmed hat, wraparound sunglasses with 99–100% UVA/UVB protection, and broad-spectrum sunscreen where clothing does not cover skin. Says shade and clothing are preferred to relying on sunscreen, which should not extend sun time. | Supports concise practical actions and explains why multiple measures matter. |
-| [WHO, Radiation: Protecting against skin cancer](https://www.who.int/news-room/questions-and-answers/item/radiation-protecting-against-skin-cancer), page date not shown | Advises extra care at UVI 3+. Trees, umbrellas, and canopies are not complete UV protection because scattered and reflected UV remains. Recommends clothing, a brimmed hat, UV-A/UV-B protective sunglasses, and broad-spectrum SPF 30+. | Supports shade-aware wording. SPF advice varies across WHO materials, so avoid selecting a number as universal app advice without deciding a geographic policy. |
+| [WHO, Radiation: The ultraviolet (UV) index](https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index), 20 June 2022 | Gives three action bands: 0–2, 3–7, and 8+. Says people can enjoy being outdoors at 0–2; recommends shade during midday, shirt, sunscreen, and hat at 3–7; advises avoiding outdoor exposure during midday and using protection at 8+. It says extra measures are normally unnecessary below UVI 2. | Supports the app's three WHO action bands and the clearer low-UV and 8+ wording. |
+| [WHO, Radiation: Protecting against skin cancer](https://www.who.int/news-room/questions-and-answers/item/radiation-protecting-against-skin-cancer), 16 July 2024 | Advises special care at UVI 3+. Recommends limiting midday exposure, shade, protective clothing, a wide-brimmed hat, wraparound UVA/UVB-protective sunglasses, and broad-spectrum SPF 30+ sunscreen applied liberally to uncovered skin. It recommends reapplication every two hours, particularly after sweating, swimming, playing, or exercise, and says sunscreen should not be used to extend sun time. Shade structures do not provide complete UV protection. | Informs the app's sunscreen wording and stronger 8+ guidance. UV Scout follows this newer WHO Q&A for SPF 30+; the specific product label and local advice still apply. |
 | [US EPA, UV Index Scale](https://www.epa.gov/sunsafety/uv-index-scale-0), updated 15 June 2026 | Groups 3–7 as Moderate to High, with shade, sunscreen, clothing, hat, and sunglasses; 8+ as Very High to Extreme with extra protection. Specifies SPF 15+ on this page and says its scale follows WHO international reporting guidelines. | Independently supports the three action bands; its SPF number differs from newer WHO guidance. |
 | [Environment and Climate Change Canada, UV index and sun safety](https://www.canada.ca/en/environment-climate-change/services/weather-health/uv-index-sun-safety.html), page details 20 April 2026 | Uses all five familiar category names. Groups 3–7 and 8+ for action. Notes snow, bright surfaces, altitude, and exposure duration can affect exposure; shade can reduce exposure but does not make it zero. Recommends SPF 30+. | Confirms the category labels and that shade is context, not a forecast correction. Its local time windows and detailed advice should not be presented as universal without qualification. |
 
@@ -38,26 +37,27 @@ broad-spectrum sunscreen on skin that clothing does not cover. Shade does not
 block all UV; scattered and reflected UV can still reach a person. UV can be
 higher around reflective surfaces such as fresh snow, sand, or water.
 
-**Source variation:** WHO and EPA materials specify different SPF minimums
-(15+ on some guidance pages; 30+ on another WHO page and Canadian guidance).
-For an English-first international app, this draft avoids a numeric SPF
-recommendation. It can say to use broad-spectrum sunscreen on uncovered skin
-and follow the product label and local public-health advice.
+**Source variation:** Older WHO materials and some national sources give
+different SPF minimums. UV Scout uses WHO's 16 July 2024 Q&A, which recommends
+broad-spectrum SPF 30 or higher. The app should still tell users to follow the
+product label and relevant local public-health advice.
 
-**Product choices:** Use the outing's highest raw UV value to select one of
-three action levels; explain the reason in plain language; do not reduce
-forecast UV numerically; do not tell users to move their outing to another time.
-The planner has no shade selector; default guidance recommends shade generally
-rather than claiming a route-specific shade condition.
-Present timing comparisons as information, consistent with the user's preference.
+**Product choices:** Keep WHO's three action bands as a static attributed
+reference in Info; do not turn the peak into a WHO outing algorithm. UV Scout's
+own outing summary uses the full profile and does not reduce forecast UV
+numerically or automatically change the user's plan. Its practical advice uses
+WHO and other reviewed sources as evidence, while clearly identifying the
+profile synthesis as UV Scout's product choice. Alternative-time comparisons
+remain informational. The planner has no shade selector and does not claim
+route-specific shade conditions.
 
-## Proposed guidance behavior
+## WHO reference table content for Info
 
-| Outing UV level | Evidence-aligned message direction | General shade and context detail |
+| WHO table band | Evidence-aligned message direction | General shade and context detail |
 | --- | --- | --- |
-| Raw UV below 3 | Explain that the forecast remains below WHO's general protection threshold. Do not say exposure is completely safe or that protection is never useful. | Keep any bright-surface reminder brief and conditional; don't imply the app knows the user's surroundings. |
-| Raw UV from 3 to below 8 | Explain that protection is recommended. Encourage seeking shade when UV is strongest, covering skin with clothing, protecting eyes, and using broad-spectrum sunscreen on uncovered skin. | General shade guidance should note that overhead cover helps but indirect UV can remain. Use a concise “if you're near snow, water, or bright sand” reminder where appropriate. |
-| Raw UV 8 or higher | Explain that extra protection is warranted. Emphasize shade, covering clothing, a brimmed hat, eye protection, and sunscreen on uncovered skin. WHO advises avoiding outdoor exposure around midday at these values; phrase this as guidance without telling this user to choose a different start time. | Give the same concise shade/reflection context without suggesting the user selected or has a particular route condition. |
+| Raw UV below 3 | Say WHO's table places 0–2 in the “enjoy being outdoors” band; qualify that extra measures are generally unnecessary under normal circumstances below 2. Never imply zero exposure or universal safety. | Keep the reflection caveat brief; don't imply the app knows the user's surroundings. |
+| Raw UV from 3 to below 8 | State that protection is recommended. Advise shade during midday, covering clothing, a wide-brimmed hat, UV-protective sunglasses, and broad-spectrum SPF 30+ sunscreen on uncovered skin. Include liberal application and the general two-hour/after-sweating-or-swimming reapplication advice. | General shade guidance should note that overhead cover helps but indirect UV can remain. Mention bright reflective surroundings conditionally. |
+| Raw UV 8 or higher | State that WHO advises avoiding outdoor exposure during midday hours where possible. If outdoors, seek shade and use the full protection set: clothing, hat, sunglasses, and sunscreen. | Keep this as attributed WHO guidance; UV Scout's time comparisons remain informational and do not silently change the user's selected outing. |
 
 Use hourly values to show how UV changes through the selected outing. Do not
 infer personal dose, time-to-sunburn, or a safe exposure duration from forecast
@@ -72,21 +72,23 @@ visible. Apply action thresholds to raw forecast values: protection starts at
 
 ## Editable data shape in the app
 
-Guidance definitions currently live in `src/domain/guidance/protectionGuidance.json`.
-They contain stable UV-band and protection-level keys, raw-UV thresholds,
-headlines, explanations, actions, profile-message templates, and the reapplication
-trigger. The JSON is validated and interpreted by
-`src/domain/guidance/getProtectionGuidance.ts`; outing overlap and coverage
-calculations are in `src/domain/outing/calculateOutingForecast.ts`; the feature
-renders structured results. Keep sources and rationale here, editable wording
-and thresholds in JSON, and calculations in TypeScript.
+WHO's general note, raw-UV action thresholds, labels, and actions live in
+`src/domain/guidance/whoGuidance.json` and are validated and returned as a
+static Info table by `src/domain/guidance/getWhoGuidance.ts`. UV Scout's profile bands, headlines,
+explanations, profile-message templates, and reapplication trigger live in
+`src/domain/guidance/uvScoutInsight.json` and are interpreted by
+`src/domain/guidance/getUvScoutInsight.ts`. The two interpreters do not depend
+on each other's rules. The Info feature renders the WHO table; the outing
+feature renders only the Scout profile. Outing overlap and coverage calculations remain in
+`src/domain/outing/calculateOutingForecast.ts`.
 
-The UI receives a structured protection level, observed UV-duration summary,
-forecast-coverage caveat, action list, and (when its configured condition is met)
-a conditional reapplication reminder. It requires no shade or other extra
-answers. Sweating, swimming, toweling, clothing coverage, and reflective
-surroundings remain unknown and are not inferred. TypeScript validates and maps
-rule data; the feature handles rendering.
+The UI receives independent structured WHO actions and UV Scout profile
+insights, including observed UV-duration summaries, a forecast-coverage caveat,
+and (when its configured condition is met) a conditional reapplication reminder.
+It requires no shade or other extra answers. Sweating, swimming, toweling,
+clothing coverage, and reflective surroundings remain unknown and are not
+inferred. Each TypeScript interpreter validates only its own editable rule data;
+the feature handles rendering.
 
 ## Resolved product decision: fractional protection trigger
 
@@ -109,6 +111,7 @@ category; keep the original decimal visible.
   personalize advice.
 - Do not infer snow, water, sand, altitude, clothing coverage, or skin
   sensitivity without reliable user input or data.
-- Review wording for midday advice against the preference not to recommend
-  changing the selected outing time.
+- Preserve the distinction between WHO's source guidance to avoid midday
+  exposure at UVI 8+ where possible and UV Scout's informational time
+  comparisons; do not silently reschedule the selected outing.
 - Recheck public-health guidance before public or commercial release.

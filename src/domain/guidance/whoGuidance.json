@@ -1,0 +1,37 @@
+{
+  "note": "Sun protection is recommended from UV Index 3 and above; this is general guidance.",
+  "context": "The UV Index measures intensity: higher values mean greater potential for skin and eye harm and less time before harm can occur. Exposure duration and frequency also matter.",
+  "levels": [
+    {
+      "key": "low",
+      "minimumUvInclusive": 0,
+      "label": "Low UV",
+      "actions": [
+        "The forecast stays below WHO's UVI 3 threshold for recommended protection. WHO's table says people can enjoy being outdoors at UVI 0–2; under normal circumstances, extra protection is not needed below 2.",
+        "Bright reflective surroundings, such as fresh snow, can still increase UV exposure."
+      ]
+    },
+    {
+      "key": "protection",
+      "minimumUvInclusive": 3,
+      "label": "Protection recommended",
+      "actions": [
+        "Seek shade during midday hours, when UV is often strongest.",
+        "Cover skin with clothing, and wear a wide-brimmed hat and UV-protective sunglasses.",
+        "Use broad-spectrum SPF 30 or higher sunscreen generously on skin clothing does not cover.",
+        "Reapply about every two hours, especially after swimming or sweating. Sunscreen does not make a longer stay in the sun safe."
+      ]
+    },
+    {
+      "key": "extra-protection",
+      "minimumUvInclusive": 8,
+      "label": "Extra protection",
+      "actions": [
+        "Where possible, avoid being outdoors during midday hours.",
+        "If you are outdoors, seek shade and cover skin with clothing; wear a wide-brimmed hat and UV-protective sunglasses.",
+        "Use broad-spectrum SPF 30 or higher sunscreen generously on skin clothing does not cover.",
+        "Reapply about every two hours, especially after swimming or sweating. Sunscreen does not make a longer stay in the sun safe."
+      ]
+    }
+  ]
+}
