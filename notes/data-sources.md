@@ -1,6 +1,6 @@
 # Data and evidence sources
 
-Updated 2026-10-08. This is the source register for UV Scout. It records the
+Updated 2026-10-09. This is the source register for UV Scout. It records the
 origin of external forecast/location data and evidence used to shape app
 behavior, plus where each source enters the project and how it is interpreted.
 Topic-specific research notes contain the fuller evidence review and rationale.
@@ -27,8 +27,7 @@ re-verified that day.
 
 | Source | Data used and how it is used | Where it enters the app | Attribution, licensing, and limits |
 | --- | --- | --- | --- |
-| [OpenStreetMap standard raster map tiles](https://operations.osmfoundation.org/policies/tiles/) and [Leaflet](https://leafletjs.com/) | Interactive web map; visible tiles provide geographic context and a user tap selects that latitude/longitude for the forecast. | `src/features/location/LocationMap.web.tsx` requests visible tiles from `https://tile.openstreetmap.org/{z}/{x}/{y}.png` and displays OpenStreetMap contributor attribution. | Tile policy checked 2026-10-08. OSM data is open, but public standard tile servers are capacity-limited and best-effort, not a guaranteed production tile service. The browser loads only visible tiles and keeps attribution visible; do not bulk-prefetch or add offline downloads. Select a suitable hosted tile provider before commercial/high-volume release. Tile requests disclose the viewed map area to OSM; selected coordinates are separately sent to the forecast service and, for an optional locality label, BigDataCloud. |
-| Apple Maps / Google Maps through [`react-native-maps`](https://docs.expo.dev/versions/v57.0.0/sdk/map-view/) | Native Android/iOS basemap and gestures in Expo Go; tapping selects coordinates and choosing a search/device location recenters the map. | `src/features/location/LocationMap.native.tsx`; SDK-57-compatible `react-native-maps` 1.27.2. | Expo SDK 57 docs checked 2026-10-08: included in Expo Go. A store-distributed Android build using Google Maps needs additional API-key configuration. Native provider attribution is supplied by its SDK. Review SDK privacy and production configuration before release. |
+| [OpenStreetMap standard raster map tiles](https://operations.osmfoundation.org/policies/tiles/) and [Leaflet](https://leafletjs.com/) | Interactive location picker on web, Android, and iOS. Visible tiles provide geographic context; a user tap sends the selected latitude/longitude to the app. | Web uses bundled Leaflet in `src/features/location/LocationMap.web.tsx`. Native uses `react-native-webview` with Leaflet 1.9.4 assets from unpkg and the same OSM tile endpoint in `src/features/location/LocationMap.native.tsx` and `src/features/location/nativeMapDocument.ts`. Both use `https://tile.openstreetmap.org/{z}/{x}/{y}.png` and show contributor attribution. | OSM tile policy checked 2026-10-09. OSM data is open, but the public standard tile service is capacity-limited and best-effort, not a guaranteed production tile service. The map requests visible tiles on demand; do not bulk-prefetch or add offline downloads. Select a suitable hosted tile provider before commercial/high-volume release. Tile requests disclose the viewed map area to OSM. The native WebView also fetches the pinned Leaflet 1.9.4 JS/CSS from unpkg; if those assets or tiles cannot load, the basemap is unavailable. Selected coordinates are separately sent to the forecast service and, for an optional locality label, BigDataCloud. |
 
 ## Scientific and public-health evidence
 

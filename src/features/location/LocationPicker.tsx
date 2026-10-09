@@ -17,9 +17,10 @@ import { LocationMap } from './LocationMap';
 
 type Props = {
   onSelect: (location: SelectedLocation | null) => void;
+  onMapInteractionChange: (isInteracting: boolean) => void;
 };
 
-export function LocationPicker({ onSelect }: Props) {
+export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Place[]>([]);
   const [selected, setSelected] = useState<SelectedLocation | null>(null);
@@ -118,7 +119,9 @@ export function LocationPicker({ onSelect }: Props) {
     const location: SelectedLocation = { source: 'place', place };
     setSelected(location);
     onSelect(location);
-    setQuery(formatPlaceName(place));
+    // The selected place is displayed above the search controls. Keep the input
+    // empty so its centered caret does not jump to the end of the place name.
+    setQuery('');
     setResults([]);
     setHasSearched(false);
     setError(null);
@@ -148,32 +151,60 @@ export function LocationPicker({ onSelect }: Props) {
 
   return (
     <View>
+      {selected && (
+        <View style={styles.selected}>
+          <Text style={styles.selectedName}>{getLocationName(selected)}</Text>
+          <Text style={styles.selectedCoordinates}>{formatLocationCoordinates(selected)}</Text>
+        </View>
+      )}
+
       <Text style={styles.heading}>Location</Text>
 
-      <Text style={styles.mapHint}>Tap the map to choose a location</Text>
-      <LocationMap
-        onSelectCoordinates={selectMapCoordinates}
-        selectedLocation={selected}
-      />
+      <View style={styles.locationMethods}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={isLocating}
+          onPress={useDeviceLocation}
+          style={({ pressed }) => [
+            styles.locationButton,
+            pressed && styles.locationButtonPressed,
+            isLocating && styles.buttonDisabled,
+          ]}
+        >
+          {isLocating ? (
+            <ActivityIndicator color="#151515" />
+          ) : (
+            <Text style={styles.locationButtonText}>Use my location</Text>
+          )}
+        </Pressable>
 
-      <TextInput
-        accessibilityLabel="Search for a place"
-        autoCapitalize="words"
-        onChangeText={(value) => {
-          locationRequest.current += 1;
-          setQuery(value);
-          setResults([]);
-          setHasSearched(false);
-          setSelected(null);
-          onSelect(null);
-          setError(null);
-        }}
-        placeholder="City or place"
-        placeholderTextColor="#909090"
-        returnKeyType="done"
-        style={styles.input}
-        value={query}
-      />
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.or}>or</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <TextInput
+          accessibilityLabel="Search location"
+          autoCapitalize="words"
+          onChangeText={(value) => {
+            locationRequest.current += 1;
+            setQuery(value);
+            setResults([]);
+            setHasSearched(false);
+            setSelected(null);
+            onSelect(null);
+            setError(null);
+          }}
+          cursorColor="#777777"
+          placeholder="Search location"
+          placeholderTextColor="#909090"
+          returnKeyType="done"
+          selectionColor="#777777"
+          style={styles.input}
+          value={query}
+        />
+      </View>
 
       {isSearching && <Text style={styles.message}>Searching places...</Text>}
 
@@ -196,32 +227,14 @@ export function LocationPicker({ onSelect }: Props) {
         <Text style={styles.message}>No places found. Try a nearby city or a fuller name.</Text>
       )}
 
-      <Text style={styles.or}>or</Text>
-
-      <Pressable
-        accessibilityRole="button"
-        disabled={isLocating}
-        onPress={useDeviceLocation}
-        style={({ pressed }) => [
-          styles.locationButton,
-          pressed && styles.buttonPressed,
-          isLocating && styles.buttonDisabled,
-        ]}
-      >
-        {isLocating ? (
-          <ActivityIndicator color="#151515" />
-        ) : (
-          <Text style={styles.buttonText}>Use my location</Text>
-        )}
-      </Pressable>
-
-      {selected && (
-        <View style={styles.selected}>
-          <Text style={styles.selectedName}>{getLocationName(selected)}</Text>
-          <Text style={styles.selectedCoordinates}>{formatLocationCoordinates(selected)}</Text>
-        </View>
-      )}
       {error && <Text style={styles.error}>{error}</Text>}
+
+      <Text style={styles.mapHint}>Tap the map to choose a location</Text>
+      <LocationMap
+        onInteractionChange={onMapInteractionChange}
+        onSelectCoordinates={selectMapCoordinates}
+        selectedLocation={selected}
+      />
 
       <Text style={styles.attribution}>Place search: Open-Meteo · device labels: BigDataCloud</Text>
     </View>
@@ -243,32 +256,48 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    borderColor: '#D6D6D6',
-    borderRadius: 10,
-    borderWidth: 1,
+    alignSelf: 'stretch',
+    backgroundColor: '#FFFFFF',
     color: '#151515',
     fontSize: 15,
     minHeight: 48,
     paddingHorizontal: 14,
+    textAlign: 'center',
   },
   locationButton: {
     alignItems: 'center',
-    borderColor: '#D6D6D6',
-    borderRadius: 10,
-    borderWidth: 1,
     justifyContent: 'center',
     minHeight: 48,
+  },
+  locationButtonPressed: { opacity: 0.6 },
+  locationButtonText: {
+    color: '#151515',
+    fontSize: 15,
+    fontWeight: '500',
+    textDecorationLine: 'underline',
+  },
+  locationMethods: {
+    alignSelf: 'stretch',
+    borderColor: '#D6D6D6',
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  divider: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginHorizontal: 14,
+  },
+  dividerLine: {
+    backgroundColor: '#E8E8E8',
+    flex: 1,
+    height: 1,
   },
   buttonPressed: {
     backgroundColor: '#F3F3F3',
   },
   buttonDisabled: {
     opacity: 0.45,
-  },
-  buttonText: {
-    color: '#151515',
-    fontSize: 15,
-    fontWeight: '500',
   },
   results: {
     borderColor: '#E2E2E2',
@@ -288,11 +317,11 @@ const styles = StyleSheet.create({
   },
   or: {
     color: '#8A8A8A',
-    fontSize: 13,
-    marginVertical: 14,
+    fontSize: 12,
+    marginHorizontal: 10,
     textAlign: 'center',
   },
-  selected: { alignItems: 'center', marginTop: 16 },
+  selected: { alignItems: 'center', marginBottom: 16 },
   selectedName: { color: '#333333', fontSize: 15, fontWeight: '600', lineHeight: 20, textAlign: 'center' },
   selectedCoordinates: { color: '#777777', fontSize: 12, marginTop: 3, textAlign: 'center' },
   message: {

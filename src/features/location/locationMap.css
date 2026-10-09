@@ -1,0 +1,16 @@
+.leaflet-tile {
+  filter: grayscale(1) brightness(1.03) contrast(0.96);
+}
+
+.leaflet-marker-icon.uv-scout-location-marker {
+  background: transparent;
+  border: 0;
+}
+
+.uv-scout-location-marker__glyph {
+  display: block;
+  color: #151515;
+  font: 700 15px/16px Arial, sans-serif;
+  text-align: center;
+  text-shadow: 0 0 2px #FFFFFF, 0 0 4px #FFFFFF;
+}

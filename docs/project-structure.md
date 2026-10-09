@@ -26,7 +26,8 @@ src/
   features/                   UI components, formatting, React hooks
     forecast/                 Hourly chart and forecast loading hook
     location/                 Location search, map selection, and formatting
-      LocationMap.native.tsx  Expo Go native map
+      LocationMap.native.tsx  Leaflet/OpenStreetMap map in native WebView
+      nativeMapDocument.ts    Native map HTML, tiles, and tap bridge
       LocationMap.web.tsx     Leaflet/OpenStreetMap browser map
       LocationPicker.tsx      Search, device location, and shared selection state
     planning/                 Time inputs and platform date/time picker

@@ -22,6 +22,11 @@ date/time dialogs; web uses a browser date/time control.
 Tap **Use my location** to grant foreground location access. The app requests
 permission only after the tap and does not save the coordinates.
 
+The location map uses Leaflet with OpenStreetMap tiles on phone and web. It
+needs internet access to load the map library and visible map tiles; the map
+shows OpenStreetMap attribution. The public tile service is best-effort, so a
+commercial or high-traffic release will need a suitable tile provider.
+
 You can instead type a city or place. Suggestions appear after three characters
 and a short pause; tap one to select it.
 Place search and UV/temperature forecasts use Open-Meteo; no API key is needed

@@ -1,54 +1,66 @@
-import MapView, { Marker, type Region } from 'react-native-maps';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
 import { getLocationCoordinates } from '../../domain/location/getLocationCoordinates';
-import { getLocationName } from './formatLocation';
 import type { LocationMapProps } from './LocationMapProps';
+import { createNativeMapDocument } from './nativeMapDocument';
 
-const EUROPE_REGION: Region = {
-  latitude: 50.5,
-  longitude: 15,
-  latitudeDelta: 42,
-  longitudeDelta: 55,
-};
+const MAP_DOCUMENT = createNativeMapDocument();
 
-function getSelectedRegion(selectedLocation: LocationMapProps['selectedLocation']): Region | null {
-  if (!selectedLocation) return null;
-  const coordinates = getLocationCoordinates(selectedLocation);
-  return { ...coordinates, latitudeDelta: 0.12, longitudeDelta: 0.12 };
-}
-
-export function LocationMap({ selectedLocation, onSelectCoordinates }: LocationMapProps) {
-  const mapRef = useRef<MapView>(null);
+export function LocationMap({
+  selectedLocation,
+  onSelectCoordinates,
+  onInteractionChange,
+}: LocationMapProps) {
+  const mapRef = useRef<WebView>(null);
+  const [isMapReady, setIsMapReady] = useState(false);
   const coordinates = selectedLocation ? getLocationCoordinates(selectedLocation) : null;
-  const selectedRegion = getSelectedRegion(selectedLocation);
 
   useEffect(() => {
-    if (selectedRegion) mapRef.current?.animateToRegion(selectedRegion, 450);
-  }, [selectedRegion?.latitude, selectedRegion?.longitude]);
+    if (!isMapReady || !coordinates) return;
+
+    const { latitude, longitude } = coordinates;
+    mapRef.current?.injectJavaScript(
+      `window.uvScoutSelectLocation(${latitude}, ${longitude}, ${selectedLocation?.source !== 'map'}); true;`,
+    );
+  }, [coordinates?.latitude, coordinates?.longitude, isMapReady, selectedLocation?.source]);
+
+  function handleMapMessage(event: WebViewMessageEvent) {
+    try {
+      const message: unknown = JSON.parse(event.nativeEvent.data);
+      if (!message || typeof message !== 'object' || !('type' in message) || message.type !== 'select') {
+        return;
+      }
+
+      if (!('latitude' in message) || !('longitude' in message)) return;
+      const { latitude, longitude } = message;
+      if (typeof latitude !== 'number' || typeof longitude !== 'number') return;
+      if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return;
+
+      onSelectCoordinates(latitude, longitude);
+    } catch {
+      // Ignore malformed messages from the embedded map document.
+    }
+  }
 
   return (
     <View style={styles.frame}>
-      <MapView
+      <WebView
         ref={mapRef}
-        initialRegion={selectedRegion ?? EUROPE_REGION}
-        onMapReady={() => {
-          if (selectedRegion) mapRef.current?.animateToRegion(selectedRegion, 0);
-        }}
-        onPress={(event) => onSelectCoordinates(
-          event.nativeEvent.coordinate.latitude,
-          event.nativeEvent.coordinate.longitude,
-        )}
+        javaScriptEnabled
+        onError={() => setIsMapReady(false)}
+        onLoadEnd={() => setIsMapReady(true)}
+        onMessage={handleMapMessage}
+        nestedScrollEnabled
+        onTouchCancel={() => onInteractionChange?.(false)}
+        onTouchEnd={() => onInteractionChange?.(false)}
+        onTouchStart={() => onInteractionChange?.(true)}
+        originWhitelist={['*']}
+        scrollEnabled={false}
+        source={{ html: MAP_DOCUMENT }}
         style={styles.map}
-      >
-        {coordinates && (
-          <Marker
-            coordinate={coordinates}
-            title={selectedLocation ? getLocationName(selectedLocation) : 'Selected map location'}
-          />
-        )}
-      </MapView>
+      />
     </View>
   );
 }

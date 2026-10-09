@@ -281,9 +281,10 @@ calculation, supported platform versions, and the final visual polish.
 
 - Added an interactive location map for Android and web. The unselected map
   opens over Europe; taps select coordinates, and search/device selections
-  recenter it. Native uses `react-native-maps`; web uses Leaflet with attributed
-  OpenStreetMap tiles. Recorded provider policy, attribution, and limitations in
-  `notes/data-sources.md`.
+  recenter it. Both native and web now use Leaflet with attributed OpenStreetMap
+  tiles; the native map runs in a WebView so Android Expo Go does not depend on
+  its failing Google Maps key. Recorded provider policy, attribution, and
+  limitations in `notes/data-sources.md`.
 
 - Added a reusable UV evidence and guidance review prompt with sourcing,
   uncertainty, and product-choice requirements.

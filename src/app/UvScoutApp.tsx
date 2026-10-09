@@ -15,6 +15,7 @@ import { TopTabs, type AppPage } from './TopTabs';
 
 export function UvScoutApp() {
   const [location, setLocation] = useState<SelectedLocation | null>(null);
+  const [isMapInteracting, setIsMapInteracting] = useState(false);
   const [timePlan, setTimePlan] = useState<TimePlan | null>(null);
   const [page, setPage] = useState<AppPage>('location');
   const coordinates = location ? getLocationCoordinates(location) : null;
@@ -23,7 +24,11 @@ export function UvScoutApp() {
 
   return (
     <View style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        scrollEnabled={!isMapInteracting}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>UV Scout</Text>
           <Text style={styles.subtitle}>Plan your time outside based on the UV Index.</Text>
@@ -32,7 +37,10 @@ export function UvScoutApp() {
         <TopTabs activePage={page} hasLocation={location !== null} onSelect={setPage} />
 
         <View style={page === 'location' ? undefined : styles.hidden}>
-          <LocationPicker onSelect={setLocation} />
+          <LocationPicker
+            onMapInteractionChange={setIsMapInteracting}
+            onSelect={setLocation}
+          />
         </View>
 
         {location && page !== 'location' && page !== 'info' && (
