@@ -236,7 +236,6 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
         selectedLocation={selected}
       />
 
-      <Text style={styles.attribution}>Place search: Open-Meteo · device labels: BigDataCloud</Text>
     </View>
   );
 }
@@ -335,12 +334,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     marginTop: 12,
-    textAlign: 'center',
-  },
-  attribution: {
-    color: '#999999',
-    fontSize: 11,
-    marginTop: 26,
     textAlign: 'center',
   },
 });

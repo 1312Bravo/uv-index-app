@@ -3,14 +3,12 @@ import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getCloudCoverBands } from '../../domain/weather/getCloudCoverBand';
 import { getPrecipitationRateGuide } from '../../domain/weather/getPrecipitationRateGuide';
-import { getWhoGuidanceTable } from '../../domain/guidance/getWhoGuidance';
 import { getUvCategoryDefinitions } from '../../domain/uv/getUvCategory';
 import { InfoAccordion } from './InfoAccordion';
 
 const uvCategories = getUvCategoryDefinitions();
 const cloudCoverBands = getCloudCoverBands();
 const precipitationRateGuide = getPrecipitationRateGuide();
-const whoGuidanceTable = getWhoGuidanceTable();
 
 type InfoTopic = 'uv' | 'clouds' | 'precipitation';
 
@@ -46,8 +44,7 @@ function UvIndexExplanation() {
         It is not a measure of temperature.
       </Text>
       <Text style={styles.supportingText}>
-        These are the standard exposure categories. Protection is generally
-        recommended from UV Index 3 and above.
+        These are the standard categories used to describe UV Index levels.
       </Text>
       <View style={styles.list}>
         {uvCategories.map((category, index) => (
@@ -60,30 +57,11 @@ function UvIndexExplanation() {
           </View>
         ))}
       </View>
-      <Text style={styles.note}>
-        UV Scout keeps the decimal forecast visible, then rounds to the nearest
-        whole number to choose a category; .5 rounds up (for example, 2.5 is
-        Moderate). Protection guidance follows the unrounded value and begins at
-        3, in line with WHO guidance, so 2.5 can show a Moderate category while
-        remaining below the protection threshold. Category rounding is an app
-        convention.
-      </Text>
       <Text style={styles.metricHeading}>WHO guidance</Text>
-      <Text style={styles.description}>{whoGuidanceTable.context}</Text>
-      <Text style={styles.note}>{whoGuidanceTable.note}</Text>
-      <View style={styles.list}>
-        {whoGuidanceTable.bands.map((band) => (
-          <View key={band.level} style={styles.row}>
-            <View style={styles.rangeColumn}>
-              <Text style={styles.range}>{band.range}</Text>
-              <Text style={styles.category}>{band.label}</Text>
-            </View>
-            {band.actions.map((action) => (
-              <Text key={action} style={styles.whoAction}>{action}</Text>
-            ))}
-          </View>
-        ))}
-      </View>
+      <Text style={styles.description}>
+        WHO recommends sun protection from UV Index 3, and extra protection from
+        8. These are general guidance thresholds.
+      </Text>
       <SourceLink
         label="WHO · The ultraviolet (UV) index"
         url="https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)-index"
@@ -242,7 +220,6 @@ const styles = StyleSheet.create({
   range: { color: '#151515', fontSize: 14, fontWeight: '600' },
   category: { color: '#333333', fontSize: 13, fontWeight: '600' },
   categoryDescription: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 6, minWidth: 0 },
-  whoAction: { color: '#555555', fontSize: 13, lineHeight: 19, marginTop: 7, minWidth: 0 },
   note: { color: '#777777', fontSize: 12, lineHeight: 18, marginTop: 12 },
   cloudRow: {
     alignItems: 'flex-start',

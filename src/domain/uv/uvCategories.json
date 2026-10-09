@@ -3,30 +3,30 @@
     "key": "low",
     "label": "Low",
     "minimumUvInclusive": 0,
-    "meaning": "The lowest exposure category. WHO guidance generally recommends sun protection from UV Index 3 and above."
+    "meaning": "The lowest UV exposure category."
   },
   {
     "key": "moderate",
     "label": "Moderate",
     "minimumUvInclusive": 3,
-    "meaning": "A moderate UV category. UV Scout's protection guidance is based on the raw forecast and begins at 3."
+    "meaning": "UV is more intense than in the Low range and can affect unprotected skin and eyes."
   },
   {
     "key": "high",
     "label": "High",
     "minimumUvInclusive": 6,
-    "meaning": "The potential for harm from unprotected sun exposure is higher. Seek shade and protect skin and eyes."
+    "meaning": "The potential for harm from unprotected exposure is higher than in the Moderate range."
   },
   {
     "key": "very-high",
     "label": "Very high",
     "minimumUvInclusive": 8,
-    "meaning": "Unprotected skin and eyes can be harmed quickly. Extra protection and limiting strong midday sun are important."
+    "meaning": "Unprotected skin and eyes can be harmed quickly at these UV levels."
   },
   {
     "key": "extreme",
     "label": "Extreme",
     "minimumUvInclusive": 11,
-    "meaning": "The highest category. Unprotected skin and eyes can be harmed very quickly; minimize exposure and use extra protection."
+    "meaning": "The highest UV exposure category; unprotected skin and eyes can be harmed very quickly."
   }
 ]
