@@ -1,18 +1,33 @@
 {
   "note": "Approximate outing forecast, not a personal exposure or risk estimate.",
+  "bulletTitles": {
+    "peak": "Peak UV",
+    "below-3": "Time below UV 3",
+    "3-to-8": "Time at UV 3–7",
+    "8-plus": "Time at UV 8+",
+    "average": "Average UV",
+    "longestElevated": "Longest UV 3+ period",
+    "longestVeryHigh": "Longest UV 8+ period",
+    "moderateAction": "Protection",
+    "veryHighAction": "Extra protection",
+    "reflectiveConditions": "Reflected UV",
+    "sunscreenAfterConditions": "Sunscreen",
+    "lowUvContext": "Low UV",
+    "reapplication": "Reapplication"
+  },
   "profileMessages": {
-    "belowThresholdHeadline": "No covered forecast period reaches UV Index 3.",
-    "elevatedHeadline": "UV Index 3 or above appears in about {duration} of the covered forecast.",
-    "explanation": "The overall reading considers time in each UV range and uninterrupted higher-UV periods, not just the maximum. It is an approximate forecast profile, not a personal exposure estimate.",
+    "belowThresholdHeadline": "No covered period in this outing reaches UV Index 3.",
+    "elevatedHeadline": "UV Index 3 or higher is forecast for about {duration} of the covered outing.",
+    "explanation": "The guidance considers both UV level and time spent at each level, not just the peak.",
     "lowUvContext": "The covered forecast stays below UV Index 3, the usual threshold for sun-protection advice. This does not mean zero UV; reflective surroundings and personal circumstances are not included.",
     "reflectiveConditions": "If your outing includes snow, bright sand, or water, reflected UV can add exposure beyond what this location forecast represents.",
     "sunscreenAfterConditions": "If you use sunscreen, follow its product directions and reapply after swimming, sweating, or drying off.",
     "moderateAction": "During covered periods forecast at UV Index 3–below 8 (about {duration}), plan protection for exposed skin and eyes. Covering clothing, available shade, a hat, and UV-protective sunglasses add protection; use sunscreen on skin left uncovered.",
     "veryHighAction": "About {duration} of the covered forecast is at UV Index 8 or above. Give that period extra attention: use available shade, covering clothing, a hat, UV-protective sunglasses, and sunscreen on uncovered skin.",
-    "peak": "Highest forecast: UV Index {peakUv} around {peakTime}.",
-    "average": "Duration-weighted average across covered forecast hours: {averageUv}.",
-    "longestElevated": "The longest continuous period at UV Index 3 or above is about {duration}.",
-    "longestVeryHigh": "The longest continuous period at UV Index 8 or above is about {duration}."
+    "peak": "UV Index {peakUv} around {peakTime}.",
+    "average": "Across the covered part of the outing: {averageUv}.",
+    "longestElevated": "About {duration} without a break.",
+    "longestVeryHigh": "About {duration} without a break."
   },
   "messages": {
     "coverageIncomplete": "The forecast covers about {coveredDuration} of this {plannedDuration} outing. Conditions during the uncovered part are unknown.",

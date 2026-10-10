@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { getUvScoutInsight } from '../../domain/guidance/getUvScoutInsight';
+import { getUvScoutInsight, type UvScoutInsightItem } from '../../domain/guidance/getUvScoutInsight';
 import { HourlyUvBarChart } from '../forecast/HourlyUvBarChart';
 import { useHourlyForecast } from '../forecast/useHourlyForecast';
 import {
@@ -91,6 +91,18 @@ function SummaryMetric({ title, mainValue, description, secondaryValue }: {
   );
 }
 
+function GuidanceBullet({ item }: { item: UvScoutInsightItem }) {
+  return (
+    <View style={styles.guidanceBullet}>
+      <Text style={styles.guidanceBulletMarker}>•</Text>
+      <Text style={styles.guidanceBulletText}>
+        <Text style={styles.guidanceBulletTitle}>{item.title}: </Text>
+        {item.text}
+      </Text>
+    </View>
+  );
+}
+
 export function OutingForecast({ latitude, longitude, plan }: Props) {
   const { forecast, error, loading } = useHourlyForecast(
     latitude,
@@ -177,21 +189,18 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
                   </Text>
                 )}
                 <Text style={[styles.guidanceBody, styles.guidanceBodyParagraph]}>
+                  <Text style={styles.guidanceOverallLabel}>Overall: </Text>
                   {guidance.headline} {guidance.explanation}
                 </Text>
                 <View style={styles.insightList}>
-                  {guidance.profileDetails.map((detail) => (
-                    <Text key={detail} style={styles.guidanceBody}>{detail}</Text>
+                  {guidance.profileDetails.map((item, index) => (
+                    <GuidanceBullet key={`profile-${index}`} item={item} />
                   ))}
-                  {guidance.practicalGuidance.map((action) => (
-                    <Text key={action} style={styles.guidanceBody}>{action}</Text>
+                  {guidance.practicalGuidance.map((item, index) => (
+                    <GuidanceBullet key={`action-${index}`} item={item} />
                   ))}
+                  {guidance.reapplicationReminder && <GuidanceBullet item={guidance.reapplicationReminder} />}
                 </View>
-                {guidance.reapplicationReminder && (
-                  <Text style={[styles.guidanceBody, styles.guidanceBodyParagraph]}>
-                    {guidance.reapplicationReminder}
-                  </Text>
-                )}
               </View>
             </View>
           )}
@@ -238,6 +247,11 @@ const styles = StyleSheet.create({
   guidanceNote: { color: '#929292', fontSize: 11, lineHeight: 16 },
   guidanceBodyParagraph: { marginTop: 6 },
   insightList: { marginTop: 6 },
+  guidanceBullet: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
+  guidanceBulletMarker: { color: '#555555', fontSize: 14, lineHeight: 19, marginRight: 8, width: 10 },
+  guidanceBulletText: { color: '#555555', flex: 1, fontSize: 13, lineHeight: 19 },
+  guidanceBulletTitle: { color: '#333333', fontWeight: '600' },
+  guidanceOverallLabel: { color: '#333333', fontWeight: '600' },
   subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });

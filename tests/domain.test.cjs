@@ -63,7 +63,8 @@ test('missing forecast time is disclosed and breaks a continuous UV period', () 
   assert.equal(result.coveredSeconds, 7200);
   assert.deepEqual(result.missingIntervals, [{ start: 3600, end: 7200 }]);
   assert.match(insight.coverageMessage, /2 hours of this 3 hours outing/);
-  assert.ok(insight.profileDetails.some((detail) => detail.includes('continuous period') && detail.includes('1 hour')));
+  assert.ok(insight.profileDetails.some((detail) => detail.text.includes('without a break') && detail.text.includes('1 hour')));
+  assert.ok(insight.profileDetails.every((detail) => detail.title && detail.text));
 });
 
 test('precipitation totals include only complete preceding-hour amounts', () => {
@@ -84,5 +85,6 @@ test('sunscreen reminder appears at the configured 120-minute boundary', () => {
   const atBoundary = getUvScoutInsight(summarize(hours, 0, 7200), 'UTC');
 
   assert.equal(beforeBoundary.reapplicationReminder, null);
-  assert.match(atBoundary.reapplicationReminder, /at least two hours/i);
+  assert.equal(atBoundary.reapplicationReminder.title, 'Reapplication');
+  assert.match(atBoundary.reapplicationReminder.text, /at least two hours/i);
 });
