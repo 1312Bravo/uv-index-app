@@ -199,7 +199,6 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
                   {guidance.practicalGuidance.map((item, index) => (
                     <GuidanceBullet key={`action-${index}`} item={item} />
                   ))}
-                  {guidance.reapplicationReminder && <GuidanceBullet item={guidance.reapplicationReminder} />}
                 </View>
               </View>
             </View>

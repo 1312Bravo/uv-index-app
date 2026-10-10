@@ -19,11 +19,6 @@
     "extraAttentionBandKey": "8-plus",
     "coverageToleranceSeconds": 1
   },
-  "sunscreenReminder": {
-    "minimumPlannedOutingMinutes": 120,
-    "minimumCoveredUvInclusive": 3,
-    "messageKey": "reapplication"
-  },
   "conditionalContextRules": [
     {
       "key": "reflective-surroundings",
@@ -31,9 +26,21 @@
       "messageKey": "reflectiveConditions"
     },
     {
-      "key": "sunscreen-washed-or-rubbed-off",
+      "key": "sunscreen-after-conditions",
       "whenAnyCoveredUvAtOrAbove": 3,
       "messageKey": "sunscreenAfterConditions"
+    }
+  ],
+  "durationGuidance": {
+    "minimumCoveredElevatedUvSeconds": 7200,
+    "messageKey": "sunscreenExtendedExposure"
+  },
+  "weatherContextRules": [
+    {
+      "key": "very-cloudy-during-elevated-uv",
+      "whenUvAtOrAbove": 3,
+      "whenCloudCoverAtOrAbovePercent": 76,
+      "messageKey": "cloudyElevatedUv"
     }
   ],
   "forecastCoverage": {
@@ -60,7 +67,7 @@
     {
       "key": "temperature-cloud-cover-precipitation",
       "role": "display-context-only",
-      "handling": "May help describe the outing weather, but never changes UV bands, UV durations, or protection triggers."
+      "handling": "Temperature and precipitation remain display context. Cloud cover may add a conditional explanation when very cloudy hours overlap with elevated forecast UVI; it never changes UV values, durations, or protection thresholds."
     },
     {
       "key": "daylight",
@@ -107,7 +114,8 @@
     ],
     "uvScoutProductChoices": [
       "Use raw UVI bands below 3, 3 to below 8, and 8 or higher to describe the forecast profile.",
-      "Use the 120-minute reminder trigger only as a conditional planning reminder, not a personal reapplication timer.",
+      "When covered UVI reaches 3, show baseline protection and conditional after-water/sweat sunscreen advice.",
+      "Show the two-hour reapplication planning message only when at least 7200 covered seconds are forecast at UVI 3 or higher; this cumulative exposure trigger is a UV Scout product choice, not a WHO rule.",
       "Keep WHO's general action table in Info; compose separate UV Scout outing guidance from the complete covered profile."
     ],
     "notValidatedOrCalculated": [

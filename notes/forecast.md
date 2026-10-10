@@ -74,8 +74,13 @@ attribution, and limitations.
   dark selected style. Add up to three surrounding hourly bins on each side,
   using the same number of context bins before and after where the available
   forecast permits; render these context values faintly.
-- Show the forecast and baseline protection guidance as soon as start and end
-  are selected; no shade input is required. Add a conditional sunscreen
-  reapplication reminder for outings of at least 120 minutes when the covered
-  forecast reaches raw UVI 3+. This is a UV Scout rule, not an individualized
-  reminder or application tracker. See the [recommendation tree](recommendation-tree-draft.md).
+- Show the forecast and actionable protection guidance as soon as start and
+  end are selected; no shade or activity input is required. When covered
+  forecast UV reaches raw UVI 3+, include clothing, eye protection, shade,
+  sunscreen application, and conditional reapplication after water/sweat. Add
+  the two-hour planning reminder only when covered UVI 3+ totals at least two
+  hours; this is not a personal timer or application tracker. Name the local
+  forecast time windows for UVI 3–<8 and 8+. If very cloudy hours (76%+ per the
+  Info mapping) overlap with UVI 3+, clarify that cloud cover does not replace
+  the UVI forecast. Temperature and precipitation remain context, not UV
+  modifiers. See the [recommendation tree](recommendation-tree-draft.md).

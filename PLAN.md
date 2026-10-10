@@ -174,9 +174,9 @@ calculation, supported platform versions, and the final visual polish.
   average/range cloud cover, and precipitation amount plus peak hourly chance.
 - [x] Implement peak-based protection levels using raw UV, separate from display
   category rounding.
-- [x] Add the initial outing recommendation profile: duration by UV band,
-  continuous elevated intervals, forecast-coverage caveat, and conditional
-  sunscreen reminder at 120+ minutes when covered peak UV is 3+.
+- [x] Add the outing recommendation profile: duration by UV band, continuous
+  elevated intervals, forecast-coverage caveat, and actionable protection
+  steps conditioned on the covered UV profile.
 - [x] Review and broaden UV Scout's recommendation evidence/scenarios; separate
   active editable policy (`uvScoutRecommendationRules.json`) from user-facing
   wording and validate the active policy in the domain interpreter.
@@ -332,10 +332,9 @@ calculation, supported platform versions, and the final visual polish.
 - Accepted a provisional first-pass set of forecast-profile measures: peak/time,
   duration-weighted average, time in UV bands, longest continuous elevated
   interval, and forecast coverage. Converted this first slice into validated
-  JSON plus a TypeScript interpreter. Added the conditional sunscreen reminder
-  for outings lasting at least 120 minutes when covered forecast UV reaches 3+.
-  The broader proposal remains in `notes/recommendation-tree-draft.md` for
-  deferred factors.
+  JSON plus a TypeScript interpreter. The original 120-minute sunscreen
+  reminder gate was later replaced with actionable advice whenever covered UV
+  reaches 3+; see the current policy in `notes/recommendation-tree-draft.md`.
 - Removed the shade selector from the planner. Use general shade advice without
   adjusting forecast UV or claiming route-specific shade; defer optional
   “Tailor this advice” inputs.
@@ -349,8 +348,15 @@ calculation, supported platform versions, and the final visual polish.
   static Info table; UV Scout's interpreter summarizes the outing.
 - Added a compact set of manually traced outing profiles covering low UV,
   sustained moderate UV, a brief high peak, split elevated periods, partial
-  coverage, weather-context independence, and the two-hour reminder boundary.
-  These are review scenarios, not automated tests or medical thresholds.
+  coverage, weather-context independence, and advice-trigger boundaries. These
+  are review scenarios, not validated health-risk outcomes.
+- [x] Make outing advice more actionable without requiring an activity choice:
+  add clothing, hat, eyewear, shade, broad-spectrum SPF 30+ application, and
+  product-label-led reapplication directions; point out the hourly UVI 8+ period
+  and keep reflective-surface advice conditional.
+- [x] Make advice more specific to forecast conditions: state actual local-time
+  windows for UVI 3–<8 and 8+, and add a cloud-coverage clarification only when
+  very cloudy hours overlap with UVI 3+. Cloud cover never modifies forecast UVI.
 - Researched public-health protection guidance and documented source-backed
   groupings, shade limitations, and draft app rules in
   `notes/protection-guidance-research.md`.

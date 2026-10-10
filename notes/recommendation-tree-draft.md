@@ -1,15 +1,18 @@
-# UV Scout recommendation model — implementation slice v0.5
+# UV Scout recommendation model — implementation slice v0.6
 
-**Reviewed:** 8 October 2026. This revision has had separate evidence, logic,
+**Reviewed:** 10 October 2026. This revision has had separate evidence, logic,
 and clarity/implementation passes against the installed UV evidence-review
 prompt and the project sources.
 
 **Status:** WHO's three-band reference is rendered as a static Info table. The
 outing guidance composes the covered hourly UV profile, band durations,
 peak/time, duration-weighted average, continuity, forecast coverage, and
-conditional practical actions. Active policy and factor roles live in
+actionable, profile-conditioned protection steps. Practical actions name the
+local-time windows for UVI 3–<8 and UVI 8+. A cloud-context rule fires only
+when very-cloudy forecast hours overlap with UVI 3+. Active policy and factor
+roles live in
 `uvScoutRecommendationRules.json`; user-facing wording lives separately in
-`uvScoutInsight.json`. Twenty-one manually traced scenarios document behavior and
+`uvScoutInsight.json`. Twenty-two manually traced scenarios document behavior and
 edge cases; they are not automated tests or validated health-risk outputs. The
 model does not convert these factors into a personal risk score or apply
 invented duration-danger cutoffs.
@@ -36,16 +39,53 @@ Related evidence and factor inventory:
 - Do not ask for shade or other protection context in the default planner.
   Until the product decides otherwise, unknown conditions get concise
   conditional wording rather than assumptions.
-- Temperature and cloud percentage remain forecast context; neither modifies
-  the UV recommendation.
-- For an outing of at least 120 minutes whose covered forecast reaches raw UVI
-  3+, show a conditional sunscreen reminder. This is a UV Scout product trigger
-  based on general reapplication guidance; it does not track application or
-  create a personal timer.
+- Temperature and precipitation remain forecast context and do not modify UV
+  advice. Cloud cover never modifies forecast UVI or its thresholds; when
+  very-cloudy hours overlap with UVI 3+, it adds only a clarification to follow
+  the UVI forecast rather than assuming clouds remove UV.
+- Whenever covered forecast UV reaches raw UVI 3+, include practical sunscreen
+  application and reapplication directions, conditionally phrased for people
+  who use sunscreen. This does not track application or create a personal timer.
 - Keep the reasoning layers distinct: WHO's sourced reference is in Info;
   **UV guidance for outing** is UV Scout's own full-profile interpretation.
   Clearly say the Scout summary is approximate and is not personal dose or
   individualized health risk.
+
+## Actionable advice update — 10 October 2026
+
+Whenever covered forecast time reaches UVI 3+, the app gives practical steps:
+
+- Cover exposed skin with clothing, wear a broad-brimmed hat and
+  UV-protective sunglasses, and use available shade when UV is strongest.
+- For skin left uncovered, use broad-spectrum SPF 30+ sunscreen; apply it
+  generously and evenly as the product label directs. Sunscreen is one layer,
+  not a reason to extend time outside.
+- If using sunscreen, reapply after swimming, sweating, or drying off, following
+  the product label. A separate every-two-hours planning reminder appears only
+  when the covered forecast contains at least two cumulative hours at UVI 3+;
+  this distinguishes a brief UV peak followed by low UV from sustained elevated
+  UV. It is a UV Scout product rule based on general reapplication guidance,
+  not a WHO exposure threshold. UV Scout does not know whether/when sunscreen
+  was applied and does not run a personal timer.
+- If near snow, bright sand, or water, keep protecting yourself even in shade;
+  reflected UV can add exposure.
+- Name the actual local-time windows when UVI 3–<8 and 8+ are forecast. These
+  are estimates based on one-hour forecast bins, not minute-level predictions.
+- If cloud cover is at least 76% (the Info mapping's “very cloudy” band) during
+  an overlapping UVI 3+ hour, explain that clouds can reduce UV but do not
+  reliably remove it. Point to the UVI forecast; do not apply a cloud
+  multiplier or trigger the note from cloud cover alone.
+
+When UVI 8+ occurs, a separate action names the local-time forecast window and
+advises prioritizing shade during those hours where possible. This is general
+planning guidance, not a risk score or a claim that shade removes UV. The
+planner still has no activity selector or extra required inputs; sweat,
+swimming, clothing, route shade, and reflective surroundings are not inferred.
+
+The previous UV Scout product trigger based on total outing length (at least
+120 minutes) was replaced with one based on covered time at UVI 3+ (at least
+two hours). This better matches the factor the outing model actually describes:
+time in elevated UV, not time spent outside at any UV level.
 
 ## Evidence versus UV Scout choices
 
@@ -67,9 +107,11 @@ and [FDA sunscreen guidance](https://www.fda.gov/drugs/understanding-over-counte
 peak/time, duration-weighted average, estimated time in UV bands, longest
 continuous elevated periods, and forecast coverage. Keep these as descriptive
 profile signals; never infer personal dose or adjust forecast UV for shade,
-cloud percentage, clothing, or activity. Apply practical messages only when
-their corresponding forecast conditions are present, without creating new
-medical duration thresholds.
+cloud percentage, clothing, or activity. Very cloudy hours may select a
+separate clarifying sentence only when they overlap with UVI 3+; this does not
+change the protection level. Apply practical messages only when their
+corresponding forecast conditions are present. The two-hour sunscreen-planning
+trigger is an explicitly labeled UV Scout choice, not a medical threshold.
 
 **Deferred:** optional context questions; numeric sunscreen amount; future
 start-time comparisons; and any labels such as “brief” or
@@ -189,7 +231,7 @@ These conditions affect protection advice, not the forecast UVI or WHO band.
 
 | Known condition | Draft behavior | Unknown/not collected in default planner |
 | --- | --- | --- |
-| Outing is at least 120 minutes and its covered forecast reaches UVI 3+ | Add the editable, conditional reminder that this outing lasts at least two hours and users who use sunscreen can plan to reapply during it, following the product directions. This is not a due-time calculation. | Do not assume sunscreen was applied at outing start or calculate the number of personal reapplications. If the covered forecast stays below UVI 3, do not trigger this from duration alone. |
+| Any covered outing time reaches UVI 3+ | Give baseline sunscreen-on-uncovered-skin advice and conditional reapplication after swimming, sweating, or drying off. When cumulative covered time at UVI 3+ reaches two hours, add a separate planning reminder based on the whole covered UV profile. | Do not assume sunscreen is used or calculate a personal timer. The two-hour UVI trigger is a UV Scout product choice informed by general reapplication guidance, not a WHO exposure threshold. |
 | Heavy sweating | If explicitly known in a future optional flow, emphasize reapplication sooner/afterward as directed by the product label. | Keep “especially after heavy sweating” conditional; do not infer sweat from running, hiking, cycling, temperature, humidity, or duration. |
 | Swimming/bathing | If explicitly known in a future optional flow, emphasize a product labelled for water resistance and following its water-specific reapplication directions. | Keep “especially after swimming” conditional; do not use a generic 40/80-minute timer across countries/products. |
 | Toweling/drying off | If explicitly known in a future optional flow, include label-directed reapplication after toweling. | No assumption or detection. |
@@ -238,19 +280,19 @@ the unchanged static table in Info; it is not a tier selected for that outing.
 
 | Scenario and hourly UVI profile | Derived profile | Guidance assembled by current rules | What it checks |
 | --- | --- | --- | --- |
-| **Low throughout, 6h:** `[0, 1, 2, 2, 1, 0]` | Below 3: 6h; 3–<8: 0h; 8+: 0h. Peak 2; average 1.0. | “No covered forecast period reaches UV Index 3.” No elevated-band action or reapplication reminder; retain the note that this is not zero exposure. WHO's 0–2 guidance remains available in Info. | No reassurance that UV is zero; no unnecessary higher-band actions. |
-| **Sustained moderate, 6h:** `[4, 5, 6, 6, 5, 4]` | Below 3: 0h; 3–<8: 6h; 8+: 0h. Peak 6; average 5.0; one continuous elevated period. | State that 3+ appears for about 6h, report the 3–<8 duration, peak/time, and average; give the 3–<8 practical protection text and the conditional sunscreen reminder. No separate “split period” detail because the period is continuous. | Sustained exposure remains visible; the peak does not stand in for the whole profile. |
-| **Brief high peak, 6h:** `[0, 0, 8, 1, 0, 0]` | Below 3: 5h; 3–<8: 0h; 8+: 1h. Peak 8; average 1.5. | Headline reports about 1h at 3+; the high-period action applies to about 1h at 8+, not the whole outing. Show the low hours, peak/time, average, and conditional reapplication reminder (the planned outing is ≥2h and reaches 3+). | A high peak is retained without labeling all six hours high; average does not erase the peak. |
+| **Low throughout, 6h:** `[0, 1, 2, 2, 1, 0]` | Below 3: 6h; 3–<8: 0h; 8+: 0h. Peak 2; average 1.0. | “No covered forecast period reaches UV Index 3.” No above-threshold action or reapplication advice; retain the note that this is not zero UV. WHO's 0–2 guidance remains available in Info. | No reassurance that UV is zero; no unnecessary higher-band actions. |
+| **Sustained moderate, 6h:** `[4, 5, 6, 6, 5, 4]` | Below 3: 0h; 3–<8: 6h; 8+: 0h. Peak 6; average 5.0; one continuous elevated period. | State that 3+ appears for about 6h, report the 3–<8 duration, peak/time, and average; name the local-time 3–<8 window; give clothing/eye/shade steps, uncovered-skin sunscreen directions, and reapplication advice. | Sustained exposure remains visible; the peak does not stand in for the whole profile. |
+| **Brief high peak, 6h:** `[0, 0, 8, 1, 0, 0]` | Below 3: 5h; 3–<8: 0h; 8+: 1h. Peak 8; average 1.5. | Headline reports about 1h at 3+; the high-period action applies to about 1h at 8+, not the whole outing. Show the low hours and peak/time, then advise using the chart to find the 8+ period and prioritizing shade there where possible. Apply the same conditional sunscreen advice as other covered UVI 3+ outings. | A high peak is retained without labeling all six hours high; average does not erase the peak. |
 | **Separated elevated periods, 6h:** `[4, 1, 8, 2, 5, 1]` | Below 3: 3h; 3–<8: 2h; 8+: 1h. Peak 8; average 3.5; longest continuous 3+ run: 1h. | Report about 3h at 3+, with separate band durations, peak/time, average, and the longest continuous elevated run. Include both the 3–<8 and 8+ practical text, plus the conditional reminder. | Multiple applicable rules compose; the app need not have a unique paragraph for this exact sequence. |
-| **Partial coverage, 6h planned:** four covered bins `[4, 4, 1, 1]`, then 2h missing | Covered: below 3 for 2h and 3–<8 for 2h; peak 4; average 2.5 over covered time. | Headline and band durations say “covered forecast”; show that 4h of the planned 6h are covered and the other 2h are unknown. The current two-hour reminder still triggers because the plan is 6h and the covered peak reaches 3+. | Missing time is not treated as zero; makes visible that the reapplication trigger currently uses planned duration plus the covered peak. |
+| **Partial coverage, 6h planned:** four covered bins `[4, 4, 1, 1]`, then 2h missing | Covered: below 3 for 2h and 3–<8 for 2h; peak 4; average 2.5 over covered time. | Headline and band durations say “covered forecast”; show that 4h of the planned 6h are covered and the other 2h are unknown. Action guidance is based only on covered UVI; missing periods remain unknown. | Missing time is not treated as zero or used to infer an action trigger. |
 | **Weather context changes, same UV:** hold `[1, 2, 4, 6, 5, 2]` fixed; compare cool/cloudy (14–18°C, 90–100% clouds) with warm/clear (24–30°C, 0–5% clouds); precipitation may also differ | UV profile remains: below 3 for 3h; 3–<8 for 3h; peak 6; average 3.3. | UV guidance stays the same; the weather values change their separate chart/summary display only. | Confirms that clouds, temperature, and precipitation are not hidden UV multipliers. It is a product-logic check, not a claim that a provider would forecast identical UV under every weather combination. |
-| **Reapplication boundary:** 90 min versus 120 min at UVI 4 | Both are entirely in 3–<8; same peak/category, different outing duration. | The reminder is absent at 90 min and appears at exactly 120 min. It says “if you use sunscreen” and follows product directions; it does not schedule a personal application time. | Makes the current 120 min product cutoff explicit for later review; WHO's general advice is about reapplication, not this app's outing-start trigger. |
+| **Short outing, UVI 3+:** 30 min at UVI 4 | 30 min in 3–<8; peak 4. | Protection and conditional reapplication steps still appear. The wording does not imply an interval falls within the plan and does not start a timer. | Confirms practical advice is not gated by outing duration. |
 
 ### How to read the combinations
 
 Each rule is evaluated independently against the same profile, then relevant
-messages are combined: UVI 3–<8 time, UVI 8+ time, coverage, and the
-duration-based reminder can all contribute to one result. Temperature, clouds,
+messages are combined: UVI 3–<8 time, UVI 8+ time, coverage, and conditional
+sunscreen/reapplication advice can all contribute to one result. Temperature, clouds,
 precipitation, and daylight do not currently branch UV protection guidance.
 Sweating, swimming, toweling, shade, clothing coverage, reflective surfaces,
 and personal vulnerability are unknown; the app does not infer them. Future
@@ -303,7 +345,7 @@ only the Scout profile appears in outing guidance. Outing metrics come from
 These passes improve traceability and internal consistency; they do not make
 the proposal medically validated or replace a domain expert's review.
 
-## Expanded review scenarios — controlling review set (8 October 2026)
+## Expanded review scenarios — controlling review set (10 October 2026)
 
 This section extends the earlier scenarios above and is the current review set.
 It was manually traced against `src/domain/guidance/uvScoutRecommendationRules.json`
@@ -314,33 +356,34 @@ personal measurements.
 
 | # | Scenario / example | Expected model behavior and check |
 | --- | --- | --- |
-| 1 | Low throughout: `[0,1,2,2,1,0]` for 6 h | 6 h below 3, peak 2, weighted average 1.0; no above-3 practical action or two-hour reminder. Describe forecast conditions, not zero exposure or personal assurance. |
-| 2 | Sustained moderate: `[4,5,6,6,5,4]` for 6 h | 6 h at 3–<8, peak/time retained, average 5.0, longest continuous ≥3 is 6 h; band-specific practical guidance and conditional reminder. No invented “dangerous after X hours” cutoff. |
-| 3 | Brief 8+ peak, otherwise low: `[0,0,8,1,0,0]` for 6 h | 5 h below 3 and 1 h at 8+, peak 8, average 1.5. Preserve the high interval and its action without describing all six hours as high. |
+| 1 | Low throughout: `[0,1,2,2,1,0]` for 6 h | 6 h below 3, peak 2, weighted average 1.0; no above-3 practical action. Describe forecast conditions, not zero exposure or personal assurance. |
+| 2 | Sustained moderate: `[4,5,6,6,5,4]` for 6 h | 6 h at 3–<8, peak/time retained, average 5.0, longest continuous ≥3 is 6 h; band-specific protection and reapplication planning advice. No invented “dangerous after X hours” cutoff. |
+| 3 | Brief 8+ peak, otherwise low: `[0,0,8,1,0,0]` for 6 h | Preserve the one-hour 8+ interval, peak, and action without describing the entire outing as high; 1 h at UVI 3+ does not trigger the two-hour reapplication reminder. |
 | 4 | Mixed moderate and 8+: `[4,4,8,4,4,4]` for 6 h | 5 h at 3–<8 and 1 h at 8+, average about 4.7; communicate both sustained moderate and the distinct higher hour. The average does not remove the peak. |
 | 5 | Equal mean, different profile: `[4,4,4,4]` vs `[0,0,8,8]` for 4 h | Both average 4, but first has 4 h at 3–<8 and second 2 h below 3 plus 2 h at 8+. Band durations and peak preserve the difference. |
 | 6 | Same total elevated time, separated: `[4,1,4,1,4,1]` | Three distinct forecast stretches at 3–<8; longest elevated run is 1 h, not the 3 h total. Do not call it three continuous hours. |
 | 7 | Exact band boundaries: `[2.9,3.0,7.9,8.0]`, 1 h per bin | Exactly 1 h below 3, 2 h at 3–<8, and 1 h at 8+. Raw values decide rules; display-category rounding does not change them. |
 | 8 | Partial bins: 30 min at UVI 2, 60 min at 4, 30 min at 8 | 30 min below 3, 60 min at 3–<8, 30 min at 8+; weighted average 4.5. Confirms overlap weighting rather than counting touched hours as full hours. |
-| 9 | Partial coverage: 3 h requested, only 2 h covered at `[4,4]` | Describe 2 covered hours at 3–<8, average 4 over covered time, and disclose the missing hour. Do not imply it was low or complete. Current 120-minute reminder uses planned duration plus covered peak; keep conditional. |
+| 9 | Partial coverage: 3 h requested, only 2 h covered at `[4,4]` | Describe 2 covered hours at 3–<8, average 4 over covered time, disclose the missing hour, and give actions based on the known covered values only. Do not imply the missing hour was low or complete. |
 | 10 | Missing gap splits a run: UVI 5 for 1 h, no forecast for 1 h, then UVI 5 for 1 h | Two covered elevated hours total, but neither continuous interval exceeds 1 h. Missing coverage is not zero UV and breaks continuity. |
 | 11 | No usable overlap / no forecast | Do not produce a recommendation from nonexistent data. Ask the user to adjust time/duration; never substitute zeros. |
-| 12 | Reminder duration boundary: 119 vs 120 planned minutes, covered peak UVI 4 | Reminder absent at 119 and present at 120, phrased “if you use sunscreen”; this is an editable planning reminder, not a personal timer. |
-| 13 | Reminder UV boundary: 120 min, peak UVI 2.9 vs 3.0 | No reminder below raw 3; reminder at raw 3 when duration is also ≥120 min. Do not use rounded display category. |
-| 14 | Same UV profile, differing temperature/cloud/rain | UV Scout advice is unchanged. Weather remains separate. Cloud percentage is not “UV blocked %”; cool weather does not imply protective clothing or lower UV. |
+| 12 | Same plan length, different profile: `[8,0,0,0,0]` vs `[7,7,7,7,7]` | Both receive appropriate protection advice, but only the sustained profile reaches two cumulative covered hours at UVI 3+ and gets the time-based reapplication planning reminder. |
+| 13 | Advice UV boundary: peak UVI 2.9 vs 3.0 | The elevated-UV action set is absent below raw 3 and appears at raw 3; do not use rounded display category. |
+| 14 | Very cloudy during elevated UV: `[5,5,2]`, cloud `[90,40,100]%` | Keep UV profile/actions; add a cloud note only for the coincident first hour at UVI 5 and 90% cloud. The overcast hour at UVI 2 alone does not trigger it. |
 | 15 | Snow, sand, water, or elevation might matter but are unknown | When covered UVI reaches 3+, add the conditional reflection note; do not claim the user is there or apply a numeric adjustment. Elevation remains part of forecast context and is not separately adjusted. |
 | 16 | Route shade, clothing coverage, and eyewear unknown | Do not assume shade or what the person wears. Keep complementary general actions; no shade multiplier. |
-| 17 | Swimming, heavy sweating, exercise, toweling, product/application unknown | When covered UVI reaches 3+, show a conditional sunscreen reminder to follow the product directions and reapply after swimming, sweating, or drying off. Do not assert that the user is swimming/sweating or calculate product-specific timers. |
+| 17 | Swimming, heavy sweating, exercise, toweling, product/application unknown | When covered UVI reaches 3+, keep after-condition advice conditional and label-led. Add the two-hour planning reminder only if covered UVI 3+ totals at least two hours. Do not infer the conditions or calculate product-specific timers. |
 | 18 | Bright reflective surroundings unknown (snow, bright sand, water) | When covered UVI reaches 3+, explain conditionally that reflection can add UV beyond the location forecast. Do not infer the surface or apply a numeric multiplier. |
-| 19 | Nighttime forecast has UVI 0 and daylight markers show darkness | Report forecast and daylight separately; darkness is not an all-outing health assurance, nor should day/night be inferred from UV alone. |
-| 20 | Long outing but UVI below 3: 8 h `[0,1,1,2,1,1,0,0]` | Duration remains visible but does not alone trigger the two-hour reminder when covered peak is below 3. No individual risk conclusion. |
-| 21 | Repeated moderate/high values over a long outing | Keep peak, time in bands, average, and longest continuity separate. No composite risk score, UVI-hours dose, or unsupported “overall risk” ranking. |
+| 19 | Same UV profile, differing temperature/rain and clear vs very cloudy sky | Temperature and rain do not alter UV actions. Cloud wording may differ only when at least 76% cloud cover coincides with UVI 3+. No weather variable is a UV multiplier. |
+| 20 | Nighttime forecast has UVI 0 and daylight markers show darkness | Report forecast and daylight separately; darkness is not an all-outing health assurance, nor should day/night be inferred from UV alone. |
+| 21 | Long outing but UVI below 3: 8 h `[0,1,1,2,1,1,0,0]` | Duration remains visible but does not alone trigger the elevated-UV action set when covered peak is below 3. No individual risk conclusion. |
+| 22 | Repeated moderate/high values over a long outing | Keep peak, time in bands, average, and longest continuity separate. No composite risk score, UVI-hours dose, or unsupported “overall risk” ranking. |
 
-These 21 scenarios are coverage of distinct behavior classes, not an attempt to
-enumerate every possible hourly combination. Add automated tests when a test
-harness exists; exact checks should include UVI 3/8, 119/120 minutes, partial
-overlaps, missing intervals, zero coverage, and weather changes that must not
-alter UV advice.
+These 22 scenarios are coverage of distinct behavior classes, not an attempt to
+enumerate every possible hourly combination. Automated domain tests cover raw
+UVI 3/8 boundaries, different duration profiles, exact advice windows, cloudy
+hours coincident with elevated UV, partial overlaps, missing intervals, and
+conditions that must not alter UV values or advice.
 
 The model composes independent observations: forecast bands, duration,
 peak/time, weighted mean, continuous elevated spans, and coverage. Shade,

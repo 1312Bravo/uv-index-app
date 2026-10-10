@@ -6,7 +6,7 @@ and the current implementation slice in
 now enabled. Older peak-selected WHO references in this research record the
 previous proposal and are superseded by that decision.
 
-**Reviewed:** 2026-10-08. Public-health pages and API documentation can change;
+**Reviewed:** 2026-10-10. Public-health pages and API documentation can change;
 recheck the linked versions before a public or commercial release. This revision
 expands the sunscreen and exposure-duration review and separates the WHO reference
 from the proposed UV Scout recommendation model.
@@ -46,6 +46,34 @@ implemented profile-first slice and remaining proposals and product questions.
 - The model reports forecast conditions, not personal exposure, absorbed dose,
   burn time, or a validated health-risk score. The one-hour representation and
   partial forecast coverage remain explicit limitations.
+
+## Product decision update — 10 October 2026
+
+The outing advice is now more actionable without an activity selector or
+required questions. For any covered time at UVI 3+, it gives concrete clothing,
+hat, eyewear, shade, and uncovered-skin sunscreen steps; conditional
+reapplication after swimming, sweating, or drying off; and conditional
+reflected-UV context. It adds an every-two-hours planning reminder only when
+the covered forecast contains at least two cumulative hours at UVI 3+, rather
+than using total outing duration or a brief peak alone. For UVI 8+, it names
+the local-time forecast window and advises prioritizing shade during those
+hours where possible.
+
+The former app-specific rule that gated reapplication wording on an outing of
+at least 120 minutes is superseded. UV Scout does not know if/when sunscreen
+was applied and does not create a personal timer. Follow the product label;
+this is general guidance, not a prediction that protection lasts for a fixed
+time. WHO's cited protection page was checked again 10 October 2026.
+
+This implementation refinement makes the profile actionable in time: the
+moderate and 8+ actions state their actual local-time forecast windows rather
+than asking users to infer them from the graph. A separate cloud-context rule
+fires only when at least 76% cloud cover (the existing “very cloudy” Info band)
+coincides with UVI 3+. It explains that clouds may reduce UV but should not be
+used instead of the UVI forecast. This is a contextual clarification only;
+cloud cover never reduces or increases the provider's UVI. Temperature and
+precipitation remain display context, not UV advice modifiers. The 76% boundary
+is an existing product label boundary, not a scientific protection threshold.
 
 ## Expanded evidence and scenario review — 8 October 2026
 
@@ -100,15 +128,15 @@ human-readable app text remains in `uvScoutInsight.json`, and
 
 | Factor | Evidence relevance | Current model treatment | What would be needed to use it differently |
 | --- | --- | --- | --- |
-| Raw hourly UVI and time-of-day pattern | Principal forecast indicator; higher levels and duration matter | Core profile: peak/time, weighted average, time per band, longest continuous elevated interval | Better temporal resolution and validation before any dose-like estimate |
+| Raw hourly UVI and time-of-day pattern | Principal forecast indicator; higher levels and duration matter | Core profile: peak/time, weighted average, time per band, longest continuous elevated interval; practical actions name local-time UVI 3–<8 and 8+ windows | Better temporal resolution and validation before any dose-like estimate |
 | Planned duration and partial-bin overlap | Describes how long the outing intersects forecast periods | Exact interval overlap, with provider-hour values treated as representative | Do not treat it as exposure time if user is not actually outdoors throughout |
 | Forecast coverage and gaps | Missing data cannot support a claim about the full plan | Profile only over covered intervals; explicit caveat; gaps break continuity | Forecast timestamp/uncertainty data before adding freshness/confidence claims |
 | Location, date, timezone, elevation | Affect modeled forecast and UV context | Use selected place and provider forecast/timezone; no separate elevation multiplier | Documented compatible elevation data and validated forecast method before adjustments |
-| Cloud cover | Associated with UV but type/thickness and scattering matter; percentage alone is insufficient | Display only; do not recalculate provider UV | Cloud optical properties and validated source model, not a cloud-cover percentage |
+| Cloud cover | Associated with UV but type/thickness and scattering matter; percentage alone is insufficient | Display separately; when at least 76% cloud overlaps UVI 3+, add a conditional clarification to follow UVI; never recalculate provider UV | Cloud optical properties and validated source model, not a cloud-cover percentage |
 | Shade and route geometry | Shade reduces direct exposure but diffuse/reflected UV can remain | Unknown; general availability wording only; no numeric reduction | Explicit route/shade detail and evidence-based method, while preserving uncertainty |
 | Surface reflection (snow, sand, water, bright surroundings) | Can add reflected/scattered UV | When covered UVI reaches 3, show a conditional note; do not infer the surface or multiply UVI | User-supplied context would be needed for tailored advice; exact additional exposure remains unestimated |
 | Clothing, hat, eyewear, exposed skin | Protection actions depend on coverage and garment/protection properties | General complementary advice only; no inferred coverage | Carefully designed optional inputs; avoid converting vague choices to SPF/dose |
-| Sunscreen use, product, application time/amount | Correct use and reapplication matter; water resistance is product-specific | Conditional after-condition note when covered UVI reaches 3; an additional ≥120-minute reminder when covered peak UVI ≥3; no timer | User-provided application/product label details and a deliberate privacy/UX decision |
+| Sunscreen use, product, application time/amount | Correct use and reapplication matter; water resistance is product-specific | Baseline application plus conditional after-water/sweat/drying guidance whenever covered UVI reaches 3; add a two-hour planning reminder when cumulative covered UVI 3+ time reaches two hours | The two-hour trigger is a UV Scout product choice informed by WHO's interval, not a WHO exposure threshold. No personal timer or assumed application time. |
 | Sweat, swimming, exercise, toweling | Can remove sunscreen and prompt earlier reapplication | Conditional reapplication wording when covered UVI reaches 3; never inferred | Explicitly known condition would allow tailoring, but still follow product directions rather than one universal timer |
 | Temperature, apparent temperature, humidity, precipitation, wind | Relevant to comfort/weather, not a direct substitute for UV | Weather outlook only; does not alter UV categories/actions | Separate weather-safety domain and authoritative, defined weather thresholds |
 | Daylight/twilight | Helps understand whether a proposed outing is in daylight | Display timing context; no substitution for UVI | Keep local solar-event method and polar/terrain limitations visible |
@@ -124,7 +152,7 @@ short UVI 8+ peaks versus long lower-UV periods, sustained UVI 3–<8, equal
 averages with different peaks, split versus continuous elevated periods, exact
 raw-threshold boundaries, partial first/last hours, gaps, incomplete/no
 coverage, weather held apart from UV, daylight, reflective surfaces, unknown
-shade/clothing, sweat/water/product conditions, and sunscreen reminder edges.
+shade/clothing, sweat/water/product conditions, and advice-trigger boundaries.
 The cases exercise rule composition rather than enumerating every combination.
 
 The model should be thought of as a transparent profile composer:
@@ -133,9 +161,9 @@ The model should be thought of as a transparent profile composer:
 2. Derive profile facts from raw forecast values and actual overlap.
 3. Select the applicable band-specific, general protective actions without
    letting the average hide a peak.
-4. Add conditional reflection/sunscreen-after-condition notes when covered UVI
-   reaches 3; add the separate two-hour reminder only when both its planned-
-   duration and covered-UVI triggers are true.
+4. Add actionable sunscreen and conditional reflection/reapplication wording
+   when covered UVI reaches 3. The app does not infer use or condition and does
+   not run a personal application timer.
 5. Keep weather/daylight as separate context; do not infer whether conditional
    factors actually apply.
 6. Disclose limitations; do not produce dose, burn-time, safety, or personal
@@ -209,7 +237,7 @@ one of these:
 | Sunscreen amount and application | Protection assumes sufficient, even application. WHO gives 3–4 heaped tablespoons/about 35 ml for an adult full body; FDA/AAD use about 1 fluid ounce for an average full-body application. Required amount changes with body size and uncovered area. WHO says 20–30 minutes before exposure; FDA/AAD say 15 minutes. | A concise tip can say apply generously and evenly to all skin not covered by clothing, including often-missed areas. A more detailed help panel could explain the adult full-body example and that clothing reduces the amount needed. | **Action plus optional education.** Do not turn a whole-body amount into a one-size-fits-all personal dose. Because official lead-time advice differs, direct users to their product label/local advice rather than selecting a universal minute value without a policy decision. |
 | Reapplication, elapsed time, swimming, sweating, and toweling | WHO advises reapplying every two hours, particularly after sweating, swimming, playing, or exercising. FDA says at least every two hours and more often with swimming/sweating; U.S. water-resistance periods depend on the product label. | Outing length can indicate whether one or more reapplication reminders may fall during the plan. Sweat, water, and toweling can make label-specific earlier reapplication relevant. The app does not know when sunscreen was applied, whether it is used, or which product/label applies. | **High-value advice modifier, partly unknown.** Default wording can be conditional. A future optional input could report swimming/heavy sweating; a future application-time control would be a separate tracking decision. Any reminder must say to follow the product label and must not imply protection is guaranteed between reminders. |
 | Eye, head, and skin protection | UV can harm eyes as well as skin. WHO recommends UV-protective wraparound sunglasses, protective clothing, a brimmed hat, shade, and broad-spectrum sunscreen on skin clothing does not cover. | Cover complementary protection options rather than over-focusing on sunscreen. | **Baseline actions.** Say UV-protective eyewear; do not infer protection from lens darkness or price. Keep body-part coverage specific but concise. |
-| Cloud cover | Clouds often reduce UV, but UV can still be high under cloud. Cloud percentage is a sky-cover estimate, not the fraction of UV blocked. | Helps explain the sky condition but should not override a supplied UV forecast or make a cloudy outing sound safe. | **Context only.** Show cloud percentage separately. Do not multiply or subtract it from regular `uv_index`; do not interpret “100% cloud cover” as “100% UV blocked.” |
+| Cloud cover | Clouds often reduce UV, but UV can still be high under cloud. Cloud percentage is a sky-cover estimate, not the fraction of UV blocked. | When the existing “very cloudy” band (76%+) overlaps an hour at UVI 3+, tell the user to follow the UVI forecast rather than cloud cover alone. | **Advice context only.** Show cloud percentage separately. Do not multiply or subtract it from regular `uv_index`; do not interpret “100% cloud cover” as “100% UV blocked.” |
 | Snow, water, sand, bright surfaces | WHO notes reflection can increase UV exposure; snow, water, sand, and bright surfaces are relevant contexts. | When covered UVI reaches 3, the app adds a conditional note; it does not infer a route or estimate an exact increase. | Optional user-provided context remains deferred. Do not invent a fixed multiplier or assert all surfaces behave identically. |
 | Altitude, latitude, season, ozone, solar angle | These affect environmental UV; WHO lists them as drivers. The selected provider forecast may incorporate some of these through its model, but its exact contribution depends on model and location. | They explain why the same clock time or season may have different UVI in different places. | **Forecast-model context, not app multipliers.** Prefer the provider's location/time forecast. Do not add a generic altitude or seasonal adjustment on top. |
 | Skin sensitivity, previous skin cancer, family history, photosensitizing medicines, age | WHO identifies some groups as more vulnerable; FDA explains that certain medicines may cause photosensitivity. These factors are personal, incomplete, and sometimes sensitive health information. | They can justify more careful advice for some people, but the app has no validated profile or medication checker. Skin color alone must not be used to reassure someone that protection is unnecessary. | **Not personalized in MVP.** Keep general advice suitable to a broad audience; optionally include a short note that some people need extra care and should follow clinician/local guidance. Do not collect diagnoses, medication names, or skin type without a separate privacy and evidence review. |
@@ -279,7 +307,7 @@ do not interpret every candidate row as a shipped rule.
 | Combination | Evidence-informed effect | Candidate UV Scout behavior | Guardrail |
 | --- | --- | --- | --- |
 | Peak UVI × time at that level | Higher UVI means harm can occur in less time; longer and repeated exposure also matters. | Keep the peak and its time visible, then add estimated minutes/hours in the 3–<8 and 8+ bands so short and sustained exposure are distinguishable. | WHO's static table is not an outing-selected tier. Forecast bins are hourly estimates, not a route measurement or exact personal dose. Do not convert them into “safe minutes.” |
-| Total outing duration × reapplication interval | Sunscreen protection requires reapplication; WHO/FDA guidance is generally at least/about every two hours, with earlier reapplication after water/sweat or per product label. | Active product choice: a conditional reminder at planned duration ≥120 minutes when covered peak UVI ≥3; no personal timer. | This is an approximate UV Scout reminder, not a sourced rule pairing outing duration with UV threshold. Labels and application timing vary. |
+| Time at covered UVI 3+ × reapplication interval | Sunscreen protection requires reapplication; WHO/FDA guidance is generally at least/about every two hours, with earlier reapplication after water/sweat or per product label. | Keep after-condition advice conditional whenever covered UVI reaches 3; add the two-hour planning reminder when cumulative covered UVI 3+ time reaches two hours. | Two hours of elevated forecast UV is a UV Scout trigger, not a WHO threshold. The app does not know whether/when sunscreen was applied. |
 | Sunscreen × amount × exposed skin | Under-application or missed areas can reduce achieved protection; clothes cover some skin. | Recommend generous, even application to uncovered skin, plus optional quantity education; avoid redundant sunscreen advice if skin is covered. | Do not compute a personalized volume without body size/coverage; WHO/FDA/AAD amount examples are full-body examples, not a universal amount. |
 | Sunscreen × swimming/sweat/towel drying | Water, sweat, and drying off can remove sunscreen; product directions differ. | Active conditional note at covered UVI ≥3; later optional personalization could tailor it if the user shares these conditions. | Do not infer from activity or weather or hard-code U.S. water-resistance timers. |
 | Shade × reflective surroundings | Shade reduces direct sun but scattered and reflected UV may remain; snow, water, sand, and bright surfaces can increase exposure. | General shade advice plus active conditional reflection note at covered UVI ≥3. | A future optional personalization section may collect route context; no numeric shade/reflection multiplier. |
@@ -330,7 +358,7 @@ the review space, not an approved set of shipped questions or thresholds.
 | Sweat / swimming / toweling × sunscreen product | These conditions can call for earlier/product-specific reapplication. | When known, prioritize “follow your product label; reapply after…” over a generic elapsed-time-only reminder. | No activity-based inference, and no universal water-resistance duration. |
 | Shade × reflective surroundings | Shade helps but scattered/reflected UV can remain, especially around reflective surfaces. | General shade advice plus conditional reflection reminder, or tailor it if a future user input exists. | No shade multiplier and no “shade makes it safe” message. |
 | Clothing coverage × sunscreen | Sunscreen advice applies to skin not covered by clothing; clothing quality/coverage varies. | Give complementary actions; tailor only if coverage is explicitly known. | Do not compute sunscreen quantity from a vague clothing selection. |
-| Cloud cover × provider UV | Cloudiness and UV are related but cloud percentage is not a UV-reduction factor. | Use provider's regular UV; present cloud amount separately as context. | Never multiply the UV profile by cloud percentage or imply overcast means no protection is needed. |
+| Cloud cover × provider UV | Cloudiness and UV are related but cloud percentage is not a UV-reduction factor. | Use provider's regular UV; if 76%+ cloud and UVI 3+ overlap, add a targeted clarification with the affected local-time window. | Never multiply the UV profile by cloud percentage or imply overcast means no protection is needed. |
 | Daylight/timing × forecast alternative | Lower UV at a later time may coincide with twilight or darkness; “earlier” may already be past. | Compare only still-future equal-duration choices and show daylight/twilight context. | Never recommend going back in time, or equate darkness with a safe daylight outing. |
 | Forecast completeness × any derived metric | Incomplete or stale samples can distort averages, time-in-band, and duration summaries. | Expose missing coverage, reduce claims, or suppress unsupported results. | Never substitute missing forecast with zero or a fabricated UV value. |
 
@@ -371,13 +399,12 @@ runtime behavior; this section explains how the interpreter composes them:
 3. It builds a Scout-only headline and details from that full covered profile.
    WHO's general reference remains the separate static Info table; this
    interpreter does not select or reproduce WHO guidance.
-4. It adds band-specific practical actions for covered UVI 3–<8 and 8+, plus
-   conditional reflection and sunscreen-after-swimming/sweating/drying-off
-   notes when any covered UVI reaches 3. It does not claim those conditions
-   apply to the user.
-5. It adds the conditional two-hour sunscreen planning reminder when planned
-   duration is at least 120 minutes and the covered peak reaches UVI 3. This is
-   not a personalized timer or a reminder based on known application time.
+4. It adds actionable band-specific protective steps for covered UVI 3–<8 and
+   8+, plus conditional reflection and after-water/sweat sunscreen guidance
+   when any covered UVI reaches 3. It does not claim unknown conditions apply.
+5. It adds the every-two-hours planning reminder only when cumulative covered
+   time at UVI 3+ reaches two hours. This is a UV Scout product trigger, not a
+   WHO exposure threshold or a personal timer.
 6. It discloses incomplete forecast coverage. Temperature, cloud percentage,
    precipitation, daylight, shade, clothing, personal vulnerability, and
    activity are not numerical UV multipliers or inferred user conditions.
@@ -517,10 +544,12 @@ controlling review cases above take precedence over the historical draft prose.
    for an adult full body; FDA/AAD use about one ounce for a typical full-body
    application. WHO says 20–30 minutes before, while FDA/AAD say 15 minutes;
    product-label wording is the safer default for application timing.
-5. **Reapplication reminder.** The active product choice is a conditional
-   reminder at planned duration ≥120 minutes when covered peak UVI is ≥3. It is
-   not a timer and the app does not know when sunscreen was applied or which
-   product is used. A user-controlled application time remains deferred.
+5. **Reapplication reminder.** The active behavior is conditional, label-led
+   advice after swimming, sweating, or drying off whenever covered UVI reaches
+   3. The separate two-hour planning reminder requires two cumulative covered
+   hours at UVI 3+; the earlier total-outing-duration gate is superseded. Neither
+   message is a timer; the app does not know when sunscreen was applied or
+   which product is used.
 6. **Personal vulnerability.** Do not add skin-type or medication profiling by
    default. If personalized guidance is ever desired, define privacy, audience,
    evidence, and clinician/public-health review before collecting any such data.

@@ -1,6 +1,7 @@
 import definitions from './uvScoutInsight.json';
 import rules from './uvScoutRecommendationRules.json';
 import { getHourOverlap, type OutingForecastSummary } from '../outing/calculateOutingForecast';
+import cloudCoverBands from '../weather/cloudCoverBands.json';
 
 type UvBandKey = 'below-3' | '3-to-8' | '8-plus';
 type ThresholdKey = 'protection' | 'extra-protection';
@@ -17,10 +18,10 @@ export type UvScoutInsight = {
   profileDetails: UvScoutInsightItem[];
   practicalGuidance: UvScoutInsightItem[];
   coverageMessage: string | null;
-  reapplicationReminder: UvScoutInsightItem | null;
 };
 
 const expectedBandKeys: UvBandKey[] = ['below-3', '3-to-8', '8-plus'];
+const veryCloudyBand = cloudCoverBands.find((band) => band.key === 'very-cloudy');
 
 function validateDefinitions() {
   const usedBandKeys = new Set<string>();
@@ -57,7 +58,7 @@ function validateDefinitions() {
     !('average' in definitions.bulletTitles) ||
     !('longestElevated' in definitions.bulletTitles) ||
     !('longestVeryHigh' in definitions.bulletTitles) ||
-    !('reapplication' in definitions.bulletTitles)
+    !('sunscreenBasics' in definitions.bulletTitles)
   ) {
     throw new Error('UV Scout profile bullet titles are incomplete.');
   }
@@ -71,9 +72,21 @@ function validateDefinitions() {
   if (
     rules.guidanceTriggers.elevatedBandKey !== '3-to-8' ||
     rules.guidanceTriggers.extraAttentionBandKey !== '8-plus' ||
-    rules.sunscreenReminder.minimumCoveredUvInclusive !== rules.uvBands[1].minimumUvInclusive ||
-    !(rules.sunscreenReminder.messageKey in definitions.messages) ||
-    !(rules.forecastCoverage.messageKey in definitions.messages)
+    !(rules.forecastCoverage.messageKey in definitions.messages) ||
+    !Number.isFinite(rules.durationGuidance.minimumCoveredElevatedUvSeconds) ||
+    rules.durationGuidance.minimumCoveredElevatedUvSeconds <= 0 ||
+    !(rules.durationGuidance.messageKey in definitions.profileMessages) ||
+    !(rules.durationGuidance.messageKey in definitions.bulletTitles) ||
+    rules.weatherContextRules.length === 0 ||
+    !veryCloudyBand ||
+    new Set(rules.weatherContextRules.map((rule) => rule.key)).size !== rules.weatherContextRules.length ||
+    rules.weatherContextRules.some((rule) =>
+      !rule.key.trim() || !Number.isFinite(rule.whenUvAtOrAbove) || rule.whenUvAtOrAbove < 0 ||
+      !Number.isFinite(rule.whenCloudCoverAtOrAbovePercent) ||
+      rule.whenCloudCoverAtOrAbovePercent < 0 || rule.whenCloudCoverAtOrAbovePercent > 100 ||
+      rule.whenCloudCoverAtOrAbovePercent !== veryCloudyBand.minimumPercentInclusive ||
+      !(rule.messageKey in definitions.profileMessages) || !(rule.messageKey in definitions.bulletTitles),
+    )
   ) {
     throw new Error('UV Scout trigger bands or message references do not match the editable definitions.');
   }
@@ -101,11 +114,6 @@ function validateDefinitions() {
   if (
     !definitions.messages.coverageIncomplete.trim() ||
     !definitions.messages.bandDuration.trim() ||
-    !definitions.messages.reapplication.trim() ||
-    !Number.isFinite(rules.sunscreenReminder.minimumPlannedOutingMinutes) ||
-    rules.sunscreenReminder.minimumPlannedOutingMinutes <= 0 ||
-    !Number.isFinite(rules.sunscreenReminder.minimumCoveredUvInclusive) ||
-    rules.sunscreenReminder.minimumCoveredUvInclusive < 0 ||
     !Number.isFinite(rules.guidanceTriggers.coverageToleranceSeconds) ||
     rules.guidanceTriggers.coverageToleranceSeconds < 0 ||
     !rules.profileSignals.includePeakAndTime ||
@@ -144,9 +152,6 @@ const extraAttentionBandKey = rules.guidanceTriggers.extraAttentionBandKey as Uv
 const coverageMessageTemplate = definitions.messages[
   rules.forecastCoverage.messageKey as keyof typeof definitions.messages
 ];
-const reapplicationMessageTemplate = definitions.messages[
-  rules.sunscreenReminder.messageKey as keyof typeof definitions.messages
-];
 
 function formatDuration(seconds: number): string {
   const totalMinutes = Math.max(1, Math.round(seconds / 60));
@@ -171,6 +176,41 @@ function formatLocalTime(time: number, timezone: string): string {
     minute: '2-digit',
     timeZone: timezone,
   }).format(new Date(time * 1000));
+}
+
+function formatLocalDate(time: number, timezone: string): string {
+  return new Intl.DateTimeFormat('en', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    timeZone: timezone,
+  }).format(new Date(time * 1000));
+}
+
+function getUvPeriods(
+  summary: OutingForecastSummary,
+  timezone: string,
+  matches: (hour: OutingForecastSummary['hours'][number]) => boolean,
+): string {
+  const intervals = [...summary.hours]
+    .sort((left, right) => left.time - right.time)
+    .flatMap((hour) => {
+      const overlap = getHourOverlap(hour, summary.startSeconds, summary.endSeconds);
+      return overlap && matches(hour) ? [overlap] : [];
+    });
+  const periods: Array<{ start: number; end: number }> = [];
+  for (const interval of intervals) {
+    const previous = periods.at(-1);
+    if (previous && interval.start <= previous.end) previous.end = Math.max(previous.end, interval.end);
+    else periods.push({ start: interval.start, end: interval.end });
+  }
+  return periods.map(({ start, end }) => {
+    const startTime = formatLocalTime(start, timezone);
+    const endTime = formatLocalTime(end, timezone);
+    return formatLocalDate(start, timezone) === formatLocalDate(end - 1, timezone)
+      ? `${formatLocalDate(start, timezone)} ${startTime}–${endTime}`
+      : `${formatLocalDate(start, timezone)} ${startTime}–${formatLocalDate(end, timezone)} ${endTime}`;
+  }).join('; ');
 }
 
 function getProfileDetails(
@@ -261,6 +301,9 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
   const elevatedSeconds = (bandSeconds.get(elevatedBandKey) ?? 0) +
     (bandSeconds.get(extraAttentionBandKey) ?? 0);
   const veryHighSeconds = bandSeconds.get(extraAttentionBandKey) ?? 0;
+  const moderatePeriods = getUvPeriods(summary, timezone, ({ uv }) => uv >= 3 && uv < 8);
+  const elevatedPeriods = getUvPeriods(summary, timezone, ({ uv }) => uv >= 3);
+  const veryHighPeriods = getUvPeriods(summary, timezone, ({ uv }) => uv >= 8);
   const headline = elevatedSeconds === 0
     ? definitions.profileMessages.belowThresholdHeadline
     : fillMessage(definitions.profileMessages.elevatedHeadline, {
@@ -272,12 +315,44 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
   if (moderateSeconds > 0) {
     practicalGuidance.push(createInsightItem('moderateAction', fillMessage(definitions.profileMessages.moderateAction, {
       duration: formatDuration(moderateSeconds),
+      periods: moderatePeriods,
     })));
   }
   if (veryHighSeconds > 0) {
     practicalGuidance.push(createInsightItem('veryHighAction', fillMessage(definitions.profileMessages.veryHighAction, {
       duration: formatDuration(veryHighSeconds),
+      periods: veryHighPeriods,
     })));
+  }
+  if (elevatedSeconds > 0) {
+    practicalGuidance.push(createInsightItem('sunscreenBasics', definitions.profileMessages.sunscreenBasics));
+  }
+  if (elevatedSeconds >= rules.durationGuidance.minimumCoveredElevatedUvSeconds) {
+    practicalGuidance.push(createInsightItem(
+      rules.durationGuidance.messageKey as keyof typeof definitions.bulletTitles,
+      fillMessage(definitions.profileMessages[
+        rules.durationGuidance.messageKey as keyof typeof definitions.profileMessages
+      ], { duration: formatDuration(elevatedSeconds), periods: elevatedPeriods }),
+    ));
+  }
+  for (const rule of rules.weatherContextRules) {
+    const matchingPeriods = getUvPeriods(summary, timezone, (hour) =>
+      hour.cloudCover !== null && hour.cloudCover >= rule.whenCloudCoverAtOrAbovePercent &&
+      hour.uv >= rule.whenUvAtOrAbove,
+    );
+    const hasOverlap = summary.hours.some((hour) =>
+      hour.cloudCover !== null && hour.cloudCover >= rule.whenCloudCoverAtOrAbovePercent &&
+      hour.uv >= rule.whenUvAtOrAbove &&
+      getHourOverlap(hour, summary.startSeconds, summary.endSeconds) !== null,
+    );
+    if (hasOverlap) {
+      practicalGuidance.push(createInsightItem(
+        rule.messageKey as keyof typeof definitions.bulletTitles,
+        fillMessage(definitions.profileMessages[
+          rule.messageKey as keyof typeof definitions.profileMessages
+        ], { periods: matchingPeriods }),
+      ));
+    }
   }
   for (const rule of rules.conditionalContextRules) {
     if (summary.highestUv >= rule.whenAnyCoveredUvAtOrAbove) {
@@ -299,12 +374,6 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
       plannedDuration: formatDuration(summary.requestedSeconds),
     })
     : null;
-  const reapplicationReminder =
-    summary.requestedSeconds >= rules.sunscreenReminder.minimumPlannedOutingMinutes * 60 &&
-    summary.highestUv >= rules.sunscreenReminder.minimumCoveredUvInclusive
-      ? createInsightItem('reapplication', reapplicationMessageTemplate)
-      : null;
-
   return {
     note: definitions.note,
     headline,
@@ -312,6 +381,5 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
     profileDetails: getProfileDetails(summary, timezone, bandSeconds, longestAtThreshold),
     practicalGuidance,
     coverageMessage,
-    reapplicationReminder,
   };
 }

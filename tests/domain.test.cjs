@@ -79,12 +79,63 @@ test('precipitation totals include only complete preceding-hour amounts', () => 
   assert.equal(result.peakHourlyPrecipitationProbability, 70);
 });
 
-test('sunscreen reminder appears at the configured 120-minute boundary', () => {
-  const hours = [hour(0, 4), hour(3600, 4)];
-  const beforeBoundary = getUvScoutInsight(summarize(hours, 0, 7140), 'UTC');
-  const atBoundary = getUvScoutInsight(summarize(hours, 0, 7200), 'UTC');
+test('action guidance gives concrete protection steps for moderate and very high UV', () => {
+  const moderate = getUvScoutInsight(summarize([hour(0, 5), hour(3600, 5)], 0, 7200), 'UTC');
+  const veryHigh = getUvScoutInsight(summarize([hour(0, 8)], 0, 1800), 'UTC');
+  const moderateActions = moderate.practicalGuidance.map(({ text }) => text).join(' ');
+  const veryHighAction = veryHigh.practicalGuidance.find(({ title }) => title === 'Extra protection');
 
-  assert.equal(beforeBoundary.reapplicationReminder, null);
-  assert.equal(atBoundary.reapplicationReminder.title, 'Reapplication');
-  assert.match(atBoundary.reapplicationReminder.text, /at least two hours/i);
+  assert.match(moderateActions, /broad-brimmed hat/i);
+  assert.match(moderateActions, /broad-spectrum SPF 30\+/i);
+  assert.match(moderateActions, /12:00 AM–2:00 AM/i);
+  assert.match(veryHighAction.text, /Thu, Jan 1 12:00 AM–12:30 AM/i);
+  assert.match(veryHighAction.text, /spend those hours in shade/i);
+});
+
+test('very cloudy hours overlapping elevated UV add a targeted cloud-context action only', () => {
+  const overlap = getUvScoutInsight(summarize([
+    hour(0, 5, { cloudCover: 90 }),
+    hour(3600, 5, { cloudCover: 40 }),
+    hour(7200, 2, { cloudCover: 100 }),
+  ], 0, 10800), 'UTC');
+  const cloudAction = overlap.practicalGuidance.find(({ title }) => title === 'Clouds and UV');
+
+  assert.match(cloudAction.text, /very cloudy conditions/i);
+  assert.match(cloudAction.text, /Thu, Jan 1 12:00 AM–1:00 AM/i);
+  assert.equal(cloudAction.text.includes('1:00 AM–2:00 AM'), false);
+  assert.match(cloudAction.text, /follow the UV Index forecast/i);
+
+  const noOverlap = getUvScoutInsight(summarize([
+    hour(0, 2, { cloudCover: 100 }),
+    hour(3600, 5, { cloudCover: 40 }),
+  ], 0, 7200), 'UTC');
+  assert.equal(noOverlap.practicalGuidance.some(({ title }) => title === 'Clouds and UV'), false);
+});
+
+test('sunscreen advice responds differently to brief and sustained elevated UV', () => {
+  const briefHighThenLow = getUvScoutInsight(summarize([
+    hour(0, 8), hour(3600, 0), hour(7200, 0), hour(10800, 0), hour(14400, 0),
+  ], 0, 18000), 'UTC');
+  const sustainedModerate = getUvScoutInsight(summarize([
+    hour(0, 7), hour(3600, 7), hour(7200, 7), hour(10800, 7),
+  ], 0, 14400), 'UTC');
+  const briefActions = briefHighThenLow.practicalGuidance;
+  const sustainedReapplication = sustainedModerate.practicalGuidance
+    .find(({ title }) => title === 'Reapplication');
+
+  assert.ok(briefActions.some(({ title }) => title === 'Sunscreen'));
+  assert.equal(briefActions.some(({ title }) => title === 'Reapplication'), false);
+  assert.match(sustainedReapplication.text, /about 4 hours at UV Index 3 or higher/i);
+  assert.match(sustainedReapplication.text, /every two hours/i);
+  assert.match(sustainedReapplication.text, /does not know when you applied it/i);
+});
+
+test('after-water or sweat sunscreen advice remains conditional at any elevated UV duration', () => {
+  const low = getUvScoutInsight(summarize([hour(0, 2)], 0, 1800), 'UTC');
+  const briefElevated = getUvScoutInsight(summarize([hour(0, 3)], 0, 1800), 'UTC');
+  const afterConditions = briefElevated.practicalGuidance
+    .find(({ title }) => title === 'After water or sweat');
+
+  assert.equal(low.practicalGuidance.some(({ title }) => title === 'After water or sweat'), false);
+  assert.match(afterConditions.text, /after swimming, sweating, or drying off/i);
 });
