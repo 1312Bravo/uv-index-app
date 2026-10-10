@@ -1,0 +1,44 @@
+[
+  {
+    "key": "calm-light-air",
+    "minimumKmhInclusive": 0,
+    "maximumKmhInclusive": 5,
+    "label": "Calm to light air",
+    "description": "Smoke may drift, while leaves barely move."
+  },
+  {
+    "key": "light-gentle-breeze",
+    "minimumKmhInclusive": 6,
+    "maximumKmhInclusive": 19,
+    "label": "Light to gentle breeze",
+    "description": "You can feel the wind; leaves and small twigs move."
+  },
+  {
+    "key": "moderate-fresh-breeze",
+    "minimumKmhInclusive": 20,
+    "maximumKmhInclusive": 38,
+    "label": "Moderate to fresh breeze",
+    "description": "Dust or loose paper may lift; small branches or trees begin to sway."
+  },
+  {
+    "key": "strong-breeze-near-gale",
+    "minimumKmhInclusive": 39,
+    "maximumKmhInclusive": 61,
+    "label": "Strong breeze to near gale",
+    "description": "Large branches and whole trees move; walking against the wind can be difficult."
+  },
+  {
+    "key": "gale-strong-gale",
+    "minimumKmhInclusive": 62,
+    "maximumKmhInclusive": 86,
+    "label": "Gale to strong gale",
+    "description": "Twigs or branches may break."
+  },
+  {
+    "key": "storm-force-plus",
+    "minimumKmhInclusive": 87,
+    "maximumKmhInclusive": null,
+    "label": "Storm-force or stronger",
+    "description": "Trees may be uprooted and structural damage can occur."
+  }
+]

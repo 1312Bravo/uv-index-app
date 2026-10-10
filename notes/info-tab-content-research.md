@@ -74,3 +74,24 @@ guide's potentially confusing highest-band term. The app does not classify
 forecast values automatically: an hourly total cannot show short bursts, the
 provider's total may include snow, and an outing sum spans multiple hours. The
 chart and outing summary keep displaying numeric amounts.
+
+## Wind speed
+
+**Source-backed:** The U.S. National Weather Service's land-based Beaufort scale
+associates wind-force ranges with observable effects such as leaves rustling,
+small branches moving, trees swaying, or damage at very high wind speeds.
+Open-Meteo's `wind_speed_10m` is the wind-speed forecast at 10 m above ground for
+the indicated hour.
+
+Sources:
+
+- U.S. National Weather Service, [Beaufort Wind Scale](https://www.weather.gov/mfl/beaufort),
+  land effects and force descriptions; checked 10 October 2026.
+- Open-Meteo, [Weather Forecast API documentation](https://open-meteo.com/en/docs?past_days=1),
+  hourly `wind_speed_10m` definition; checked 10 October 2026.
+
+**Product choice:** `src/domain/weather/windSpeedBands.json` groups neighboring
+Beaufort levels into six wider km/h ranges to keep the Info guide compact. The
+descriptions are short paraphrases of typical land effects, not official labels,
+precise predictions, or wind-safety thresholds. The chart shows rounded hourly
+wind speed only. No wind value affects UV or protection guidance.

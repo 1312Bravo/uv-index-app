@@ -273,6 +273,9 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
   const precipitationDescription = hour.precipitation == null
     ? 'unavailable'
     : `${formatPrecipitation(hour.precipitation)} millimeters`;
+  const windSpeedDescription = hour.windSpeed == null
+    ? 'unavailable'
+    : `${Math.round(hour.windSpeed)} kilometers per hour`;
   const outingDescription = selectedRange
     ? isSelected ? ', during selected outing' : ', outside selected outing'
     : '';
@@ -284,7 +287,7 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
         : hour.period === 'now' && styles.currentBin,
     ]}
       accessible
-      accessibilityLabel={`${formatHour(hour.time, timezone)}. UV Index ${hour.uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour${outingDescription}.`}
+      accessibilityLabel={`${formatHour(hour.time, timezone)}. UV Index ${hour.uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour. Wind speed ${windSpeedDescription}${outingDescription}.`}
       accessibilityRole="text"
     >
       <Text numberOfLines={1} style={[styles.cloudCover, isContext && styles.contextText]}>
@@ -322,6 +325,9 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
       </Text>
       <Text numberOfLines={1} style={[styles.precipitation, isContext && styles.contextText]}>
         {formatPrecipitation(hour.precipitation)}
+      </Text>
+      <Text numberOfLines={1} style={[styles.windSpeed, isContext && styles.contextText]}>
+        {hour.windSpeed === null ? '—' : Math.round(hour.windSpeed)}
       </Text>
     </View>
   );
@@ -368,7 +374,7 @@ export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialSc
         </View>
       </ScrollView>
       <Text pointerEvents="none" style={styles.topLegend}>Cloud cover (%) · Temperature (°C)</Text>
-      <Text style={styles.bottomLegend}>Rain chance (%) · Precipitation (mm)</Text>
+      <Text style={styles.bottomLegend}>Rain chance (%) · Precipitation (mm) · Wind (km/h)</Text>
     </View>
   );
 }
@@ -388,7 +394,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   chart: { marginTop: 10 },
-  chartContent: { flexGrow: 1, justifyContent: 'center' },
+  chartContent: { flexGrow: 1, justifyContent: 'center', paddingBottom: 14 },
   legendSpace: { height: 22 },
   bins: { alignItems: 'flex-end', flexDirection: 'row', gap: BIN_GAP },
   daylightTrack: { position: 'relative' },
@@ -462,5 +468,6 @@ const styles = StyleSheet.create({
   day: { color: '#767676', fontSize: 9, marginTop: 2, minHeight: 15, textAlign: 'center' },
   precipitationProbability: { color: '#686868', fontSize: 9, marginTop: 5, textAlign: 'center', width: BIN_WIDTH },
   precipitation: { color: '#686868', fontSize: 9, marginTop: 1, textAlign: 'center', width: BIN_WIDTH },
+  windSpeed: { color: '#686868', fontSize: 9, marginTop: 1, textAlign: 'center', width: BIN_WIDTH },
   bottomLegend: { color: '#777777', fontSize: 10, marginTop: 6, textAlign: 'center' },
 });

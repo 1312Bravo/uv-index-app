@@ -3,14 +3,16 @@ import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getCloudCoverBands } from '../../domain/weather/getCloudCoverBand';
 import { getPrecipitationRateGuide } from '../../domain/weather/getPrecipitationRateGuide';
+import { getWindSpeedBands } from '../../domain/weather/getWindSpeedBands';
 import { getUvCategoryDefinitions } from '../../domain/uv/getUvCategory';
 import { InfoAccordion } from './InfoAccordion';
 
 const uvCategories = getUvCategoryDefinitions();
 const cloudCoverBands = getCloudCoverBands();
 const precipitationRateGuide = getPrecipitationRateGuide();
+const windSpeedBands = getWindSpeedBands();
 
-type InfoTopic = 'uv' | 'clouds' | 'precipitation';
+type InfoTopic = 'uv' | 'clouds' | 'precipitation' | 'wind';
 
 function formatUvRange(index: number): string {
   const category = uvCategories[index];
@@ -162,6 +164,37 @@ function PrecipitationExplanation() {
   );
 }
 
+function WindExplanation() {
+  return (
+    <>
+      <Text style={styles.description}>
+        Wind speed is forecast at 10 meters above ground and shown in kilometers
+        per hour. This simplified guide groups land-based Beaufort descriptions;
+        actual effects vary with local surroundings.
+      </Text>
+      <View style={styles.list}>
+        {windSpeedBands.map((band) => (
+          <View key={band.key} style={styles.cloudRow}>
+            <Text style={styles.windRange}>{band.range}</Text>
+            <View style={styles.cloudDescription}>
+              <Text style={styles.category}>{band.label}</Text>
+              <Text style={styles.description}>{band.description}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      <SourceLink
+        label="U.S. National Weather Service · Beaufort wind scale"
+        url="https://www.weather.gov/mfl/beaufort"
+      />
+      <SourceLink
+        label="Open-Meteo · Weather forecast variables"
+        url="https://open-meteo.com/en/docs?past_days=1"
+      />
+    </>
+  );
+}
+
 export function InfoScreen() {
   const [openTopic, setOpenTopic] = useState<InfoTopic | null>(null);
 
@@ -194,6 +227,13 @@ export function InfoScreen() {
           onPress={() => toggleTopic('precipitation')}
         >
           <PrecipitationExplanation />
+        </InfoAccordion>
+        <InfoAccordion
+          title="Wind"
+          expanded={openTopic === 'wind'}
+          onPress={() => toggleTopic('wind')}
+        >
+          <WindExplanation />
         </InfoAccordion>
       </View>
     </View>
@@ -230,6 +270,7 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
   },
   cloudRange: { color: '#151515', fontSize: 13, fontWeight: '600', paddingTop: 2, width: 52 },
+  windRange: { color: '#151515', fontSize: 12, fontWeight: '600', paddingTop: 2, width: 78 },
   cloudDescription: { flex: 1, minWidth: 0 },
   sourceLink: { color: '#444444', fontSize: 13, marginTop: 12, textDecorationLine: 'underline' },
 });

@@ -73,6 +73,12 @@ integer percentages that cover 0–100. Their labels and descriptions are UV
 Scout's simplified wording, not an official meteorological scale. Keep the
 percentage meaning (sky area covered) separate from UV exposure and route shade.
 
+For the Info screen's wind guide, edit `src/domain/weather/windSpeedBands.json`.
+Ranges are consecutive integer km/h values beginning at zero; the last range has
+no upper bound. These six rows group land-based Beaufort descriptions into a
+shorter guide; they are not official Beaufort categories. The app currently shows
+wind speed only; gust values are not fetched or displayed.
+
 Follow this pattern for future editable domain mappings and guidance content:
 JSON holds the definitions, TypeScript validates and interprets them, and UI
 components render the returned result. Calculations stay in TypeScript. JSON is
@@ -100,7 +106,7 @@ provenance belong in the guidance research notes and `notes/data-sources.md`.
 | Input controls, chart styling, display formatting | `src/features/` |
 | API URL, provider parsing, request handling | `src/services/` |
 | UV thresholds, outing and daylight calculations | `src/domain/` |
-| Category and cloud-cover explanations | `src/domain/` and `src/features/info/` |
+| Category, cloud-cover, and wind explanations | `src/domain/` and `src/features/info/` |
 | Explanation of an accepted product rule | `notes/` |
 | External data/evidence source and its use | `notes/data-sources.md` |
 | How to run or extend the app | `docs/` |

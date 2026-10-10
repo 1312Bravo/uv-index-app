@@ -9,7 +9,8 @@ helps people plan outdoor time around the current and forecast UV index.
 
 - An Expo + React Native + TypeScript app is installed, with Android and web
   support. Device location, manual place search, and today's remaining UV trend
-  with temperature, cloud cover, and precipitation context are implemented.
+  with temperature, cloud cover, precipitation, and hourly wind context are
+  implemented.
 - The app should support Android and web from the beginning.
 - Open-Meteo is the weather and UV data source for the non-commercial MVP.
 - The initial use case is UV exposure guidance for outdoor activities.
@@ -47,15 +48,17 @@ helps people plan outdoor time around the current and forecast UV index.
 - Show hourly precipitation chance and expected amount as separate weather
   context below each chart time. Preserve the provider's preceding-hour meaning;
   do not present combined hourly probabilities as an outing-wide chance.
+- Show hourly wind speed as separate weather context below precipitation; do not
+  use wind to adjust the UV forecast or protection guidance.
 - Summarize outings in four compact metrics: UV peak/average, temperature
   average/range, cloud-cover average/range, and expected precipitation with the
   peak hourly chance. Sum rain only across complete preceding-hour intervals;
   do not prorate partial hours or combine probabilities.
 - Use the same compact hourly UV bar chart in the outlook and outing result, with
   cloud-cover percentage and temperature above each bar, and precipitation values
-  below each hour label.
+  and wind speed below each hour label.
 - Keep a final, always-available Info tab with the UV category mapping and a
-  plain-language cloud-cover percentage guide.
+  plain-language guide to cloud cover and wind speeds.
 - Present Info topics as vertically stacked disclosures, with none expanded at
   first and no more than one topic open at a time.
 - Keep the interface minimal, with a small number of clear inputs and an easy-to-read result.
@@ -168,6 +171,9 @@ calculation, supported platform versions, and the final visual polish.
   wording and validate the active policy in the domain interpreter.
 - [x] Add hourly cloud cover as separate context and use a shared hourly bar chart
   for the outlook and selected outing.
+- [x] Add hourly wind speed below the precipitation values in both forecast charts;
+  keep it separate from UV Scout's protection guidance.
+- [x] Add an Info guide to grouped land-based wind-speed ranges.
 - [x] Add an always-available final Info tab explaining UV categories, decimal
   category rounding, and cloud-cover percentages.
 - [x] Group Info explanations under vertically stacked topics, collapsed by

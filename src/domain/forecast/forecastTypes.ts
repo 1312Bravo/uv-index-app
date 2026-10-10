@@ -7,6 +7,7 @@ export type ForecastHour = {
   cloudCover: number | null;
   precipitationProbability: number | null;
   precipitation: number | null;
+  windSpeed: number | null;
   period: 'past' | 'now' | 'future';
 };
 
