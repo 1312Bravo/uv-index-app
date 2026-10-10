@@ -4,6 +4,7 @@ import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { getCloudCoverBands } from '../../domain/weather/getCloudCoverBand';
 import { getPrecipitationRateGuide } from '../../domain/weather/getPrecipitationRateGuide';
 import { getWindSpeedBands } from '../../domain/weather/getWindSpeedBands';
+import { getWhoGuidanceTable } from '../../domain/guidance/getWhoGuidance';
 import { getUvCategoryDefinitions } from '../../domain/uv/getUvCategory';
 import { InfoAccordion } from './InfoAccordion';
 
@@ -11,6 +12,7 @@ const uvCategories = getUvCategoryDefinitions();
 const cloudCoverBands = getCloudCoverBands();
 const precipitationRateGuide = getPrecipitationRateGuide();
 const windSpeedBands = getWindSpeedBands();
+const whoGuidance = getWhoGuidanceTable();
 
 type InfoTopic = 'uv' | 'clouds' | 'precipitation' | 'wind';
 
@@ -61,9 +63,22 @@ function UvIndexExplanation() {
       </View>
       <Text style={styles.metricHeading}>WHO guidance</Text>
       <Text style={styles.description}>
-        WHO recommends sun protection from UV Index 3, and extra protection from
-        8. These are general guidance thresholds.
+        {whoGuidance.note}
       </Text>
+      <Text style={styles.note}>{whoGuidance.context}</Text>
+      <View style={styles.whoBands}>
+        {whoGuidance.bands.map((band) => (
+          <View key={band.level} style={styles.whoBand}>
+            <View style={styles.whoBandHeading}>
+              <Text style={styles.whoRange}>{band.range}</Text>
+              <Text style={styles.category}>{band.label}</Text>
+            </View>
+            {band.actions.map((action) => (
+              <Text key={action} style={styles.description}>{action}</Text>
+            ))}
+          </View>
+        ))}
+      </View>
       <SourceLink
         label="WHO · The ultraviolet (UV) index"
         url="https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)-index"
@@ -248,6 +263,10 @@ const styles = StyleSheet.create({
   description: { color: '#555555', fontSize: 13, lineHeight: 20, marginTop: 8 },
   supportingText: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 14 },
   metricHeading: { color: '#333333', fontSize: 13, fontWeight: '600', marginTop: 14 },
+  whoBands: { marginTop: 8 },
+  whoBand: { borderTopColor: '#E8E8E8', borderTopWidth: 1, paddingVertical: 10 },
+  whoBandHeading: { alignItems: 'baseline', flexDirection: 'row', gap: 10 },
+  whoRange: { color: '#151515', fontSize: 13, fontWeight: '600', width: 36 },
   list: { marginTop: 8 },
   row: {
     alignItems: 'flex-start',

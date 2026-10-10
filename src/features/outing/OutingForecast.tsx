@@ -8,6 +8,7 @@ import {
   type OutingForecastSummary,
 } from '../../domain/outing/calculateOutingForecast';
 import type { TimePlan } from '../../domain/outing/timePlan';
+import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
 
 type Props = {
   latitude: number;
@@ -46,6 +47,16 @@ function formatDateTimeRange(start: number, end: number, timezone: string): stri
   return sameDate
     ? `${formatDate(start, timezone)} · ${formatTime(start, timezone)}–${formatTime(end, timezone)}`
     : `${formatDate(start, timezone)}, ${formatTime(start, timezone)} – ${formatDate(end, timezone)}, ${formatTime(end, timezone)}`;
+}
+
+function getForecastLimitMessage(forecast: HourlyForecast, outingEnd: Date): string | null {
+  const lastHour = forecast.hours[forecast.hours.length - 1];
+  if (!lastHour) return null;
+
+  const forecastEnd = lastHour.time + 3600;
+  if (outingEnd.getTime() / 1000 <= forecastEnd) return null;
+
+  return `The forecast is available through ${formatDate(forecastEnd, forecast.timezone)} at ${formatTime(forecastEnd, forecast.timezone)}. Adjust the outing time or duration to see its full forecast.`;
 }
 
 function formatTemperatureRange(summary: OutingForecastSummary): string {
@@ -89,6 +100,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
   const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;
+  const forecastLimitMessage = forecast ? getForecastLimitMessage(forecast, plan.end) : null;
 
   return (
     <View style={styles.section}>
@@ -98,12 +110,15 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
           ? formatDateTimeRange(plan.start.getTime() / 1000, plan.end.getTime() / 1000, forecast.timezone)
           : 'Loading selected hours'}
       </Text>
+      {summary && forecastLimitMessage && (
+        <Text style={styles.coverageNote}>{forecastLimitMessage}</Text>
+      )}
 
       {loading && <ActivityIndicator color="#151515" style={styles.loading} />}
       {error && <Text style={styles.message}>{error}</Text>}
       {forecast && !summary && !loading && (
         <Text style={styles.message}>
-          The forecast does not cover these outing hours. Adjust the start time or duration and try again.
+          {forecastLimitMessage ?? 'The forecast does not cover these outing hours. Adjust the start time or duration and try again.'}
         </Text>
       )}
       {forecast && summary && (
@@ -203,6 +218,7 @@ const styles = StyleSheet.create({
   section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 36, paddingTop: 24 },
   heading: { color: '#151515', fontSize: 18, fontWeight: '600', textAlign: 'center' },
   timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', marginTop: 7, textAlign: 'center' },
+  coverageNote: { color: '#777777', fontSize: 12, lineHeight: 18, marginTop: 9, textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
   summaryGrid: { marginTop: 16 },

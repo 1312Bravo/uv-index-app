@@ -14,6 +14,9 @@ helps people plan outdoor time around the current and forecast UV index.
 - The app should support Android and web from the beginning.
 - Open-Meteo is the weather and UV data source for the non-commercial MVP.
 - The initial use case is UV exposure guidance for outdoor activities.
+- UV Scout focuses on UV-aware decisions for outings happening now or planned
+  for today or tomorrow within the available local forecast. It is not a
+  long-range planner or a general-purpose weather app.
 - The first version is for general outdoor users, in English.
 - Location should support device location, place search, and map selection on
   Android and web.
@@ -27,6 +30,9 @@ helps people plan outdoor time around the current and forecast UV index.
 - With Now selected, show a horizontal UV trend with five earlier hourly bins,
   the current hour, and eighteen later hourly bins, even before duration is chosen.
   The window may cross into the next local day.
+- Keep the full two local forecast days available to Plan an Outing through
+  tomorrow's end; the UV Outlook chart remains the rolling five-past/Now/18-future
+  window. Explain the forecast boundary when a planned outing extends beyond it.
 - The result combines a standard UV category, a forecast over the selected time,
   and practical guidance. Show WHO's general 0–2, 3–7, and 8+ reference table
   in Info. Keep `UV guidance for outing` as UV Scout's own full-profile
@@ -74,6 +80,11 @@ helps people plan outdoor time around the current and forecast UV index.
 - UV guidance must be presented as general information, not medical advice.
 - Weather and UV APIs can be unavailable or rate-limited, so loading, stale,
   missing-location, and error states need to be part of the MVP.
+- Keep UV protection as the product's main purpose. Temperature, cloud cover,
+  precipitation, and wind support outing decisions but must not displace UV
+  guidance or imply a complete general-weather service.
+- Forecasts are estimates of expected conditions, not measurements of personal
+  exposure. Make incomplete outing coverage explicit.
 
 ## Proposed Direction
 
@@ -174,8 +185,13 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add hourly wind speed below the precipitation values in both forecast charts;
   keep it separate from UV Scout's protection guidance.
 - [x] Add an Info guide to grouped land-based wind-speed ranges.
+- [x] Retain both requested forecast days for outing planning while keeping the
+  UV Outlook chart at five past, Now, and eighteen future hours; explain when an
+  outing exceeds the returned forecast horizon.
 - [x] Add an always-available final Info tab explaining UV categories, decimal
   category rounding, and cloud-cover percentages.
+- [x] Render the validated WHO general action table in the UV Info topic.
+- [x] Add executable domain tests for UV, outing aggregation, and guidance boundaries.
 - [x] Group Info explanations under vertically stacked topics, collapsed by
   default.
 - [x] Add a shared daylight track with civil dawn, sunrise, sunset, and civil
@@ -197,6 +213,13 @@ calculation, supported platform versions, and the final visual polish.
 - Support Android and web.
 - Use Open-Meteo as the initial UV and temperature source. This is an ease-of-
   implementation choice, not a claim of superior forecast accuracy.
+- Request two local forecast days from Open-Meteo for outing planning. This is a
+  near-term product horizon, not a provider maximum; keep the UV Outlook chart's
+  existing rolling window and explain when an outing exceeds available coverage.
+- Position UV Scout around current and near-term outings (today or tomorrow in
+  the available local forecast). Keep UV protection central and other weather
+  variables as supporting context; do not expand into long-range planning or a
+  general-purpose weather app.
 - Serve general outdoor users first; do not require a runner/hiker/cyclist profile.
 - Offer device location, manual place search, and map-point selection.
 - Offer place search, map selection, and device location on Android and web.
@@ -279,7 +302,6 @@ calculation, supported platform versions, and the final visual polish.
 
 ## Open Questions
 
-- What is the useful maximum forecast horizon for the first version?
 - Which details, if any, belong in a future optional “Tailor this advice” section?
 - What licensing and service capacity will a commercial release need?
 

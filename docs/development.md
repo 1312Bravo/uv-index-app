@@ -3,7 +3,8 @@
 This project uses one Expo app for Android and web. The current screen lets you
 search for a place or use your device location. After selecting one, it shows
 five earlier hourly values, Now, and eighteen future hours in a horizontally
-scrollable UV and temperature chart. The chart can cross midnight.
+scrollable UV chart with cloud cover, temperature, precipitation, and wind
+context. The chart can cross midnight.
 The first page keeps this overview focused. Use the **Plan an Outing** tab to
 open the planner, which supports Now or a scheduled start, duration presets
 including 3 hours, custom minutes, or an explicit end time. Android uses
@@ -50,3 +51,9 @@ the button again.
 
 The QR code is generated each time the development server starts. It is a
 temporary connection to the computer running the project, not a published app.
+
+## Domain checks
+
+Run `pnpm test` to compile and run the dependency-free domain test suite. It
+covers the WHO reference table, UV category rounding, outing aggregation,
+forecast gaps, precipitation totals, and the sunscreen reminder boundary.

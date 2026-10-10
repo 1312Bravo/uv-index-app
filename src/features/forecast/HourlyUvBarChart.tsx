@@ -23,11 +23,20 @@ const HORIZON_Y = 68;
 const ARC_HEIGHT = 26;
 const ARC_STEPS = 48;
 const OUTING_CONTEXT_HOURS = 3;
+const OUTLOOK_PAST_HOURS = 5;
+const OUTLOOK_FUTURE_HOURS = 18;
 
 type SelectedRange = { start: number; end: number };
 
 function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange): ForecastHour[] {
-  if (!selectedRange) return hours;
+  if (!selectedRange) {
+    const currentIndex = hours.findIndex((hour) => hour.period === 'now');
+    if (currentIndex < 0) return hours;
+    return hours.slice(
+      Math.max(0, currentIndex - OUTLOOK_PAST_HOURS),
+      Math.min(hours.length, currentIndex + OUTLOOK_FUTURE_HOURS + 1),
+    );
+  }
 
   const selectedIndices = hours.flatMap((hour, index) =>
     hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start ? [index] : [],

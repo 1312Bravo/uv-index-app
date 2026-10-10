@@ -13,6 +13,14 @@ attribution, and limitations.
   before Now, leaving more future bins visible; all five earlier bins remain
   available by scrolling left. The window can cross midnight; show the local date
   at a day change.
+- Request two local forecast days from Open-Meteo and retain all returned hourly
+  data from five hours before the current hour through the end of tomorrow for
+  outing planning. The UV Outlook chart independently keeps its rolling
+  five-past/Now/18-future window. This is UV Scout's near-term product horizon,
+  not Open-Meteo's maximum forecast capability. If an outing extends beyond the
+  returned hourly coverage, show the forecast end and ask the user to adjust the
+  outing rather than silently changing their selection or treating missing hours
+  as zero.
 - Each bin shows cloud cover and temperature above a UV-height bar, with the UV
   value above the bar. The local hour and day label follow the bar; precipitation
   chance and expected amount appear in two compact rows below. Earlier hours are

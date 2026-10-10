@@ -45,7 +45,8 @@ export async function getHourlyForecast(
   }
 
   const hours: ForecastHour[] = [];
-  for (let index = currentIndex - 5; index <= currentIndex + 18; index += 1) {
+  // Keep the full requested forecast for outing planning; charts choose their own window.
+  for (let index = currentIndex - 5; index < times.length; index += 1) {
     const time = times[index];
     const hourlyUv = data.hourly.uv_index[index];
     const hourlyTemperature = data.hourly.temperature_2m[index];
