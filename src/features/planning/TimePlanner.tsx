@@ -335,12 +335,12 @@ export function TimePlanner({ onChange }: Props) {
       {error && <Text style={styles.error}>{error}</Text>}
       {!error && endMode === 'duration' && selectedDuration && (
         <Text style={styles.summary}>
-          {startMode === 'now' ? 'Starting now' : `Starting at ${formatTime(scheduledStart ?? new Date())}`} · {formatDuration(selectedDuration)}
+          {startMode === 'now' ? 'Starting now' : `Starting at ${formatTime(scheduledStart ?? new Date())}`}, {formatDuration(selectedDuration)}
         </Text>
       )}
       {!error && endMode === 'end-time' && endTime && (
         <Text style={styles.summary}>
-          {startMode === 'now' ? 'Starting now' : `Starting at ${formatTime(scheduledStart ?? new Date())}`} · ending at {formatTime(endTime)}
+          {startMode === 'now' ? 'Starting now' : `Starting at ${formatTime(scheduledStart ?? new Date())}`}, ending at {formatTime(endTime)}
         </Text>
       )}
       <Text style={styles.hint}>Times use your device's local time.</Text>

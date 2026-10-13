@@ -91,9 +91,11 @@ wording. The validated interpreter returns the static table for the Info tab;
 it does not select a WHO tier for an outing. Edit
 `src/domain/guidance/uvScoutInsight.json` for Scout's human-readable wording and
 `src/domain/guidance/uvScoutRecommendationRules.json` for active UV bands,
-profile signals, factor roles, coverage behavior, conditional context-message
-triggers, and the reapplication trigger. Raw UVI thresholds and reminder
-duration (minutes) are explicit. Keep stable keys and message placeholders unchanged unless the
+factor roles, coverage behavior, conditional context-message triggers, and the
+extra reapplication-message trigger. Raw UVI thresholds and the reminder's
+minimum cumulative covered UVI 3+ duration are explicit in seconds. The text
+file separates bullet titles, action messages, and summary messages. Keep
+stable keys and message placeholders unchanged unless the
 interpreter is updated. `getUvScoutInsight.ts` validates and consumes both
 files. The Info feature renders the WHO table; the outing feature uses UV
 Scout's profile interpreter. Forecast overlap and coverage calculations stay
@@ -132,10 +134,11 @@ active policy live separately in `uvScoutInsight.json` and
 `uvScoutRecommendationRules.json`, interpreted by `getUvScoutInsight.ts` for
 the outing view. Display-category rounding remains separate
 from WHO-aligned raw-UV action thresholds; for example, displayed Moderate 2.5
-remains below the WHO protection trigger of raw UVI 3. Sources and rationale
-are in `notes/recommendation-tree-draft.md`,
-`notes/recommendation-model-research.md`, and
-`notes/protection-guidance-research.md`.
+remains below the WHO protection trigger of raw UVI 3. Current behavior,
+scenarios, and the source/product boundary are in
+`notes/active-uv-guidance.md`; older rationale is in
+`notes/recommendation-tree-draft.md`, `notes/recommendation-model-research.md`,
+and `notes/protection-guidance-research.md`.
 
 This structure pass preserves existing behavior, including the rolling forecast
 window and device-local planner inputs. Changes to forecast coverage, time-zone

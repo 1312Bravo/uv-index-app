@@ -78,13 +78,13 @@ function formatEventTime(time: number, timezone: string): string {
 }
 
 function formatPrecipitation(value: number | null | undefined): string {
-  if (value == null) return '—';
+  if (value == null) return '-';
   if (value === 0) return '0';
   return value < 0.1 ? value.toFixed(2) : value.toFixed(1);
 }
 
 function formatPrecipitationProbability(value: number | null | undefined): string {
-  return value == null ? '—' : `${Math.round(value)}%`;
+  return value == null ? '-' : `${Math.round(value)}%`;
 }
 
 function createArcSegments(
@@ -300,7 +300,7 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
       accessibilityRole="text"
     >
       <Text numberOfLines={1} style={[styles.cloudCover, isContext && styles.contextText]}>
-        {hour.cloudCover === null ? '—' : `${Math.round(hour.cloudCover)}%`}
+        {hour.cloudCover === null ? '-' : `${Math.round(hour.cloudCover)}%`}
       </Text>
       <Text numberOfLines={1} style={[styles.temperature, isContext && styles.contextText]}>
         {Math.round(hour.temperature)}°
@@ -336,7 +336,7 @@ function HourBin({ hour, timezone, scale, showDay, selectedRange }: {
         {formatPrecipitation(hour.precipitation)}
       </Text>
       <Text numberOfLines={1} style={[styles.windSpeed, isContext && styles.contextText]}>
-        {hour.windSpeed === null ? '—' : Math.round(hour.windSpeed)}
+        {hour.windSpeed === null ? '-' : Math.round(hour.windSpeed)}
       </Text>
     </View>
   );
@@ -382,8 +382,8 @@ export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialSc
           </View>
         </View>
       </ScrollView>
-      <Text pointerEvents="none" style={styles.topLegend}>Cloud cover (%) · Temperature (°C)</Text>
-      <Text style={styles.bottomLegend}>Rain chance (%) · Precipitation (mm) · Wind (km/h)</Text>
+      <Text pointerEvents="none" style={styles.topLegend}>Cloud cover (%), temperature (°C)</Text>
+      <Text style={styles.bottomLegend}>Rain chance (%), precipitation (mm), wind (km/h)</Text>
     </View>
   );
 }

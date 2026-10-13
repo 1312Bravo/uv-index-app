@@ -20,12 +20,12 @@ function formatUvRange(index: number): string {
   const category = uvCategories[index];
   const nextCategory = uvCategories[index + 1];
   return nextCategory
-    ? `${category.minimumUvInclusive}–${nextCategory.minimumUvInclusive - 1}`
+    ? `${category.minimumUvInclusive}-${nextCategory.minimumUvInclusive - 1}`
     : `${category.minimumUvInclusive}+`;
 }
 
 function formatCloudRange(minimum: number, maximum: number): string {
-  return minimum === maximum ? `${minimum}%` : `${minimum}–${maximum}%`;
+  return minimum === maximum ? `${minimum}%` : `${minimum}-${maximum}%`;
 }
 
 function openSource(url: string) {
@@ -80,11 +80,11 @@ function UvIndexExplanation() {
         ))}
       </View>
       <SourceLink
-        label="WHO · The ultraviolet (UV) index"
+        label="WHO: The ultraviolet (UV) index"
         url="https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)-index"
       />
       <SourceLink
-        label="WHO · Global Solar UV Index guide"
+        label="WHO: Global Solar UV Index guide"
         url="https://www.who.int/publications/i/item/9241590076"
       />
     </>
@@ -115,14 +115,14 @@ function CloudCoverExplanation() {
         These cloud labels are simplified descriptions, not official weather
         categories. Clouds can reduce UV, but UV can still be high under clouds;
         thin or broken clouds may have little effect or sometimes increase UV.
-        Use the forecast UV Index—not cloud cover—to understand UV conditions.
+        Use the forecast UV Index, not cloud cover, to understand UV conditions.
       </Text>
       <SourceLink
-        label="WHO · UV radiation, clouds and haze"
+        label="WHO: UV radiation, clouds and haze"
         url="https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)"
       />
       <SourceLink
-        label="Open-Meteo · Weather forecast variables"
+        label="Open-Meteo: Weather forecast variables"
         url="https://open-meteo.com/en/docs"
       />
     </>
@@ -163,16 +163,16 @@ function PrecipitationExplanation() {
       </View>
       <Text style={styles.note}>
         In the outing summary, the amount adds only complete forecast hours within
-        your outing. “Peak hourly chance” is the highest single-hour chance in
+        your outing. Peak hourly chance is the highest single-hour chance in
         that period, not a combined chance for the outing. The outing total sums
         multiple hours, so do not classify it with the hourly rain guide above.
       </Text>
       <SourceLink
-        label="Open-Meteo · Weather forecast variables"
+        label="Open-Meteo: Weather forecast variables"
         url="https://open-meteo.com/en/docs"
       />
       <SourceLink
-        label="WMO · Rain-intensity criteria"
+        label="WMO: Rain-intensity criteria"
         url="https://www.weather.gov/media/epz/mesonet/CWOP-WMO8.pdf"
       />
     </>
@@ -199,11 +199,11 @@ function WindExplanation() {
         ))}
       </View>
       <SourceLink
-        label="U.S. National Weather Service · Beaufort wind scale"
+        label="U.S. National Weather Service: Beaufort wind scale"
         url="https://www.weather.gov/mfl/beaufort"
       />
       <SourceLink
-        label="Open-Meteo · Weather forecast variables"
+        label="Open-Meteo: Weather forecast variables"
         url="https://open-meteo.com/en/docs?past_days=1"
       />
     </>

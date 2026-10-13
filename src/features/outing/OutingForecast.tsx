@@ -45,8 +45,8 @@ function formatDateTimeRange(start: number, end: number, timezone: string): stri
     dateFormatter.format(new Date(end * 1000));
 
   return sameDate
-    ? `${formatDate(start, timezone)} · ${formatTime(start, timezone)}–${formatTime(end, timezone)}`
-    : `${formatDate(start, timezone)}, ${formatTime(start, timezone)} – ${formatDate(end, timezone)}, ${formatTime(end, timezone)}`;
+    ? `${formatDate(start, timezone)}, ${formatTime(start, timezone)}-${formatTime(end, timezone)}`
+    : `${formatDate(start, timezone)}, ${formatTime(start, timezone)} - ${formatDate(end, timezone)}, ${formatTime(end, timezone)}`;
 }
 
 function getForecastLimitMessage(forecast: HourlyForecast, outingEnd: Date): string | null {
@@ -62,16 +62,16 @@ function getForecastLimitMessage(forecast: HourlyForecast, outingEnd: Date): str
 function formatTemperatureRange(summary: OutingForecastSummary): string {
   const low = Math.round(summary.lowestTemperature);
   const high = Math.round(summary.highestTemperature);
-  return low === high ? `${low}°C` : `${low}–${high}°C`;
+  return low === high ? `${low}°C` : `${low}-${high}°C`;
 }
 
 function formatCloudCoverRange(summary: OutingForecastSummary): string {
   if (summary.lowestCloudCover === null || summary.highestCloudCover === null) return 'Range unavailable';
-  return `Range ${Math.round(summary.lowestCloudCover)}–${Math.round(summary.highestCloudCover)}%`;
+  return `Range ${Math.round(summary.lowestCloudCover)}-${Math.round(summary.highestCloudCover)}%`;
 }
 
 function formatPrecipitationAmount(value: number | null): string {
-  if (value === null) return '—';
+  if (value === null) return '-';
   return `${value > 0 && value < 0.1 ? value.toFixed(2) : value.toFixed(1)} mm`;
 }
 
@@ -94,7 +94,7 @@ function SummaryMetric({ title, mainValue, description, secondaryValue }: {
 function GuidanceBullet({ item }: { item: UvScoutInsightItem }) {
   return (
     <View style={styles.guidanceBullet}>
-      <Text style={styles.guidanceBulletMarker}>•</Text>
+      <Text style={styles.guidanceBulletMarker}>-</Text>
       <Text style={styles.guidanceBulletText}>
         <Text style={styles.guidanceBulletTitle}>{item.title}: </Text>
         {item.text}
@@ -122,10 +122,6 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
           ? formatDateTimeRange(plan.start.getTime() / 1000, plan.end.getTime() / 1000, forecast.timezone)
           : 'Loading selected hours'}
       </Text>
-      {summary && forecastLimitMessage && (
-        <Text style={styles.coverageNote}>{forecastLimitMessage}</Text>
-      )}
-
       {loading && <ActivityIndicator color="#151515" style={styles.loading} />}
       {error && <Text style={styles.message}>{error}</Text>}
       {forecast && !summary && !loading && (
@@ -135,12 +131,31 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
       )}
       {forecast && summary && (
         <>
+          {guidance && (
+            <View style={styles.guidance}>
+              <Text style={styles.guidanceTitle}>UV guidance for outing</Text>
+              {guidance.coverageMessage && (
+                <Text style={styles.guidanceCoverage}>{guidance.coverageMessage}</Text>
+              )}
+              <Text style={styles.guidanceGroupHeading}>What to do</Text>
+              <View style={styles.insightList}>
+                {guidance.practicalGuidance.map((item, index) => (
+                  <GuidanceBullet key={`action-${index}`} item={item} />
+                ))}
+              </View>
+              <View style={styles.guidanceSummary}>
+                <Text style={styles.guidanceGroupHeading}>Summary</Text>
+                <Text style={styles.guidanceBody}>{guidance.summary}</Text>
+              </View>
+            </View>
+          )}
+
           <View style={styles.summaryGrid}>
             <View style={styles.summaryRow}>
               <SummaryMetric
                 title="UV INDEX"
                 mainValue={summary.highestUv.toFixed(1)}
-                description={`Category: ${summary.highestCategory.label}`}
+                description={`Rounded category: ${summary.highestCategory.label}`}
                 secondaryValue={`Average: ${summary.averageUv.toFixed(1)}`}
               />
               <View style={styles.summaryDivider} />
@@ -155,7 +170,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
             <View style={styles.summaryRow}>
               <SummaryMetric
                 title="CLOUD COVER"
-                mainValue={summary.averageCloudCover === null ? '—' : `${Math.round(summary.averageCloudCover)}%`}
+                mainValue={summary.averageCloudCover === null ? '-' : `${Math.round(summary.averageCloudCover)}%`}
                 description={summary.averageCloudCover === null ? 'Average unavailable' : 'Average'}
                 secondaryValue={formatCloudCoverRange(summary)}
               />
@@ -174,35 +189,6 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
               />
             </View>
           </View>
-
-          {guidance && (
-            <View style={styles.guidance}>
-              <Text style={styles.guidanceTitle}>UV guidance for outing</Text>
-              <View style={styles.scoutInsight}>
-                <Text style={styles.guidanceGroupHeading}>UV Scout insight</Text>
-                <Text style={[styles.guidanceNote, styles.guidanceBodyParagraph]}>
-                  {guidance.note}
-                </Text>
-                {guidance.coverageMessage && (
-                  <Text style={[styles.guidanceBody, styles.guidanceBodyParagraph]}>
-                    {guidance.coverageMessage}
-                  </Text>
-                )}
-                <Text style={[styles.guidanceBody, styles.guidanceBodyParagraph]}>
-                  <Text style={styles.guidanceOverallLabel}>Overall: </Text>
-                  {guidance.headline} {guidance.explanation}
-                </Text>
-                <View style={styles.insightList}>
-                  {guidance.profileDetails.map((item, index) => (
-                    <GuidanceBullet key={`profile-${index}`} item={item} />
-                  ))}
-                  {guidance.practicalGuidance.map((item, index) => (
-                    <GuidanceBullet key={`action-${index}`} item={item} />
-                  ))}
-                </View>
-              </View>
-            </View>
-          )}
 
           <Text style={styles.subheading}>UV &amp; weather by hour</Text>
           <HourlyUvBarChart
@@ -226,10 +212,9 @@ const styles = StyleSheet.create({
   section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 36, paddingTop: 24 },
   heading: { color: '#151515', fontSize: 18, fontWeight: '600', textAlign: 'center' },
   timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', marginTop: 7, textAlign: 'center' },
-  coverageNote: { color: '#777777', fontSize: 12, lineHeight: 18, marginTop: 9, textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
-  summaryGrid: { marginTop: 16 },
+  summaryGrid: { marginTop: 24 },
   summaryRow: { alignItems: 'stretch', flexDirection: 'row' },
   summaryItem: { alignItems: 'center', flex: 1, justifyContent: 'flex-start', paddingHorizontal: 4, paddingVertical: 7 },
   summaryDivider: { alignSelf: 'stretch', backgroundColor: '#DDDDDD', marginHorizontal: 7, marginVertical: 5, width: 1 },
@@ -238,19 +223,17 @@ const styles = StyleSheet.create({
   summaryValue: { color: '#151515', fontSize: 18, marginTop: 4, textAlign: 'center' },
   summaryDetail: { color: '#696969', fontSize: 11, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: '#696969', fontSize: 13, marginTop: 4, textAlign: 'center' },
-  guidance: { marginTop: 12 },
+  guidance: { marginTop: 24 },
   guidanceTitle: { color: '#151515', fontSize: 17, fontWeight: '600', textAlign: 'center' },
-  scoutInsight: { paddingTop: 14 },
-  guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19 },
+  guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14 },
+  guidanceCoverage: { color: '#666666', fontSize: 12, lineHeight: 18, marginTop: 10 },
   guidanceBody: { color: '#555555', fontSize: 13, lineHeight: 19 },
-  guidanceNote: { color: '#929292', fontSize: 11, lineHeight: 16 },
-  guidanceBodyParagraph: { marginTop: 6 },
+  guidanceSummary: { borderTopColor: '#E6E6E6', borderTopWidth: 1, marginTop: 18, paddingTop: 2 },
   insightList: { marginTop: 6 },
   guidanceBullet: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
   guidanceBulletMarker: { color: '#555555', fontSize: 14, lineHeight: 19, marginRight: 8, width: 10 },
   guidanceBulletText: { color: '#555555', flex: 1, fontSize: 13, lineHeight: 19 },
   guidanceBulletTitle: { color: '#333333', fontWeight: '600' },
-  guidanceOverallLabel: { color: '#333333', fontWeight: '600' },
   subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });

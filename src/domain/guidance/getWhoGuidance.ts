@@ -62,7 +62,7 @@ export function getWhoGuidanceTable(): WhoGuidanceTable {
         level: level.key as WhoGuidanceLevelKey,
         range: upperBound === null
           ? `${level.minimumUvInclusive}+`
-          : `${level.minimumUvInclusive}–${upperBound}`,
+          : `${level.minimumUvInclusive}-${upperBound}`,
         label: level.label,
         actions: [...level.actions],
       };

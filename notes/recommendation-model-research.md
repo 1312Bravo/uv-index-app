@@ -1,5 +1,9 @@
 # UV Scout recommendation model: factors and evidence review
 
+**Research record, not current app behavior.** See
+[active UV guidance](active-uv-guidance.md) for the reviewed MVP rule table,
+copy order, and current scenarios. Older proposals below may be superseded.
+
 **Status:** Evidence and factor inventory. See the dated product decision below
 and the current implementation slice in
 [`recommendation-tree-draft.md`](recommendation-tree-draft.md) for the behavior

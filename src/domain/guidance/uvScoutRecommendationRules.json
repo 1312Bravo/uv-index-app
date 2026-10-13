@@ -1,19 +1,11 @@
 {
-  "schemaVersion": 1,
-  "modelNote": "Descriptive guidance from a location-based hourly forecast. This is not a personal exposure, dose, burn-time, or health-risk estimate.",
+  "schemaVersion": 2,
+  "modelNote": "General UV protection actions from the covered hourly forecast. This is not a personal exposure, dose, burn-time, or health-risk estimate.",
   "uvBands": [
     { "key": "below-3", "minimumUvInclusive": 0, "maximumUvExclusive": 3, "label": "the UV Index stays below 3" },
     { "key": "3-to-8", "minimumUvInclusive": 3, "maximumUvExclusive": 8, "label": "the UV Index is from 3 to below 8" },
     { "key": "8-plus", "minimumUvInclusive": 8, "maximumUvExclusive": null, "label": "the UV Index is 8 or higher" }
   ],
-  "profileSignals": {
-    "includePeakAndTime": true,
-    "includeDurationWeightedAverage": true,
-    "includeTimeInEachNonzeroBand": true,
-    "includeLongestContinuousAtOrAboveUv": [3, 8],
-    "forecastHourlyPointRepresentsSeconds": 3600,
-    "missingCoverageBreaksContinuity": true
-  },
   "guidanceTriggers": {
     "elevatedBandKey": "3-to-8",
     "extraAttentionBandKey": "8-plus",
@@ -24,11 +16,6 @@
       "key": "reflective-surroundings",
       "whenAnyCoveredUvAtOrAbove": 3,
       "messageKey": "reflectiveConditions"
-    },
-    {
-      "key": "sunscreen-after-conditions",
-      "whenAnyCoveredUvAtOrAbove": 3,
-      "messageKey": "sunscreenAfterConditions"
     }
   ],
   "durationGuidance": {
@@ -45,7 +32,7 @@
   ],
   "forecastCoverage": {
     "neverFillMissingWithZero": true,
-    "labelProfileAsCoveredForecast": true,
+    "labelIncompleteCoverage": true,
     "messageKey": "coverageIncomplete"
   },
   "factorPolicy": [
@@ -62,7 +49,7 @@
     {
       "key": "forecast-coverage",
       "role": "confidence-limitation",
-      "handling": "Calculate profile durations only over covered intervals, break continuity across gaps, and disclose missing periods."
+      "handling": "Calculate durations only over covered intervals, break continuity across gaps, and disclose missing periods."
     },
     {
       "key": "temperature-cloud-cover-precipitation",
@@ -97,7 +84,7 @@
     {
       "key": "sweat-swimming-toweling",
       "role": "not-known-by-default",
-      "handling": "When covered UVI reaches 3, remind sunscreen users conditionally to follow product directions after swimming, sweating, or drying off; do not infer the activity or calculate a timer."
+      "handling": "When covered UVI reaches 3, include conditional reapplication advice after swimming, sweating, or towel drying; do not infer the activity or calculate a timer."
     },
     {
       "key": "personal-sensitivity-and-medication",
@@ -114,9 +101,10 @@
     ],
     "uvScoutProductChoices": [
       "Use raw UVI bands below 3, 3 to below 8, and 8 or higher to describe the forecast profile.",
-      "When covered UVI reaches 3, show baseline protection and conditional after-water/sweat sunscreen advice.",
-      "Show the two-hour reapplication planning message only when at least 7200 covered seconds are forecast at UVI 3 or higher; this cumulative exposure trigger is a UV Scout product choice, not a WHO rule.",
-      "Keep WHO's general action table in Info; compose separate UV Scout outing guidance from the complete covered profile."
+      "Always give a practical outcome for covered UV below 3, without treating daytime and nighttime differently.",
+      "When covered UVI reaches 3, show clothing, shade, eye protection, and sunscreen advice for the relevant hours; highlight UVI 8+ periods for extra shade.",
+      "Show the extra two-hour reapplication reminder only when at least 7200 covered seconds are forecast at UVI 3 or higher; this display trigger is a UV Scout product choice, not a WHO rule or a personal timer.",
+      "Keep WHO's general action table in Info; place UV Scout actions before a short profile summary in the outing result."
     ],
     "notValidatedOrCalculated": [
       "personal UV dose or accumulated dose",

@@ -56,4 +56,5 @@ temporary connection to the computer running the project, not a published app.
 
 Run `pnpm test` to compile and run the dependency-free domain test suite. It
 covers the WHO reference table, UV category rounding, outing aggregation,
-forecast gaps, precipitation totals, and the sunscreen reminder boundary.
+forecast gaps, precipitation totals, raw UV action boundaries, low-UV advice,
+cloud overlap, separated periods, and the sunscreen reminder boundary.

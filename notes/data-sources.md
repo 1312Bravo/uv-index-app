@@ -1,6 +1,6 @@
 # Data and evidence sources
 
-Updated 2026-10-10. This is the source register for UV Scout. It records the
+Updated 2026-10-13. This is the source register for UV Scout. It records the
 origin of external forecast/location data and evidence used to shape app
 behavior, plus where each source enters the project and how it is interpreted.
 Topic-specific research notes contain the fuller evidence review and rationale.
@@ -48,6 +48,30 @@ usage notes in the runtime-provider table above are superseded by this correctio
 | American Academy of Dermatology, [How to Apply Sunscreen](https://www.aad.org/public/everyday-care/sun-protection/shade-clothing-sunscreen/how-to-apply-sunscreen) | Dermatologist guidance on broad-spectrum, water-resistant SPF 30+, applying before going outdoors, about 1 oz for most adults covering exposed body skin (more may be needed), and reapplying every two hours and after swimming/sweating. | Independent professional-society cross-check in `notes/recommendation-model-research.md`; not a runtime data source or a UV Scout medical endorsement. | Last updated 2025-08-15; checked 2026-10-06. U.S.-based professional guidance; distinguish it from WHO/global advice and local product labeling. |
 | Open-Meteo, [Weather Forecast API documentation](https://open-meteo.com/en/docs), `cloud_cover` definition; WHO, [UV radiation, clouds and haze](https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)) | Cloud cover describes the fraction/percentage of sky covered; it is not the percentage of UV blocked. Clouds can reduce UV, but do not guarantee low UV. | Provider value appears with hourly forecast bins; explanatory bands are in `src/domain/weather/cloudCoverBands.json`, interpreted in `src/domain/weather/getCloudCoverBand.ts`, and explained in `src/features/info/InfoScreen.tsx`. | The six cloud labels/ranges are simplified UV Scout wording, not an official cloud classification or UV adjustment. See [Info-tab research](info-tab-content-research.md). |
 | NOAA Global Monitoring Laboratory, [solar calculation details](https://gml.noaa.gov/grad/solcalc/calcdetails.html) and [civil twilight glossary](https://gml.noaa.gov/grad/solcalc/glossary.html); [SunCalc](https://github.com/mourner/suncalc) Meeus-style equations and event conventions | Approximate solar event times; civil dawn/dusk use the Sun's centre 6° below the horizon, and sunrise/sunset use the apparent horizon convention. | Pure calculation in `src/domain/daylight/getDaylightEvents.ts`; timestamps are displayed on the shared charts in `src/features/forecast/HourlyUvBarChart.tsx`. No daylight web service is called at runtime. | Times are approximate; refraction, terrain, and polar-day/night cases limit interpretation. NOAA's published precision describes NOAA's implementation, not a verified accuracy claim for UV Scout's calculation. The arc height is illustrative. Full rationale is in [daylight research](daylight-research.md). |
+
+### Active UV-guidance review, 2026-10-13
+
+Rechecked the WHO [UV Index Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index)
+(dated 20 June 2022), WHO [skin-cancer protection Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-protecting-against-skin-cancer)
+(dated 16 July 2024), [Open-Meteo forecast documentation](https://open-meteo.com/en/docs),
+and [FDA sunscreen consumer guidance](https://www.fda.gov/drugs/understanding-over-counter-medicines/sunscreen-how-help-protect-your-skin-sun).
+No new runtime provider or personal-risk formula was added. WHO's UVI 3
+protection threshold, stronger protection at UVI 8+, and clothing, shade,
+eyewear, and sunscreen advice inform the editable text and rules in
+`src/domain/guidance/uvScoutInsight.json` and
+`src/domain/guidance/uvScoutRecommendationRules.json`; the interpreter is
+`src/domain/guidance/getUvScoutInsight.ts`. FDA is a U.S. comparative source
+for sunscreen-label and reapplication wording, not a separate rule engine.
+Open-Meteo provides hourly forecast values, transformed into covered outing
+durations by `src/domain/outing/calculateOutingForecast.ts`; it does not
+provide outing advice. The UI in `src/features/outing/OutingForecast.tsx` now
+shows actions and a short summary rather than every internal profile metric.
+The two-hour *message-display* trigger, cloud-overlap wording, and summary
+composition are UV Scout choices. They are not WHO duration thresholds or a
+personal dose estimate. Full active behavior, scenarios, attribution, and
+limitations are in [active UV guidance](active-uv-guidance.md); earlier row
+descriptions of the full profile refer to calculations, not all currently
+displayed guidance bullets. Recheck provider terms before commercial release.
 
 ## UV Scout-authored definitions and decisions
 

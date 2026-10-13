@@ -1,41 +1,32 @@
 {
-  "note": "Approximate outing forecast, not a personal exposure or risk estimate.",
   "bulletTitles": {
-    "peak": "Peak UV",
-    "below-3": "Time below UV 3",
-    "3-to-8": "Time at UV 3–7",
-    "8-plus": "Time at UV 8+",
-    "average": "Average UV",
-    "longestElevated": "Longest UV 3+ period",
-    "longestVeryHigh": "Longest UV 8+ period",
-    "moderateAction": "Protection",
-    "veryHighAction": "Extra protection",
-    "sunscreenBasics": "Sunscreen",
-    "cloudyElevatedUv": "Clouds and UV",
-    "reflectiveConditions": "Reflected UV",
-    "sunscreenAfterConditions": "After water or sweat",
-    "sunscreenExtendedExposure": "Reapplication",
-    "lowUvContext": "Low UV"
+    "lowUv": "Protection",
+    "protection": "Protection",
+    "extraProtection": "Strongest hours",
+    "sunscreen": "Sunscreen",
+    "cloudyElevatedUv": "Cloudy hours",
+    "reflectiveConditions": "Bright surfaces"
   },
-  "profileMessages": {
-    "belowThresholdHeadline": "No covered period in this outing reaches UV Index 3.",
-    "elevatedHeadline": "UV Index 3 or higher is forecast for about {duration} of the covered outing.",
-    "explanation": "The guidance considers both UV level and time spent at each level, not just the peak.",
-    "lowUvContext": "The covered forecast stays below UV Index 3, the usual threshold for sun-protection advice. This does not mean zero UV; reflective surroundings and personal circumstances are not included.",
-    "reflectiveConditions": "If your outing is near snow, bright sand, or water, keep protecting yourself even in shade—reflected UV can add exposure.",
-    "sunscreenAfterConditions": "If you use sunscreen, reapply after swimming, sweating, or drying off; follow the product label.",
-    "sunscreenExtendedExposure": "The forecast has about {duration} at UV Index 3 or higher, across {periods}. If you use sunscreen, plan to reapply during this extended elevated-UV time; WHO recommends every two hours and particularly after swimming, sweating, or drying off. Follow the product label. UV Scout does not know when you applied it.",
-    "moderateAction": "For about {duration} at UV Index 3 to below 8 ({periods}), cover exposed skin with clothing, wear a broad-brimmed hat and UV-protective sunglasses, and use available shade when UV is strongest.",
-    "veryHighAction": "The outing has about {duration} at UV Index 8+ ({periods}). If possible, plan to spend these forecast hours in shade. Shade is not complete protection, so keep covering up and protect your eyes.",
-    "sunscreenBasics": "For skin left uncovered, use broad-spectrum SPF 30+ sunscreen. Apply it generously and evenly as the label directs. Sunscreen is one layer of protection, not a reason to stay outside longer.",
-    "cloudyElevatedUv": "Although very cloudy conditions are forecast, UV Index 3+ is also forecast during {periods}. Clouds can reduce UV, but do not reliably remove it; follow the UV Index forecast rather than cloud cover alone.",
-    "peak": "UV Index {peakUv} around {peakTime}.",
-    "average": "Across the covered part of the outing: {averageUv}.",
-    "longestElevated": "About {duration} without a break.",
-    "longestVeryHigh": "About {duration} without a break."
+  "actionMessages": {
+    "lowComplete": "For most people, no extra sun protection is needed during these hours.",
+    "lowPartial": "For most people, no extra sun protection is needed during the {duration} with forecast data.",
+    "protection": "UV 3+ is forecast for {periods}. Cover skin with clothing, wear a broad-brimmed hat and UV-protective sunglasses, and seek shade.",
+    "extraProtection": "UV 8+ is forecast for {periods}. Limit time in direct sun and prioritize shade.",
+    "sunscreenBasics": "Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before going out.",
+    "sunscreenAfterConditions": "If you swim, sweat, or towel off, reapply according to the label.",
+    "sunscreenExtendedExposure": "Reapply at least every two hours while outdoors, or sooner after swimming, sweating, or towel drying. Follow the label.",
+    "cloudyElevatedUv": "Keep UV protection in place during {periods}, despite heavy cloud cover.",
+    "reflectiveConditions": "Near snow, bright sand, or water, keep skin and eyes protected even in shade."
+  },
+  "summaryMessages": {
+    "lowComplete": "UV stays below 3 throughout this outing ({duration}).",
+    "lowPartial": "UV stays below 3 for {duration} of the outing with forecast data.",
+    "protection": "UV 3+ is forecast for about {duration}. Peak UV is {peakUv} around {peakTime}.",
+    "protectionSeparated": "UV 3+ is forecast for about {duration} in separate periods. Peak UV is {peakUv} around {peakTime}.",
+    "extraProtection": "UV 3+ is forecast for about {duration}, including {veryHighDuration} at UV 8+. Peak UV is {peakUv} around {peakTime}.",
+    "extraProtectionSeparated": "UV 3+ is forecast for about {duration} in separate periods, including {veryHighDuration} at UV 8+. Peak UV is {peakUv} around {peakTime}."
   },
   "messages": {
-    "coverageIncomplete": "The forecast covers about {coveredDuration} of this {plannedDuration} outing. Conditions during the uncovered part are unknown.",
-    "bandDuration": "For about {duration}, {bandLabel}."
+    "coverageIncomplete": "Forecast available for {coveredDuration} of the planned {plannedDuration}. The remaining time has no forecast."
   }
 }

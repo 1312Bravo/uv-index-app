@@ -4,7 +4,6 @@ import { getHourOverlap, type OutingForecastSummary } from '../outing/calculateO
 import cloudCoverBands from '../weather/cloudCoverBands.json';
 
 type UvBandKey = 'below-3' | '3-to-8' | '8-plus';
-type ThresholdKey = 'protection' | 'extra-protection';
 
 export type UvScoutInsightItem = {
   title: string;
@@ -12,11 +11,8 @@ export type UvScoutInsightItem = {
 };
 
 export type UvScoutInsight = {
-  note: string;
-  headline: string;
-  explanation: string;
-  profileDetails: UvScoutInsightItem[];
   practicalGuidance: UvScoutInsightItem[];
+  summary: string;
   coverageMessage: string | null;
 };
 
@@ -26,9 +22,7 @@ const veryCloudyBand = cloudCoverBands.find((band) => band.key === 'very-cloudy'
 function validateDefinitions() {
   const usedBandKeys = new Set<string>();
 
-  if (!definitions.note.trim()) throw new Error('UV Scout insight note must not be empty.');
-
-  if (rules.schemaVersion !== 1 || !rules.modelNote.trim()) {
+  if (rules.schemaVersion !== 2 || !rules.modelNote.trim()) {
     throw new Error('UV Scout recommendation rules have an unsupported schema or empty model note.');
   }
 
@@ -52,15 +46,17 @@ function validateDefinitions() {
   if (expectedBandKeys.some((key) => !usedBandKeys.has(key))) {
     throw new Error('All three UV Scout exposure bands must be defined.');
   }
-  if (
-    expectedBandKeys.some((key) => !(key in definitions.bulletTitles)) ||
-    !('peak' in definitions.bulletTitles) ||
-    !('average' in definitions.bulletTitles) ||
-    !('longestElevated' in definitions.bulletTitles) ||
-    !('longestVeryHigh' in definitions.bulletTitles) ||
-    !('sunscreenBasics' in definitions.bulletTitles)
-  ) {
-    throw new Error('UV Scout profile bullet titles are incomplete.');
+  const requiredTitles = [
+    'lowUv', 'protection', 'extraProtection', 'sunscreen', 'cloudyElevatedUv', 'reflectiveConditions',
+  ] as const;
+  const requiredActions = [
+    'lowComplete', 'lowPartial', 'protection', 'extraProtection', 'sunscreenBasics',
+    'sunscreenAfterConditions', 'sunscreenExtendedExposure', 'cloudyElevatedUv', 'reflectiveConditions',
+  ] as const;
+  if (requiredTitles.some((key) => !definitions.bulletTitles[key]?.trim()) ||
+    requiredActions.some((key) => !definitions.actionMessages[key]?.trim()) ||
+    Object.values(definitions.summaryMessages).some((message) => !message.trim())) {
+    throw new Error('UV Scout action titles or messages are incomplete.');
   }
 
   if (rules.uvBands[0].maximumUvExclusive !== 3 ||
@@ -75,8 +71,7 @@ function validateDefinitions() {
     !(rules.forecastCoverage.messageKey in definitions.messages) ||
     !Number.isFinite(rules.durationGuidance.minimumCoveredElevatedUvSeconds) ||
     rules.durationGuidance.minimumCoveredElevatedUvSeconds <= 0 ||
-    !(rules.durationGuidance.messageKey in definitions.profileMessages) ||
-    !(rules.durationGuidance.messageKey in definitions.bulletTitles) ||
+    !(rules.durationGuidance.messageKey in definitions.actionMessages) ||
     rules.weatherContextRules.length === 0 ||
     !veryCloudyBand ||
     new Set(rules.weatherContextRules.map((rule) => rule.key)).size !== rules.weatherContextRules.length ||
@@ -85,7 +80,7 @@ function validateDefinitions() {
       !Number.isFinite(rule.whenCloudCoverAtOrAbovePercent) ||
       rule.whenCloudCoverAtOrAbovePercent < 0 || rule.whenCloudCoverAtOrAbovePercent > 100 ||
       rule.whenCloudCoverAtOrAbovePercent !== veryCloudyBand.minimumPercentInclusive ||
-      !(rule.messageKey in definitions.profileMessages) || !(rule.messageKey in definitions.bulletTitles),
+      !(rule.messageKey in definitions.actionMessages) || !(rule.messageKey in definitions.bulletTitles),
     )
   ) {
     throw new Error('UV Scout trigger bands or message references do not match the editable definitions.');
@@ -95,7 +90,7 @@ function validateDefinitions() {
     const invalid = !rule.key.trim() || conditionalRuleKeys.has(rule.key) ||
       !Number.isFinite(rule.whenAnyCoveredUvAtOrAbove) ||
       rule.whenAnyCoveredUvAtOrAbove !== rules.uvBands[1].minimumUvInclusive ||
-      !(rule.messageKey in definitions.profileMessages) ||
+      !(rule.messageKey in definitions.actionMessages) ||
       !(rule.messageKey in definitions.bulletTitles);
     conditionalRuleKeys.add(rule.key);
     return invalid;
@@ -103,29 +98,15 @@ function validateDefinitions() {
     throw new Error('UV Scout conditional context rules are invalid or duplicated.');
   }
 
-  const profileMessages = Object.values(definitions.profileMessages);
-  if (profileMessages.some((message) => typeof message !== 'string' || !message.trim())) {
-    throw new Error('UV Scout profile messages must be non-empty strings.');
-  }
-  const bulletTitles = Object.values(definitions.bulletTitles);
-  if (bulletTitles.some((title) => typeof title !== 'string' || !title.trim())) {
+  if (Object.values(definitions.bulletTitles).some((title) => typeof title !== 'string' || !title.trim())) {
     throw new Error('UV Scout insight bullet titles must be non-empty strings.');
   }
   if (
     !definitions.messages.coverageIncomplete.trim() ||
-    !definitions.messages.bandDuration.trim() ||
     !Number.isFinite(rules.guidanceTriggers.coverageToleranceSeconds) ||
     rules.guidanceTriggers.coverageToleranceSeconds < 0 ||
-    !rules.profileSignals.includePeakAndTime ||
-    !rules.profileSignals.includeDurationWeightedAverage ||
-    !rules.profileSignals.includeTimeInEachNonzeroBand ||
-    rules.profileSignals.includeLongestContinuousAtOrAboveUv.length !== 2 ||
-    rules.profileSignals.includeLongestContinuousAtOrAboveUv[0] !== 3 ||
-    rules.profileSignals.includeLongestContinuousAtOrAboveUv[1] !== 8 ||
-    rules.profileSignals.forecastHourlyPointRepresentsSeconds !== 3600 ||
-    !rules.profileSignals.missingCoverageBreaksContinuity ||
     !rules.forecastCoverage.neverFillMissingWithZero ||
-    !rules.forecastCoverage.labelProfileAsCoveredForecast ||
+    !rules.forecastCoverage.labelIncompleteCoverage ||
     rules.factorPolicy.length === 0 ||
     new Set(rules.factorPolicy.map((factor) => factor.key)).size !== rules.factorPolicy.length ||
     rules.factorPolicy.some((factor) =>
@@ -143,12 +124,10 @@ function validateDefinitions() {
 
 validateDefinitions();
 
-const thresholds: Record<ThresholdKey, number> = {
-  protection: rules.profileSignals.includeLongestContinuousAtOrAboveUv[0],
-  'extra-protection': rules.profileSignals.includeLongestContinuousAtOrAboveUv[1],
-};
 const elevatedBandKey = rules.guidanceTriggers.elevatedBandKey as UvBandKey;
 const extraAttentionBandKey = rules.guidanceTriggers.extraAttentionBandKey as UvBandKey;
+const elevatedUv = rules.uvBands[1].minimumUvInclusive;
+const veryHighUv = rules.uvBands[2].minimumUvInclusive;
 const coverageMessageTemplate = definitions.messages[
   rules.forecastCoverage.messageKey as keyof typeof definitions.messages
 ];
@@ -163,7 +142,10 @@ function formatDuration(seconds: number): string {
 }
 
 function fillMessage(template: string, values: Record<string, string>): string {
-  return template.replace(/\{(\w+)\}/g, (_, key: string) => values[key] ?? `{${key}}`);
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => {
+    if (!(key in values)) throw new Error(`Missing UV Scout message value: ${key}.`);
+    return values[key];
+  });
 }
 
 function createInsightItem(titleKey: keyof typeof definitions.bulletTitles, text: string): UvScoutInsightItem {
@@ -187,82 +169,45 @@ function formatLocalDate(time: number, timezone: string): string {
   }).format(new Date(time * 1000));
 }
 
+type UvPeriod = { start: number; end: number };
+
 function getUvPeriods(
   summary: OutingForecastSummary,
-  timezone: string,
   matches: (hour: OutingForecastSummary['hours'][number]) => boolean,
-): string {
+): UvPeriod[] {
   const intervals = [...summary.hours]
     .sort((left, right) => left.time - right.time)
     .flatMap((hour) => {
       const overlap = getHourOverlap(hour, summary.startSeconds, summary.endSeconds);
       return overlap && matches(hour) ? [overlap] : [];
     });
-  const periods: Array<{ start: number; end: number }> = [];
+  const periods: UvPeriod[] = [];
   for (const interval of intervals) {
     const previous = periods.at(-1);
     if (previous && interval.start <= previous.end) previous.end = Math.max(previous.end, interval.end);
     else periods.push({ start: interval.start, end: interval.end });
   }
-  return periods.map(({ start, end }) => {
+  return periods;
+}
+
+function describePeriods(periods: UvPeriod[], timezone: string): string {
+  const firstTwo = periods.slice(0, 2).map(({ start, end }) => {
+    const date = formatLocalDate(start, timezone);
     const startTime = formatLocalTime(start, timezone);
     const endTime = formatLocalTime(end, timezone);
     return formatLocalDate(start, timezone) === formatLocalDate(end - 1, timezone)
-      ? `${formatLocalDate(start, timezone)} ${startTime}–${endTime}`
-      : `${formatLocalDate(start, timezone)} ${startTime}–${formatLocalDate(end, timezone)} ${endTime}`;
-  }).join('; ');
-}
-
-function getProfileDetails(
-  summary: OutingForecastSummary,
-  timezone: string,
-  bandSeconds: Map<UvBandKey, number>,
-  longestAtThreshold: Map<ThresholdKey, number>,
-): UvScoutInsightItem[] {
-  const details = rules.uvBands.flatMap((band) => {
-    const seconds = bandSeconds.get(band.key as UvBandKey) ?? 0;
-    return seconds > 0
-      ? [createInsightItem(band.key as keyof typeof definitions.bulletTitles, fillMessage(definitions.messages.bandDuration, {
-        duration: formatDuration(seconds),
-        bandLabel: band.label,
-      }))]
-      : [];
+      ? `${date} ${startTime}-${endTime}`
+      : `${date} ${startTime}-${formatLocalDate(end, timezone)} ${endTime}`;
   });
-
-  details.unshift(createInsightItem('peak', fillMessage(definitions.profileMessages.peak, {
-    peakUv: summary.highestUv.toFixed(1),
-    peakTime: formatLocalTime(summary.highestUvTime, timezone),
-  })));
-  details.push(createInsightItem('average', fillMessage(definitions.profileMessages.average, {
-    averageUv: summary.averageUv.toFixed(1),
-  })));
-
-  const longestElevated = longestAtThreshold.get('protection') ?? 0;
-  const elevatedSeconds = (bandSeconds.get(elevatedBandKey) ?? 0) +
-    (bandSeconds.get(extraAttentionBandKey) ?? 0);
-  if (longestElevated > 0 && longestElevated < elevatedSeconds - 60) {
-    details.push(createInsightItem('longestElevated', fillMessage(definitions.profileMessages.longestElevated, {
-      duration: formatDuration(longestElevated),
-    })));
-  }
-
-  const veryHighSeconds = bandSeconds.get(extraAttentionBandKey) ?? 0;
-  const longestVeryHigh = longestAtThreshold.get('extra-protection') ?? 0;
-  if (longestVeryHigh > 0 && longestVeryHigh < veryHighSeconds - 60) {
-    details.push(createInsightItem('longestVeryHigh', fillMessage(definitions.profileMessages.longestVeryHigh, {
-      duration: formatDuration(longestVeryHigh),
-    })));
-  }
-  return details;
+  const remaining = periods.length - firstTwo.length;
+  return remaining > 0
+    ? `${firstTwo.join(', ')} and ${remaining} more ${remaining === 1 ? 'period' : 'periods'}`
+    : firstTwo.join(' and ');
 }
 
 function getExposureProfile(summary: OutingForecastSummary) {
   const bandSeconds = new Map<UvBandKey, number>(expectedBandKeys.map((key) => [key, 0]));
-  const currentRun = new Map<ThresholdKey, { end: number; seconds: number }>();
-  const longestAtThreshold = new Map<ThresholdKey, number>();
-  const orderedHours = [...summary.hours].sort((left, right) => left.time - right.time);
-
-  for (const hour of orderedHours) {
+  for (const hour of summary.hours) {
     const overlap = getHourOverlap(hour, summary.startSeconds, summary.endSeconds);
     if (!overlap) continue;
 
@@ -274,112 +219,92 @@ function getExposureProfile(summary: OutingForecastSummary) {
       const key = band.key as UvBandKey;
       bandSeconds.set(key, (bandSeconds.get(key) ?? 0) + overlap.seconds);
     }
-
-    for (const [key, threshold] of Object.entries(thresholds) as [ThresholdKey, number][]) {
-      if (hour.uv < threshold) {
-        currentRun.delete(key);
-        continue;
-      }
-      const previous = currentRun.get(key);
-      const run = previous?.end === overlap.start
-        ? { end: overlap.end, seconds: previous.seconds + overlap.seconds }
-        : { end: overlap.end, seconds: overlap.seconds };
-      currentRun.set(key, run);
-      longestAtThreshold.set(key, Math.max(longestAtThreshold.get(key) ?? 0, run.seconds));
-    }
   }
-  return { bandSeconds, longestAtThreshold };
+  return bandSeconds;
 }
 
-// Summarize the full covered forecast profile; this is not a personal dose estimate.
+// Compose actions from covered forecast hours, then summarize the UV pattern.
 export function getUvScoutInsight(summary: OutingForecastSummary, timezone: string): UvScoutInsight {
   if (!Number.isFinite(summary.highestUv) || summary.highestUv < 0) {
     throw new Error('Outing UV Index must be finite and non-negative.');
   }
 
-  const { bandSeconds, longestAtThreshold } = getExposureProfile(summary);
+  const bandSeconds = getExposureProfile(summary);
   const elevatedSeconds = (bandSeconds.get(elevatedBandKey) ?? 0) +
     (bandSeconds.get(extraAttentionBandKey) ?? 0);
   const veryHighSeconds = bandSeconds.get(extraAttentionBandKey) ?? 0;
-  const moderatePeriods = getUvPeriods(summary, timezone, ({ uv }) => uv >= 3 && uv < 8);
-  const elevatedPeriods = getUvPeriods(summary, timezone, ({ uv }) => uv >= 3);
-  const veryHighPeriods = getUvPeriods(summary, timezone, ({ uv }) => uv >= 8);
-  const headline = elevatedSeconds === 0
-    ? definitions.profileMessages.belowThresholdHeadline
-    : fillMessage(definitions.profileMessages.elevatedHeadline, {
-      duration: formatDuration(elevatedSeconds),
-    });
+  const elevatedPeriods = getUvPeriods(summary, ({ uv }) => uv >= elevatedUv);
+  const veryHighPeriods = getUvPeriods(summary, ({ uv }) => uv >= veryHighUv);
+  const coverageComplete = summary.coveredSeconds >=
+    summary.requestedSeconds - rules.guidanceTriggers.coverageToleranceSeconds;
 
   const practicalGuidance: UvScoutInsightItem[] = [];
-  const moderateSeconds = bandSeconds.get(elevatedBandKey) ?? 0;
-  if (moderateSeconds > 0) {
-    practicalGuidance.push(createInsightItem('moderateAction', fillMessage(definitions.profileMessages.moderateAction, {
-      duration: formatDuration(moderateSeconds),
-      periods: moderatePeriods,
-    })));
-  }
-  if (veryHighSeconds > 0) {
-    practicalGuidance.push(createInsightItem('veryHighAction', fillMessage(definitions.profileMessages.veryHighAction, {
-      duration: formatDuration(veryHighSeconds),
-      periods: veryHighPeriods,
-    })));
-  }
-  if (elevatedSeconds > 0) {
-    practicalGuidance.push(createInsightItem('sunscreenBasics', definitions.profileMessages.sunscreenBasics));
-  }
-  if (elevatedSeconds >= rules.durationGuidance.minimumCoveredElevatedUvSeconds) {
-    practicalGuidance.push(createInsightItem(
-      rules.durationGuidance.messageKey as keyof typeof definitions.bulletTitles,
-      fillMessage(definitions.profileMessages[
-        rules.durationGuidance.messageKey as keyof typeof definitions.profileMessages
-      ], { duration: formatDuration(elevatedSeconds), periods: elevatedPeriods }),
-    ));
-  }
-  for (const rule of rules.weatherContextRules) {
-    const matchingPeriods = getUvPeriods(summary, timezone, (hour) =>
-      hour.cloudCover !== null && hour.cloudCover >= rule.whenCloudCoverAtOrAbovePercent &&
-      hour.uv >= rule.whenUvAtOrAbove,
-    );
-    const hasOverlap = summary.hours.some((hour) =>
-      hour.cloudCover !== null && hour.cloudCover >= rule.whenCloudCoverAtOrAbovePercent &&
-      hour.uv >= rule.whenUvAtOrAbove &&
-      getHourOverlap(hour, summary.startSeconds, summary.endSeconds) !== null,
-    );
-    if (hasOverlap) {
-      practicalGuidance.push(createInsightItem(
-        rule.messageKey as keyof typeof definitions.bulletTitles,
-        fillMessage(definitions.profileMessages[
-          rule.messageKey as keyof typeof definitions.profileMessages
-        ], { periods: matchingPeriods }),
-      ));
-    }
-  }
-  for (const rule of rules.conditionalContextRules) {
-    if (summary.highestUv >= rule.whenAnyCoveredUvAtOrAbove) {
-      practicalGuidance.push(
-        createInsightItem(
-          rule.messageKey as keyof typeof definitions.bulletTitles,
-          definitions.profileMessages[rule.messageKey as keyof typeof definitions.profileMessages],
-        ),
-      );
-    }
-  }
   if (elevatedSeconds === 0) {
-    practicalGuidance.push(createInsightItem('lowUvContext', definitions.profileMessages.lowUvContext));
+    const key = coverageComplete ? 'lowComplete' : 'lowPartial';
+    practicalGuidance.push(createInsightItem('lowUv', fillMessage(definitions.actionMessages[key], {
+      duration: formatDuration(summary.coveredSeconds),
+    })));
+  } else {
+    practicalGuidance.push(createInsightItem('protection', fillMessage(definitions.actionMessages.protection, {
+      periods: describePeriods(elevatedPeriods, timezone),
+    })));
+    if (veryHighSeconds > 0) {
+      practicalGuidance.push(createInsightItem('extraProtection', fillMessage(definitions.actionMessages.extraProtection, {
+        periods: describePeriods(veryHighPeriods, timezone),
+      })));
+    }
+    const reapplication = elevatedSeconds >= rules.durationGuidance.minimumCoveredElevatedUvSeconds
+      ? definitions.actionMessages[
+        rules.durationGuidance.messageKey as keyof typeof definitions.actionMessages
+      ]
+      : definitions.actionMessages.sunscreenAfterConditions;
+    practicalGuidance.push(createInsightItem(
+      'sunscreen', `${definitions.actionMessages.sunscreenBasics} ${reapplication}`,
+    ));
+    for (const rule of rules.weatherContextRules) {
+      const matchingPeriods = getUvPeriods(summary, (hour) =>
+        hour.cloudCover !== null && hour.cloudCover >= rule.whenCloudCoverAtOrAbovePercent &&
+        hour.uv >= rule.whenUvAtOrAbove,
+      );
+      if (matchingPeriods.length > 0) {
+        practicalGuidance.push(createInsightItem(
+          rule.messageKey as keyof typeof definitions.bulletTitles,
+          fillMessage(definitions.actionMessages[
+            rule.messageKey as keyof typeof definitions.actionMessages
+          ], { periods: describePeriods(matchingPeriods, timezone) }),
+        ));
+      }
+    }
+    for (const rule of rules.conditionalContextRules) {
+      if (summary.highestUv >= rule.whenAnyCoveredUvAtOrAbove) {
+        practicalGuidance.push(createInsightItem(
+          rule.messageKey as keyof typeof definitions.bulletTitles,
+          definitions.actionMessages[rule.messageKey as keyof typeof definitions.actionMessages],
+        ));
+      }
+    }
   }
 
-  const coverageMessage = summary.coveredSeconds < summary.requestedSeconds - rules.guidanceTriggers.coverageToleranceSeconds
+  const summaryKey = elevatedSeconds === 0
+    ? (coverageComplete ? 'lowComplete' : 'lowPartial')
+    : veryHighSeconds > 0
+      ? (elevatedPeriods.length > 1 ? 'extraProtectionSeparated' : 'extraProtection')
+      : (elevatedPeriods.length > 1 ? 'protectionSeparated' : 'protection');
+  const summaryText = fillMessage(definitions.summaryMessages[summaryKey], {
+    duration: formatDuration(elevatedSeconds === 0 ? summary.coveredSeconds : elevatedSeconds),
+    veryHighDuration: formatDuration(veryHighSeconds),
+    peakUv: summary.highestUv.toFixed(1),
+    peakTime: formatLocalTime(summary.highestUvTime, timezone),
+  });
+  const coverageMessage = !coverageComplete
     ? fillMessage(coverageMessageTemplate, {
       coveredDuration: formatDuration(summary.coveredSeconds),
       plannedDuration: formatDuration(summary.requestedSeconds),
     })
     : null;
   return {
-    note: definitions.note,
-    headline,
-    explanation: definitions.profileMessages.explanation,
-    profileDetails: getProfileDetails(summary, timezone, bandSeconds, longestAtThreshold),
     practicalGuidance,
+    summary: summaryText,
     coverageMessage,
   };
 }

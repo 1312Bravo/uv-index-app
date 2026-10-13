@@ -34,7 +34,7 @@ const bands: WindSpeedBand[] = definitions.map((definition, index) => {
     description,
     range: maximumKmhInclusive === null
       ? `${minimumKmhInclusive}+ km/h`
-      : `${minimumKmhInclusive}–${maximumKmhInclusive} km/h`,
+      : `${minimumKmhInclusive}-${maximumKmhInclusive} km/h`,
   };
 });
 

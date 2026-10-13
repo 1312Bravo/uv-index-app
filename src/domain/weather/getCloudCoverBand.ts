@@ -29,7 +29,7 @@ if (
   bands.length === 0 ||
   bands[bands.length - 1].maximumPercentInclusive !== 100
 ) {
-  throw new Error('Cloud-cover bands must cover the full 0–100% range.');
+  throw new Error('Cloud-cover bands must cover the full 0-100% range.');
 }
 
 export function getCloudCoverBands(): CloudCoverBand[] {

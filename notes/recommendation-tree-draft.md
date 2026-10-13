@@ -1,5 +1,9 @@
 # UV Scout recommendation model — implementation slice v0.6
 
+**Historical draft.** For the current rules and displayed wording, use
+[active UV guidance](active-uv-guidance.md). The older examples below document
+how the model developed and may describe superseded UI details.
+
 **Reviewed:** 10 October 2026. This revision has had separate evidence, logic,
 and clarity/implementation passes against the installed UV evidence-review
 prompt and the project sources.
