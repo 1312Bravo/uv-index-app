@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "modelNote": "General UV protection actions from the covered hourly forecast. This is not a personal exposure, dose, burn-time, or health-risk estimate.",
   "uvBands": [
     { "key": "below-3", "minimumUvInclusive": 0, "maximumUvExclusive": 3, "label": "the UV Index stays below 3" },
@@ -18,10 +18,6 @@
       "messageKey": "reflectiveConditions"
     }
   ],
-  "durationGuidance": {
-    "minimumCoveredElevatedUvSeconds": 7200,
-    "messageKey": "sunscreenExtendedExposure"
-  },
   "weatherContextRules": [
     {
       "key": "very-cloudy-during-elevated-uv",
@@ -79,7 +75,7 @@
     {
       "key": "sunscreen-product-and-use",
       "role": "not-known-by-default",
-      "handling": "Make sunscreen reminders conditional; do not assume use, application time, amount, or product label."
+      "handling": "Show general two-hour reapplication guidance whenever sunscreen is recommended; do not calculate a personal timer or assume use, application time, amount, or product label."
     },
     {
       "key": "sweat-swimming-toweling",
@@ -103,8 +99,8 @@
       "Use raw UVI bands below 3, 3 to below 8, and 8 or higher to describe the forecast profile.",
       "Always give a practical outcome for covered UV below 3, without treating daytime and nighttime differently.",
       "When covered UVI reaches 3, show clothing, shade, eye protection, and sunscreen advice for the relevant hours; highlight UVI 8+ periods for extra shade.",
-      "Show the extra two-hour reapplication reminder only when at least 7200 covered seconds are forecast at UVI 3 or higher; this display trigger is a UV Scout product choice, not a WHO rule or a personal timer.",
-      "Keep WHO's general action table in Info; place UV Scout actions before a short profile summary in the outing result."
+      "Show general two-hour reapplication guidance whenever sunscreen is recommended, without using cumulative elevated-UV time as a personal timer.",
+      "Keep WHO's general action table in Info; place a short UV Scout takeaway before the descriptive breakdown and practical actions in the outing result."
     ],
     "notValidatedOrCalculated": [
       "personal UV dose or accumulated dose",

@@ -8,11 +8,15 @@ type UvBandKey = 'below-3' | '3-to-8' | '8-plus';
 export type UvScoutInsightItem = {
   title: string;
   text: string;
+  subItems?: string[];
 };
 
 export type UvScoutInsight = {
   practicalGuidance: UvScoutInsightItem[];
-  summary: string;
+  contextNotes: UvScoutInsightItem[];
+  breakdown: string[];
+  takeaway: string;
+  takeawayBullets: string[];
   coverageMessage: string | null;
 };
 
@@ -22,7 +26,7 @@ const veryCloudyBand = cloudCoverBands.find((band) => band.key === 'very-cloudy'
 function validateDefinitions() {
   const usedBandKeys = new Set<string>();
 
-  if (rules.schemaVersion !== 2 || !rules.modelNote.trim()) {
+  if (rules.schemaVersion !== 3 || !rules.modelNote.trim()) {
     throw new Error('UV Scout recommendation rules have an unsupported schema or empty model note.');
   }
 
@@ -47,16 +51,19 @@ function validateDefinitions() {
     throw new Error('All three UV Scout exposure bands must be defined.');
   }
   const requiredTitles = [
-    'lowUv', 'protection', 'extraProtection', 'sunscreen', 'cloudyElevatedUv', 'reflectiveConditions',
+    'protection', 'extraProtection', 'sunscreen', 'cloudyElevatedUv', 'reflectiveConditions',
   ] as const;
   const requiredActions = [
-    'lowComplete', 'lowPartial', 'protection', 'extraProtection', 'sunscreenBasics',
-    'sunscreenAfterConditions', 'sunscreenExtendedExposure', 'cloudyElevatedUv', 'reflectiveConditions',
+    'protection', 'extraProtection', 'sunscreenBasics', 'sunscreenReapplication',
+    'cloudyElevatedUv', 'reflectiveConditions',
   ] as const;
   if (requiredTitles.some((key) => !definitions.bulletTitles[key]?.trim()) ||
     requiredActions.some((key) => !definitions.actionMessages[key]?.trim()) ||
-    Object.values(definitions.summaryMessages).some((message) => !message.trim())) {
-    throw new Error('UV Scout action titles or messages are incomplete.');
+    Object.values(definitions.detailMessages).some((message) => !message.trim()) ||
+    Object.values(definitions.profileMessages).some((message) => !message.trim()) ||
+    Object.values(definitions.takeawayMessages).some((parts) =>
+      parts.length < 2 || parts.some((part) => !part.trim()))) {
+    throw new Error('UV Scout action or detail text is incomplete.');
   }
 
   if (rules.uvBands[0].maximumUvExclusive !== 3 ||
@@ -69,9 +76,6 @@ function validateDefinitions() {
     rules.guidanceTriggers.elevatedBandKey !== '3-to-8' ||
     rules.guidanceTriggers.extraAttentionBandKey !== '8-plus' ||
     !(rules.forecastCoverage.messageKey in definitions.messages) ||
-    !Number.isFinite(rules.durationGuidance.minimumCoveredElevatedUvSeconds) ||
-    rules.durationGuidance.minimumCoveredElevatedUvSeconds <= 0 ||
-    !(rules.durationGuidance.messageKey in definitions.actionMessages) ||
     rules.weatherContextRules.length === 0 ||
     !veryCloudyBand ||
     new Set(rules.weatherContextRules.map((rule) => rule.key)).size !== rules.weatherContextRules.length ||
@@ -148,8 +152,12 @@ function fillMessage(template: string, values: Record<string, string>): string {
   });
 }
 
-function createInsightItem(titleKey: keyof typeof definitions.bulletTitles, text: string): UvScoutInsightItem {
-  return { title: definitions.bulletTitles[titleKey], text };
+function createInsightItem(
+  titleKey: keyof typeof definitions.bulletTitles,
+  text: string,
+  subItems?: string[],
+): UvScoutInsightItem {
+  return { title: definitions.bulletTitles[titleKey], text, subItems };
 }
 
 function formatLocalTime(time: number, timezone: string): string {
@@ -223,7 +231,64 @@ function getExposureProfile(summary: OutingForecastSummary) {
   return bandSeconds;
 }
 
-// Compose actions from covered forecast hours, then summarize the UV pattern.
+function getBreakdown(summary: OutingForecastSummary, timezone: string): string[] {
+  const hours = [...summary.hours].sort((left, right) => left.time - right.time);
+  const firstUv = hours[0].uv.toFixed(1);
+  const lastUv = hours[hours.length - 1].uv.toFixed(1);
+  const coveredDuration = formatDuration(summary.coveredSeconds);
+  const displayedUv = (uv: number) => Number(uv.toFixed(1));
+  const minimumUv = Math.min(...hours.map((hour) => displayedUv(hour.uv)));
+  const maximumUv = Math.max(...hours.map((hour) => displayedUv(hour.uv)));
+  const trend = minimumUv === maximumUv
+    ? [fillMessage(definitions.profileMessages.steady, {
+      uv: maximumUv.toFixed(1), coveredDuration, averageUv: summary.averageUv.toFixed(1),
+    })]
+    : [fillMessage(definitions.profileMessages.startEndAverage, {
+      startUv: firstUv,
+      endUv: lastUv,
+      averageUv: summary.averageUv.toFixed(1),
+    })];
+
+  if (minimumUv !== maximumUv) {
+    const highestPeriods = getUvPeriods(summary, ({ uv }) => displayedUv(uv) === maximumUv);
+    const lowestPeriods = getUvPeriods(summary, ({ uv }) => displayedUv(uv) === minimumUv);
+    const betweenPeriods = getUvPeriods(summary, ({ uv }) =>
+      displayedUv(uv) > minimumUv && displayedUv(uv) < maximumUv,
+    );
+    const totalSeconds = (periods: UvPeriod[]) =>
+      periods.reduce((total, period) => total + period.end - period.start, 0);
+    trend.push(fillMessage(definitions.profileMessages.highest, {
+      uv: maximumUv.toFixed(1),
+      duration: formatDuration(totalSeconds(highestPeriods)),
+      periods: describePeriods(highestPeriods, timezone),
+    }));
+    trend.push(fillMessage(definitions.profileMessages.lowest, {
+      uv: minimumUv.toFixed(1),
+      duration: formatDuration(totalSeconds(lowestPeriods)),
+      periods: describePeriods(lowestPeriods, timezone),
+    }));
+    if (betweenPeriods.length > 0) {
+      const betweenValues = hours.map((hour) => displayedUv(hour.uv))
+        .filter((uv) => uv > minimumUv && uv < maximumUv);
+      const minimumBetweenUv = Math.min(...betweenValues);
+      const maximumBetweenUv = Math.max(...betweenValues);
+      const duration = formatDuration(totalSeconds(betweenPeriods));
+      trend.push(minimumBetweenUv === maximumBetweenUv
+        ? fillMessage(definitions.profileMessages.betweenSingle, {
+          uv: minimumBetweenUv.toFixed(1), duration,
+        })
+        : fillMessage(definitions.profileMessages.betweenRange, {
+          minimumUv: minimumBetweenUv.toFixed(1),
+          maximumUv: maximumBetweenUv.toFixed(1),
+          duration,
+        }));
+    }
+  }
+
+  return trend;
+}
+
+// Build the takeaway, breakdown, and actions from covered forecast hours.
 export function getUvScoutInsight(summary: OutingForecastSummary, timezone: string): UvScoutInsight {
   if (!Number.isFinite(summary.highestUv) || summary.highestUv < 0) {
     throw new Error('Outing UV Index must be finite and non-negative.');
@@ -239,27 +304,37 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
     summary.requestedSeconds - rules.guidanceTriggers.coverageToleranceSeconds;
 
   const practicalGuidance: UvScoutInsightItem[] = [];
-  if (elevatedSeconds === 0) {
-    const key = coverageComplete ? 'lowComplete' : 'lowPartial';
-    practicalGuidance.push(createInsightItem('lowUv', fillMessage(definitions.actionMessages[key], {
-      duration: formatDuration(summary.coveredSeconds),
-    })));
-  } else {
-    practicalGuidance.push(createInsightItem('protection', fillMessage(definitions.actionMessages.protection, {
-      periods: describePeriods(elevatedPeriods, timezone),
-    })));
-    if (veryHighSeconds > 0) {
-      practicalGuidance.push(createInsightItem('extraProtection', fillMessage(definitions.actionMessages.extraProtection, {
-        periods: describePeriods(veryHighPeriods, timezone),
-      })));
-    }
-    const reapplication = elevatedSeconds >= rules.durationGuidance.minimumCoveredElevatedUvSeconds
-      ? definitions.actionMessages[
-        rules.durationGuidance.messageKey as keyof typeof definitions.actionMessages
-      ]
-      : definitions.actionMessages.sunscreenAfterConditions;
+  const contextNotes: UvScoutInsightItem[] = [];
+  if (elevatedSeconds > 0) {
+    const coveredDuration = formatDuration(summary.coveredSeconds);
+    const exposure = elevatedPeriods.length > 1
+      ? fillMessage(definitions.profileMessages.elevatedSeparated, {
+        count: String(elevatedPeriods.length),
+        duration: formatDuration(elevatedSeconds),
+      })
+      : elevatedSeconds >= summary.coveredSeconds
+        ? fillMessage(definitions.profileMessages.elevatedAll, { coveredDuration })
+        : fillMessage(definitions.profileMessages.elevatedPart, {
+          duration: formatDuration(elevatedSeconds),
+        });
+    const periodText = (periods: UvPeriod[]) => fillMessage(definitions.detailMessages.periods, {
+      periods: describePeriods(periods, timezone),
+    });
     practicalGuidance.push(createInsightItem(
-      'sunscreen', `${definitions.actionMessages.sunscreenBasics} ${reapplication}`,
+      'protection', definitions.actionMessages.protection,
+      [`${exposure} ${periodText(elevatedPeriods)}`],
+    ));
+    if (veryHighSeconds > 0) {
+      const veryHighTiming = fillMessage(definitions.profileMessages.veryHigh, {
+        duration: formatDuration(veryHighSeconds),
+      });
+      practicalGuidance.push(createInsightItem(
+        'extraProtection', definitions.actionMessages.extraProtection,
+        [`${veryHighTiming} ${periodText(veryHighPeriods)}`],
+      ));
+    }
+    practicalGuidance.push(createInsightItem(
+      'sunscreen', `${definitions.actionMessages.sunscreenBasics} ${definitions.actionMessages.sunscreenReapplication}`,
     ));
     for (const rule of rules.weatherContextRules) {
       const matchingPeriods = getUvPeriods(summary, (hour) =>
@@ -267,7 +342,7 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
         hour.uv >= rule.whenUvAtOrAbove,
       );
       if (matchingPeriods.length > 0) {
-        practicalGuidance.push(createInsightItem(
+        contextNotes.push(createInsightItem(
           rule.messageKey as keyof typeof definitions.bulletTitles,
           fillMessage(definitions.actionMessages[
             rule.messageKey as keyof typeof definitions.actionMessages
@@ -277,7 +352,7 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
     }
     for (const rule of rules.conditionalContextRules) {
       if (summary.highestUv >= rule.whenAnyCoveredUvAtOrAbove) {
-        practicalGuidance.push(createInsightItem(
+        contextNotes.push(createInsightItem(
           rule.messageKey as keyof typeof definitions.bulletTitles,
           definitions.actionMessages[rule.messageKey as keyof typeof definitions.actionMessages],
         ));
@@ -285,17 +360,20 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
     }
   }
 
-  const summaryKey = elevatedSeconds === 0
+  const takeawayKey = elevatedSeconds === 0
     ? (coverageComplete ? 'lowComplete' : 'lowPartial')
     : veryHighSeconds > 0
       ? (elevatedPeriods.length > 1 ? 'extraProtectionSeparated' : 'extraProtection')
       : (elevatedPeriods.length > 1 ? 'protectionSeparated' : 'protection');
-  const summaryText = fillMessage(definitions.summaryMessages[summaryKey], {
+  const takeawayValues = {
     duration: formatDuration(elevatedSeconds === 0 ? summary.coveredSeconds : elevatedSeconds),
     veryHighDuration: formatDuration(veryHighSeconds),
     peakUv: summary.highestUv.toFixed(1),
     peakTime: formatLocalTime(summary.highestUvTime, timezone),
-  });
+  };
+  const takeawayBullets = definitions.takeawayMessages[takeawayKey]
+    .map((message) => fillMessage(message, takeawayValues));
+  const takeaway = takeawayBullets.join(' ');
   const coverageMessage = !coverageComplete
     ? fillMessage(coverageMessageTemplate, {
       coveredDuration: formatDuration(summary.coveredSeconds),
@@ -304,7 +382,10 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
     : null;
   return {
     practicalGuidance,
-    summary: summaryText,
+    contextNotes,
+    breakdown: getBreakdown(summary, timezone),
+    takeaway,
+    takeawayBullets,
     coverageMessage,
   };
 }

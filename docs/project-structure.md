@@ -91,11 +91,21 @@ wording. The validated interpreter returns the static table for the Info tab;
 it does not select a WHO tier for an outing. Edit
 `src/domain/guidance/uvScoutInsight.json` for Scout's human-readable wording and
 `src/domain/guidance/uvScoutRecommendationRules.json` for active UV bands,
-factor roles, coverage behavior, conditional context-message triggers, and the
-extra reapplication-message trigger. Raw UVI thresholds and the reminder's
-minimum cumulative covered UVI 3+ duration are explicit in seconds. The text
-file separates bullet titles, action messages, and summary messages. Keep
-stable keys and message placeholders unchanged unless the
+factor roles, coverage behavior, and conditional context-message triggers.
+Raw UVI thresholds are explicit in the rule table. The two-hour sunscreen
+reapplication wording is general guidance shown whenever sunscreen is
+recommended; it is not a forecast-duration trigger or personal timer. The text
+file separates action titles/messages, profile narrative templates, time-window
+detail messages, and takeaway-message arrays (one item per opening bullet).
+Breakdown groups one-decimal displayed hourly values into highest, lowest, and
+intervening values and totals only their actual overlap with the outing.
+The matching protection steps carry raw UVI 3+ and 8+ duration/window lines;
+cloud and reflective-surface context is returned separately for subdued display.
+Low-UV outings keep their practical result in the opening takeaway, without
+a duplicate steps section. These choices do not change the action thresholds.
+Each time-window description
+lists up to two local-time periods and then counts any remaining periods. Keep stable
+keys and message placeholders unchanged unless the
 interpreter is updated. `getUvScoutInsight.ts` validates and consumes both
 files. The Info feature renders the WHO table; the outing feature uses UV
 Scout's profile interpreter. Forecast overlap and coverage calculations stay

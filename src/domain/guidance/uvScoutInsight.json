@@ -1,30 +1,60 @@
 {
   "bulletTitles": {
-    "lowUv": "Protection",
-    "protection": "Protection",
+    "protection": "Clothing and shade",
     "extraProtection": "Strongest hours",
     "sunscreen": "Sunscreen",
     "cloudyElevatedUv": "Cloudy hours",
     "reflectiveConditions": "Bright surfaces"
   },
+  "detailMessages": {
+    "periods": "Timing: {periods}."
+  },
+  "profileMessages": {
+    "steady": "UV stays at {uv} across the {coveredDuration} with forecast data, so the average is also {averageUv}.",
+    "startEndAverage": "Across the forecasted hours, UV starts at {startUv} and ends at {endUv}. The average is {averageUv}.",
+    "highest": "Highest UV is {uv} for about {duration}, during {periods}.",
+    "lowest": "Lowest UV is {uv} for about {duration}, during {periods}.",
+    "betweenSingle": "Other hourly values are {uv} for about {duration} in total.",
+    "betweenRange": "Other hourly values range from {minimumUv} to {maximumUv} for about {duration} in total.",
+    "elevatedAll": "UV remains at 3 or higher for the full {coveredDuration} with forecast data.",
+    "elevatedPart": "UV reaches 3 or higher for about {duration}.",
+    "elevatedSeparated": "UV reaches 3 or higher in {count} separate stretches, totaling about {duration}.",
+    "veryHigh": "UV reaches 8 or higher for about {duration}."
+  },
   "actionMessages": {
-    "lowComplete": "For most people, no extra sun protection is needed during these hours.",
-    "lowPartial": "For most people, no extra sun protection is needed during the {duration} with forecast data.",
-    "protection": "UV 3+ is forecast for {periods}. Cover skin with clothing, wear a broad-brimmed hat and UV-protective sunglasses, and seek shade.",
-    "extraProtection": "UV 8+ is forecast for {periods}. Limit time in direct sun and prioritize shade.",
-    "sunscreenBasics": "Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before going out.",
-    "sunscreenAfterConditions": "If you swim, sweat, or towel off, reapply according to the label.",
-    "sunscreenExtendedExposure": "Reapply at least every two hours while outdoors, or sooner after swimming, sweating, or towel drying. Follow the label.",
+    "protection": "At UV 3+, cover exposed skin, wear a broad-brimmed hat and UV-protective sunglasses, and seek shade.",
+    "extraProtection": "At UV 8+, limit time in direct sun and prioritize shade.",
+    "sunscreenBasics": "Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before the UV 3+ part of your outing.",
+    "sunscreenReapplication": "If you use sunscreen while outdoors, reapply at least every two hours and sooner after swimming, sweating, or towel drying. Follow the product label.",
     "cloudyElevatedUv": "Keep UV protection in place during {periods}, despite heavy cloud cover.",
     "reflectiveConditions": "Near snow, bright sand, or water, keep skin and eyes protected even in shade."
   },
-  "summaryMessages": {
-    "lowComplete": "UV stays below 3 throughout this outing ({duration}).",
-    "lowPartial": "UV stays below 3 for {duration} of the outing with forecast data.",
-    "protection": "UV 3+ is forecast for about {duration}. Peak UV is {peakUv} around {peakTime}.",
-    "protectionSeparated": "UV 3+ is forecast for about {duration} in separate periods. Peak UV is {peakUv} around {peakTime}.",
-    "extraProtection": "UV 3+ is forecast for about {duration}, including {veryHighDuration} at UV 8+. Peak UV is {peakUv} around {peakTime}.",
-    "extraProtectionSeparated": "UV 3+ is forecast for about {duration} in separate periods, including {veryHighDuration} at UV 8+. Peak UV is {peakUv} around {peakTime}."
+  "takeawayMessages": {
+    "lowComplete": [
+      "UV stays below 3 throughout this outing.",
+      "For most people, no extra sun protection is needed during these hours."
+    ],
+    "lowPartial": [
+      "UV stays below 3 for the {duration} with forecast data.",
+      "For most people, no extra sun protection is needed during those hours."
+    ],
+    "protection": [
+      "UV reaches {peakUv} during the {peakTime} hour, with about {duration} at UV 3+.",
+      "Use sun protection during those hours."
+    ],
+    "protectionSeparated": [
+      "UV reaches {peakUv} during the {peakTime} hour, with about {duration} at UV 3+ in separate periods.",
+      "Use sun protection during those hours."
+    ],
+    "extraProtection": [
+      "UV peaks at {peakUv} during the {peakTime} hour, with about {veryHighDuration} at UV 8+.",
+      "Limit direct sun during the strongest hours and use sun protection."
+    ],
+    "extraProtectionSeparated": [
+      "UV peaks at {peakUv} during the {peakTime} hour.",
+      "Higher UV comes in separate periods, including about {veryHighDuration} at UV 8+.",
+      "Limit direct sun during the strongest hours and use sun protection."
+    ]
   },
   "messages": {
     "coverageIncomplete": "Forecast available for {coveredDuration} of the planned {plannedDuration}. The remaining time has no forecast."

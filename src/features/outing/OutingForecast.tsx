@@ -95,11 +95,38 @@ function GuidanceBullet({ item }: { item: UvScoutInsightItem }) {
   return (
     <View style={styles.guidanceBullet}>
       <Text style={styles.guidanceBulletMarker}>-</Text>
-      <Text style={styles.guidanceBulletText}>
-        <Text style={styles.guidanceBulletTitle}>{item.title}: </Text>
-        {item.text}
-      </Text>
+      <View style={styles.guidanceBulletContent}>
+        <Text style={styles.guidanceBulletText}>
+          <Text style={styles.guidanceBulletTitle}>{item.title}{item.text ? ': ' : ''}</Text>
+          {item.text}
+        </Text>
+        {item.subItems?.map((text, index) => (
+          <Text key={`sub-${index}`} style={styles.guidanceTiming}>{text}</Text>
+        ))}
+      </View>
     </View>
+  );
+}
+
+function PlainGuidanceBullet({
+  text, prominent = false,
+}: { text: string; prominent?: boolean }) {
+  return (
+    <View style={styles.guidanceBullet}>
+      <Text style={styles.guidanceBulletMarker}>-</Text>
+      <Text style={prominent
+        ? styles.guidanceTakeawayBulletText
+        : [styles.guidanceBulletText, styles.guidanceTextFlex]}>{text}</Text>
+    </View>
+  );
+}
+
+function ContextNote({ item }: { item: UvScoutInsightItem }) {
+  return (
+    <Text style={styles.guidanceContextText}>
+      <Text style={styles.guidanceContextTitle}>{item.title}: </Text>
+      {item.text}
+    </Text>
   );
 }
 
@@ -137,16 +164,37 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
               {guidance.coverageMessage && (
                 <Text style={styles.guidanceCoverage}>{guidance.coverageMessage}</Text>
               )}
-              <Text style={styles.guidanceGroupHeading}>What to do</Text>
-              <View style={styles.insightList}>
-                {guidance.practicalGuidance.map((item, index) => (
-                  <GuidanceBullet key={`action-${index}`} item={item} />
+              <View style={styles.guidanceTakeawayList}>
+                {guidance.takeawayBullets.map((text, index) => (
+                  <PlainGuidanceBullet key={`takeaway-${index}`} text={text} prominent />
                 ))}
               </View>
-              <View style={styles.guidanceSummary}>
-                <Text style={styles.guidanceGroupHeading}>Summary</Text>
-                <Text style={styles.guidanceBody}>{guidance.summary}</Text>
+              <View style={styles.guidanceDetails}>
+                <Text style={styles.guidanceGroupHeading}>Breakdown</Text>
+                <View style={styles.insightList}>
+                  {guidance.breakdown.map((text, index) => (
+                    <PlainGuidanceBullet key={`detail-${index}`} text={text} />
+                  ))}
+                </View>
               </View>
+              {guidance.practicalGuidance.length > 0 && (
+                <View style={styles.guidanceActions}>
+                  <Text style={styles.guidanceGroupHeading}>Protection steps</Text>
+                  <View style={styles.guidanceActionList}>
+                    {guidance.practicalGuidance.map((item, index) => (
+                      <GuidanceBullet key={`action-${index}`} item={item} />
+                    ))}
+                  </View>
+                  {guidance.contextNotes.length > 0 && (
+                    <View style={styles.guidanceContext}>
+                      <Text style={styles.guidanceContextHeading}>Also consider</Text>
+                      {guidance.contextNotes.map((item, index) => (
+                        <ContextNote key={`context-${index}`} item={item} />
+                      ))}
+                    </View>
+                  )}
+                </View>
+              )}
             </View>
           )}
 
@@ -210,7 +258,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
 
 const styles = StyleSheet.create({
   section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 36, paddingTop: 24 },
-  heading: { color: '#151515', fontSize: 18, fontWeight: '600', textAlign: 'center' },
+  heading: { color: '#151515', fontSize: 17, fontWeight: '600', textAlign: 'center' },
   timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', marginTop: 7, textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
@@ -225,15 +273,25 @@ const styles = StyleSheet.create({
   summarySecondary: { color: '#696969', fontSize: 13, marginTop: 4, textAlign: 'center' },
   guidance: { marginTop: 24 },
   guidanceTitle: { color: '#151515', fontSize: 17, fontWeight: '600', textAlign: 'center' },
-  guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14 },
+  guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14, textAlign: 'center' },
   guidanceCoverage: { color: '#666666', fontSize: 12, lineHeight: 18, marginTop: 10 },
-  guidanceBody: { color: '#555555', fontSize: 13, lineHeight: 19 },
-  guidanceSummary: { borderTopColor: '#E6E6E6', borderTopWidth: 1, marginTop: 18, paddingTop: 2 },
+  guidanceTakeawayList: { marginTop: 10 },
+  guidanceTakeawayBulletText: { color: '#333333', flex: 1, fontSize: 14, lineHeight: 21 },
+  guidanceDetails: { marginTop: 12 },
+  guidanceActions: { borderTopColor: '#E6E6E6', borderTopWidth: 1, marginTop: 18, paddingTop: 2 },
+  guidanceActionList: { marginTop: 7, rowGap: 5 },
+  guidanceContext: { marginTop: 13, paddingLeft: 18 },
+  guidanceContextHeading: { color: '#666666', fontSize: 12, lineHeight: 17 },
+  guidanceContextText: { color: '#666666', fontSize: 12, lineHeight: 18, marginTop: 5 },
+  guidanceContextTitle: { color: '#555555', fontWeight: '500' },
   insightList: { marginTop: 6 },
   guidanceBullet: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
+  guidanceBulletContent: { flex: 1 },
+  guidanceTiming: { color: '#666666', fontSize: 12, lineHeight: 18, marginTop: 4 },
   guidanceBulletMarker: { color: '#555555', fontSize: 14, lineHeight: 19, marginRight: 8, width: 10 },
-  guidanceBulletText: { color: '#555555', flex: 1, fontSize: 13, lineHeight: 19 },
+  guidanceBulletText: { color: '#555555', fontSize: 13, lineHeight: 19 },
+  guidanceTextFlex: { flex: 1 },
   guidanceBulletTitle: { color: '#333333', fontWeight: '600' },
-  subheading: { color: '#151515', fontSize: 15, fontWeight: '600', marginTop: 28, textAlign: 'center' },
+  subheading: { color: '#151515', fontSize: 17, fontWeight: '600', marginTop: 28, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });

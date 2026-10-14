@@ -36,9 +36,16 @@ helps people plan outdoor time around the current and forecast UV index.
 - The result combines a rounded display category, a forecast over the selected
   time, and practical guidance. Show WHO's general 0-2, 3-7, and 8+ reference
   table in Info. The outing result is UV Scout's own rule-based interpretation
-  of covered raw-UV hours: practical actions first, then a short Summary of
-  elevated duration, peak/time, separate periods, and coverage. The 2x2 card
-  still shows the average. This is not a personal dose or medical-risk
+  of covered raw-UV hours: an untitled actionable takeaway in short bullets
+  first, then a Breakdown list for start/end, average, highest and lowest
+  values with their durations and windows, and intervening values with their
+  duration. Protection steps include the matching durations
+  and local-time windows at raw UVI 3+ or 8+ when present, alongside the
+  detailed actions. General sunscreen reapplication guidance appears whenever
+  sunscreen is recommended, not only after two hours of elevated forecast UV.
+  Cloud and reflective-surface notes are visually secondary, and below-3
+  outings rely on the actionable takeaway without duplicate steps. The 2x2
+  card still shows the average. This is not a personal dose or medical-risk
   calculation. Do not present the WHO table as an outing-specific algorithm.
   Default planning requires no extra protection-context choices; unknown
   conditions stay conditional.
@@ -114,7 +121,7 @@ after the core flow has been tested.
 
 ## Remaining recommendation-model decisions
 
-- Whether people find the now-short action list and summary clear in real
+- Whether people find the takeaway, Breakdown, and action list clear in real
   outing examples; revise after user testing rather than adding more metrics.
 - Whether to add separate episode counts or an explicitly labelled UVI-hours
   ambient proxy; neither is currently shown.
@@ -204,8 +211,22 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add a central source register and require it to be updated when app data
   providers, scientific evidence, or calculation references are introduced.
 - [x] Review the active outing rules and copy, give low-UV hours a practical
-  action, put actions before a concise Summary, and document the current model
-  separately from older research drafts.
+  action, and document the current model separately from older research drafts.
+- [x] Restore the descriptive UV profile bullets in their own section while
+  preserving the practical guidance.
+- [x] Replace the bottom Summary with an actionable opening takeaway, followed
+  by Breakdown and Protection steps.
+- [x] Turn the Breakdown's separate metric bullets into a numerical outing
+  narrative grouped into a few bullets, with relevant local-time higher-UV windows.
+- [x] Make the opening takeaway and UV trend scannable with bullets; lead the
+  trend with maximum, minimum, and intervening values and their durations while
+  keeping raw UVI 3+ and 8+ timing as supporting protection context.
+- [x] Remove the UV trend and Protection timing subtitles from Breakdown;
+  keep its forecast bullets and place raw UVI 3+/8+ timing beneath the
+  matching protection steps.
+- [x] Remove the cumulative UVI 3+ gate for sunscreen reapplication wording;
+  keep the standard reminder conditional on using sunscreen, shorten the
+  takeaway, and separate conditional context from main protection steps.
 
 ## Decisions
 
@@ -342,10 +363,10 @@ calculation, supported platform versions, and the final visual polish.
   adjusting forecast UV or claiming route-specific shade; defer optional
   “Tailor this advice” inputs.
 - Moved the WHO reference out of the outing result and into the UV section of
-  Info as a static three-band table. The outing now presents UV Scout's actions
-  first and a short forecast-profile Summary last; the four metrics and hourly
-  chart follow. This is not a personal-risk estimate, and the peak alone does
-  not determine the guidance.
+  Info as a static three-band table. The outing now presents an actionable
+  takeaway, a descriptive Breakdown, and detailed Protection steps; the four
+  metrics and hourly chart follow. This is not a personal-risk estimate, and
+  the peak alone does not determine the guidance.
 - Keep WHO guidance and UV Scout insight as separate domain systems: separate
   editable JSON, validation, and interpreters. WHO's interpreter returns the
   static Info table; UV Scout's interpreter summarizes the outing.
