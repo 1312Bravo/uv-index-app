@@ -51,16 +51,18 @@ function validateDefinitions() {
     throw new Error('All three UV Scout exposure bands must be defined.');
   }
   const requiredTitles = [
-    'protection', 'extraProtection', 'sunscreen', 'cloudyElevatedUv', 'reflectiveConditions',
+    'protection', 'extraProtection', 'lowerUv', 'sunscreen', 'cloudyElevatedUv', 'reflectiveConditions',
   ] as const;
   const requiredActions = [
-    'protection', 'extraProtection', 'sunscreenBasics', 'sunscreenReapplication',
+    'protection', 'extraProtection', 'lowerUv', 'sunscreenBasics', 'sunscreenReapplication',
     'cloudyElevatedUv', 'reflectiveConditions',
   ] as const;
   if (requiredTitles.some((key) => !definitions.bulletTitles[key]?.trim()) ||
     requiredActions.some((key) => !definitions.actionMessages[key]?.trim()) ||
+    expectedBandKeys.some((key) => !definitions.takeawayWindowMessages[key]?.trim()) ||
     Object.values(definitions.detailMessages).some((message) => !message.trim()) ||
     Object.values(definitions.profileMessages).some((message) => !message.trim()) ||
+    !definitions.takeawayMessages.elevated?.every((part) => part.trim()) ||
     Object.values(definitions.takeawayMessages).some((parts) =>
       parts.length < 2 || parts.some((part) => !part.trim()))) {
     throw new Error('UV Scout action or detail text is incomplete.');
@@ -213,6 +215,35 @@ function describePeriods(periods: UvPeriod[], timezone: string): string {
     : firstTwo.join(' and ');
 }
 
+function roundLocalHalfHour(time: number, timezone: string, edge: 'start' | 'end'): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    minute: '2-digit', second: '2-digit', timeZone: timezone,
+  }).formatToParts(new Date(time * 1000));
+  const minute = Number(parts.find((part) => part.type === 'minute')?.value);
+  const second = Number(parts.find((part) => part.type === 'second')?.value);
+  const secondsIntoHalfHour = (minute % 30) * 60 + second;
+  return edge === 'start'
+    ? time - secondsIntoHalfHour
+    : time + (1800 - secondsIntoHalfHour) % 1800;
+}
+
+function getApproximateTakeawayTimes(
+  period: UvPeriod, summary: OutingForecastSummary, timezone: string,
+): { start: string; end: string } {
+  const start = roundLocalHalfHour(period.start, timezone, 'start');
+  const end = roundLocalHalfHour(period.end, timezone, 'end');
+  const includeDate = formatLocalDate(
+    roundLocalHalfHour(summary.startSeconds, timezone, 'start'), timezone,
+  ) !== formatLocalDate(roundLocalHalfHour(summary.endSeconds, timezone, 'end'), timezone);
+  const crossesDate = formatLocalDate(start, timezone) !== formatLocalDate(end, timezone);
+  const startDate = includeDate || crossesDate ? `${formatLocalDate(start, timezone)} ` : '';
+  const endDate = crossesDate ? `${formatLocalDate(end, timezone)} ` : '';
+  return {
+    start: `${startDate}${formatLocalTime(start, timezone)}`,
+    end: `${endDate}${formatLocalTime(end, timezone)}`,
+  };
+}
+
 function getExposureProfile(summary: OutingForecastSummary) {
   const bandSeconds = new Map<UvBandKey, number>(expectedBandKeys.map((key) => [key, 0]));
   for (const hour of summary.hours) {
@@ -229,6 +260,31 @@ function getExposureProfile(summary: OutingForecastSummary) {
     }
   }
   return bandSeconds;
+}
+
+function getTimedProtection(summary: OutingForecastSummary, timezone: string): string {
+  const windows: Array<UvPeriod & { key: UvBandKey }> = [];
+  for (const hour of [...summary.hours].sort((left, right) => left.time - right.time)) {
+    const overlap = getHourOverlap(hour, summary.startSeconds, summary.endSeconds);
+    if (!overlap) continue;
+    const band = rules.uvBands.find((candidate) =>
+      hour.uv >= candidate.minimumUvInclusive &&
+      (candidate.maximumUvExclusive === null || hour.uv < candidate.maximumUvExclusive),
+    );
+    if (!band) continue;
+    const key = band.key as UvBandKey;
+    const previous = windows.at(-1);
+    if (previous?.key === key && overlap.start <= previous.end) {
+      previous.end = Math.max(previous.end, overlap.end);
+    } else {
+      windows.push({ key, start: overlap.start, end: overlap.end });
+    }
+  }
+  return windows
+    .map(({ key, start, end }) => fillMessage(definitions.takeawayWindowMessages[key], {
+      ...getApproximateTakeawayTimes({ start, end }, summary, timezone),
+    }))
+    .join(' ');
 }
 
 function getBreakdown(summary: OutingForecastSummary, timezone: string): string[] {
@@ -288,6 +344,22 @@ function getBreakdown(summary: OutingForecastSummary, timezone: string): string[
   return trend;
 }
 
+function getTakeawayProfile(summary: OutingForecastSummary, timezone: string): string {
+  const values = summary.hours.map((hour) => Number(hour.uv.toFixed(1)));
+  const minimumUv = Math.min(...values);
+  const maximumUv = Math.max(...values);
+  return minimumUv === maximumUv
+    ? fillMessage(definitions.profileMessages.takeawaySteady, {
+      uv: maximumUv.toFixed(1), coveredDuration: formatDuration(summary.coveredSeconds),
+    })
+    : fillMessage(definitions.profileMessages.takeawayChanging, {
+      minimumUv: minimumUv.toFixed(1),
+      peakUv: summary.highestUv.toFixed(1),
+      averageUv: summary.averageUv.toFixed(1),
+      peakTime: formatLocalTime(summary.highestUvTime, timezone),
+    });
+}
+
 // Build the takeaway, breakdown, and actions from covered forecast hours.
 export function getUvScoutInsight(summary: OutingForecastSummary, timezone: string): UvScoutInsight {
   if (!Number.isFinite(summary.highestUv) || summary.highestUv < 0) {
@@ -298,8 +370,12 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
   const elevatedSeconds = (bandSeconds.get(elevatedBandKey) ?? 0) +
     (bandSeconds.get(extraAttentionBandKey) ?? 0);
   const veryHighSeconds = bandSeconds.get(extraAttentionBandKey) ?? 0;
+  const lowerUvSeconds = bandSeconds.get('below-3') ?? 0;
   const elevatedPeriods = getUvPeriods(summary, ({ uv }) => uv >= elevatedUv);
   const veryHighPeriods = getUvPeriods(summary, ({ uv }) => uv >= veryHighUv);
+  const lowerUvPeriods = lowerUvSeconds > 0
+    ? getUvPeriods(summary, ({ uv }) => uv < elevatedUv)
+    : [];
   const coverageComplete = summary.coveredSeconds >=
     summary.requestedSeconds - rules.guidanceTriggers.coverageToleranceSeconds;
 
@@ -333,6 +409,14 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
         [`${veryHighTiming} ${periodText(veryHighPeriods)}`],
       ));
     }
+    if (lowerUvSeconds > 0) {
+      practicalGuidance.push(createInsightItem(
+        'lowerUv', definitions.actionMessages.lowerUv,
+        [`${fillMessage(definitions.profileMessages.lowerUv, {
+          duration: formatDuration(lowerUvSeconds),
+        })} ${periodText(lowerUvPeriods)}`],
+      ));
+    }
     practicalGuidance.push(createInsightItem(
       'sunscreen', `${definitions.actionMessages.sunscreenBasics} ${definitions.actionMessages.sunscreenReapplication}`,
     ));
@@ -362,14 +446,13 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
 
   const takeawayKey = elevatedSeconds === 0
     ? (coverageComplete ? 'lowComplete' : 'lowPartial')
-    : veryHighSeconds > 0
-      ? (elevatedPeriods.length > 1 ? 'extraProtectionSeparated' : 'extraProtection')
-      : (elevatedPeriods.length > 1 ? 'protectionSeparated' : 'protection');
+    : 'elevated';
   const takeawayValues = {
     duration: formatDuration(elevatedSeconds === 0 ? summary.coveredSeconds : elevatedSeconds),
-    veryHighDuration: formatDuration(veryHighSeconds),
     peakUv: summary.highestUv.toFixed(1),
-    peakTime: formatLocalTime(summary.highestUvTime, timezone),
+    averageUv: summary.averageUv.toFixed(1),
+    profileSummary: getTakeawayProfile(summary, timezone),
+    timedProtection: elevatedSeconds > 0 ? getTimedProtection(summary, timezone) : '',
   };
   const takeawayBullets = definitions.takeawayMessages[takeawayKey]
     .map((message) => fillMessage(message, takeawayValues));

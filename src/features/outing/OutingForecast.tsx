@@ -143,7 +143,6 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
 
   return (
     <View style={styles.section}>
-      <Text style={styles.heading}>Your outing forecast</Text>
       <Text style={styles.timeRange}>
         {forecast
           ? formatDateTimeRange(plan.start.getTime() / 1000, plan.end.getTime() / 1000, forecast.timezone)
@@ -160,7 +159,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
         <>
           {guidance && (
             <View style={styles.guidance}>
-              <Text style={styles.guidanceTitle}>UV guidance for outing</Text>
+              <Text style={styles.guidanceTitle}>UV guidance</Text>
               {guidance.coverageMessage && (
                 <Text style={styles.guidanceCoverage}>{guidance.coverageMessage}</Text>
               )}
@@ -258,8 +257,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
 
 const styles = StyleSheet.create({
   section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 36, paddingTop: 24 },
-  heading: { color: '#151515', fontSize: 17, fontWeight: '600', textAlign: 'center' },
-  timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', marginTop: 7, textAlign: 'center' },
+  timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
   summaryGrid: { marginTop: 24 },
@@ -272,24 +270,24 @@ const styles = StyleSheet.create({
   summaryDetail: { color: '#696969', fontSize: 11, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: '#696969', fontSize: 13, marginTop: 4, textAlign: 'center' },
   guidance: { marginTop: 24 },
-  guidanceTitle: { color: '#151515', fontSize: 17, fontWeight: '600', textAlign: 'center' },
+  guidanceTitle: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, textAlign: 'center' },
   guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14, textAlign: 'center' },
-  guidanceCoverage: { color: '#666666', fontSize: 12, lineHeight: 18, marginTop: 10 },
+  guidanceCoverage: { color: '#666666', fontSize: 13, lineHeight: 19, marginTop: 10 },
   guidanceTakeawayList: { marginTop: 10 },
-  guidanceTakeawayBulletText: { color: '#333333', flex: 1, fontSize: 14, lineHeight: 21 },
+  guidanceTakeawayBulletText: { color: '#333333', flex: 1, fontSize: 13, lineHeight: 19 },
   guidanceDetails: { marginTop: 12 },
   guidanceActions: { borderTopColor: '#E6E6E6', borderTopWidth: 1, marginTop: 18, paddingTop: 2 },
   guidanceActionList: { marginTop: 7, rowGap: 5 },
   guidanceContext: { marginTop: 13, paddingLeft: 18 },
-  guidanceContextHeading: { color: '#666666', fontSize: 12, lineHeight: 17 },
-  guidanceContextText: { color: '#666666', fontSize: 12, lineHeight: 18, marginTop: 5 },
+  guidanceContextHeading: { color: '#666666', fontSize: 13, lineHeight: 19 },
+  guidanceContextText: { color: '#666666', fontSize: 13, lineHeight: 19, marginTop: 5 },
   guidanceContextTitle: { color: '#555555', fontWeight: '500' },
   insightList: { marginTop: 6 },
   guidanceBullet: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
   guidanceBulletContent: { flex: 1 },
-  guidanceTiming: { color: '#666666', fontSize: 12, lineHeight: 18, marginTop: 4 },
-  guidanceBulletMarker: { color: '#555555', fontSize: 14, lineHeight: 19, marginRight: 8, width: 10 },
-  guidanceBulletText: { color: '#555555', fontSize: 13, lineHeight: 19 },
+  guidanceTiming: { color: '#666666', fontSize: 13, lineHeight: 19, marginTop: 4 },
+  guidanceBulletMarker: { color: '#555555', fontSize: 13, lineHeight: 19, marginRight: 8, width: 10 },
+  guidanceBulletText: { color: '#333333', fontSize: 13, lineHeight: 19 },
   guidanceTextFlex: { flex: 1 },
   guidanceBulletTitle: { color: '#333333', fontWeight: '600' },
   subheading: { color: '#151515', fontSize: 17, fontWeight: '600', marginTop: 28, textAlign: 'center' },

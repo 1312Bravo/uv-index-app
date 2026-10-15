@@ -37,10 +37,6 @@ function getCustomDurationMinutes(hoursText: string, minutesText: string): numbe
   return totalMinutes > 0 ? totalMinutes : null;
 }
 
-function formatTime(value: Date): string {
-  return new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' }).format(value);
-}
-
 function nextHour(): Date {
   const value = new Date();
   value.setMinutes(0, 0, 0);
@@ -333,16 +329,6 @@ export function TimePlanner({ onChange }: Props) {
       )}
 
       {error && <Text style={styles.error}>{error}</Text>}
-      {!error && endMode === 'duration' && selectedDuration && (
-        <Text style={styles.summary}>
-          {startMode === 'now' ? 'Starting now' : `Starting at ${formatTime(scheduledStart ?? new Date())}`}, {formatDuration(selectedDuration)}
-        </Text>
-      )}
-      {!error && endMode === 'end-time' && endTime && (
-        <Text style={styles.summary}>
-          {startMode === 'now' ? 'Starting now' : `Starting at ${formatTime(scheduledStart ?? new Date())}`}, ending at {formatTime(endTime)}
-        </Text>
-      )}
       <Text style={styles.hint}>Times use your device's local time.</Text>
     </View>
   );
@@ -369,6 +355,5 @@ const styles = StyleSheet.create({
   input: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, color: '#151515', flex: 1, fontSize: 14, minHeight: 46, paddingHorizontal: 12, textAlign: 'center' },
   durationSeparator: { color: '#696969', fontSize: 18 },
   error: { color: '#9C3D32', fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
-  summary: { color: '#151515', fontSize: 14, lineHeight: 20, marginTop: 14, textAlign: 'center' },
   hint: { color: '#999999', fontSize: 11, lineHeight: 16, marginTop: 18, textAlign: 'center' },
 });

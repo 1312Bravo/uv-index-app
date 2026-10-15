@@ -1,20 +1,28 @@
 # UV Scout outing guidance: active MVP rules
 
-Reviewed 2026-10-14. This is the current, reviewable description of the rules
+Reviewed 2026-10-15. This is the current, reviewable description of the rules
 the app runs. The older [recommendation-model research](recommendation-model-research.md)
 and [recommendation-tree draft](recommendation-tree-draft.md) preserve the evidence
 and earlier proposals; they are not the source of truth for current behavior.
 
 ## What the user sees
 
-In Plan an Outing, **UV guidance for outing** shows any forecast-coverage warning
-and a short, untitled bulleted takeaway that combines the expected UV pattern
-with the main protection step. **Breakdown** is a flat bullet list, starting
+In Plan an Outing, **UV guidance** shows any forecast-coverage warning
+and a short, untitled bulleted takeaway. For mixed UV, the first bullet gives
+the covered range, duration-weighted average, and peak forecast hour. The
+second bullet follows consecutive forecast windows in local-time order, with
+different protection wording for below-3, 3-to-below-8, and 8+ UV. Adjacent
+hours in the same band share one window; gaps in coverage do not merge.
+Steady UV uses a simpler first-bullet duration summary. **Breakdown** is a flat bullet list, starting
 with start/end and average, then the highest and lowest displayed hourly UV
 values with their total covered durations and local-time
 windows, and any values between them with their total duration. **Protection
 steps** holds the detailed titled actions, with raw UVI 3+ and 8+ duration and
 local-time windows as quieter lines beneath the matching actions when relevant.
+When an outing mixes below-3 and higher UV, it also identifies the below-3
+hours and their windows, so the lower-UV part is not treated as if it needs
+the same protection. Sunscreen preparation and reapplication remain separate
+steps.
 Cloud and reflective-surface cautions appear below as smaller context notes.
 For all-below-3 outings, the takeaway gives the practical outcome and the
 duplicate Protection steps section is omitted. Both section headings are
@@ -29,32 +37,42 @@ remains in Info, separate from this UV Scout outing guidance.
 | All covered values are below raw UVI 3 | Say that most people do not need extra sun protection for the forecast hours. Do not use a separate night rule. |
 | Any covered time is at raw UVI 3 or higher | Name the relevant local-time periods and recommend clothing, a broad-brimmed hat, UV-protective sunglasses, available shade, and broad-spectrum SPF 30+ sunscreen on uncovered skin. |
 | Any covered time is at raw UVI 8 or higher | Additionally identify those periods and advise limiting direct sun and prioritizing shade. |
+| An outing has both below-3 and UVI 3+ covered time | Identify the below-3 duration and windows separately; say that most people do not need extra sun protection for those lower-UV hours. This does not cancel protection advice for the UVI 3+ hours. |
 | Any covered time is at raw UVI 3 or higher | Recommend SPF 30+ on uncovered skin before those elevated hours. If sunscreen is used outdoors, give the general at-least-every-two-hours reapplication advice, with earlier reapplication after swimming, sweating, or towel drying and product-label directions. This is not a personal timer based on forecast hours. |
 | Cloud cover is at least 76% during any hour at raw UVI 3 or higher | Add a reminder to keep UV protection in place during those cloudy hours. The 76% boundary comes from UV Scout's editable display band, not a health threshold. |
 | Any covered time is at raw UVI 3 or higher | Add one conditional reminder about reflected UV near snow, bright sand, or water. The app does not know whether those surfaces are present. |
 | Some requested time has no forecast | Warn how much of the outing is covered. Never substitute zero UV for missing time. Low-UV advice applies only to known hours, and missing intervals split otherwise separate elevated periods. |
 
-The takeaway identifies the peak and its local forecast hour, approximate time
-at UV 3+ or 8+ as relevant, and the general need for protection without
-repeating every action. For only below-3 forecast values, it gives a low-UV
-practical outcome. It can note separate elevated
-periods without treating a brief peak as the level for the whole outing.
+The takeaway first describes the range and weighted average (or steady level)
+of the covered forecast. Its second bullet is a chronological protection plan:
+each band window has an approximate local-time range and matching action. Its
+displayed start is rounded down and its end rounded up to the nearest local
+half hour, with "around" wording. The exact selected times and forecast-bin
+overlaps still drive every calculation, and Breakdown and Protection steps
+keep their existing times. The second bullet does not repeat
+the first bullet's UV metrics. For only below-3 forecast values, the existing
+two-bullet low-UV outcome remains. A brief peak is not described as the level
+for the whole outing. All opening windows are shown, so a long outing with
+many UV changes may have a longer second bullet; the detailed Protection
+steps remain below. Local dates appear when an outing spans dates.
 The Breakdown reports the first and last covered hourly UV
 values, the duration-weighted average, maximum and minimum displayed hourly
 values with their total covered durations and local-time windows, and any
 intervening hourly values with their total duration. If all covered values
 display the same UV, it uses one steady-value bullet. The Clothing and shade action
 carries the raw UVI 3+ duration and windows; Strongest hours carries the raw
-UVI 8+ duration and windows when present. Below-3 guidance remains in the
-opening takeaway without a duplicate action or timing line.
+UVI 8+ duration and windows when present. Mixed outings also get a below-3
+action line with its duration and windows; outings entirely below 3 keep
+their advice only in the opening, without duplicate steps.
 Separated higher-UV stretches are named as separate rather than continuous.
 These are forecast descriptions, not new protection-rule triggers, a personal
 UV dose, burn time, or a validated risk score. Hourly values stand in for their overlapping hour bins;
 first and last hours are weighted by actual outing overlap. Trend minimum,
 maximum, and between-value grouping uses values rounded to one decimal for
 display only; protection thresholds still use raw UVI. Consecutive matching
-hourly bins form one time window. Time windows list at
-most two periods and then a count, so many short episodes do not flood the UI.
+hourly bins form one time window. The opening names each consecutive band
+window in order. The detailed action lines list at most two periods and then
+a count, so many short episodes do not flood those lines.
 
 Displayed UV categories round decimal values to a whole number with .5 upward,
 but **action thresholds use raw values**. A displayed 2.9 can therefore carry
@@ -78,6 +96,10 @@ forecast fields, not the recommendation text.
 UV Scout chooses how to compose time windows, when to show sunscreen guidance,
 the 76% cloud-message trigger, and the short takeaway. The two-hour interval
 comes from WHO's sunscreen advice, not cumulative UVI 3+ forecast time.
+WHO describes duration and frequency as relevant to harm, but does not define
+an outing-level dose or safe-minute threshold. UV Scout's time-in-band and
+local-window descriptions organize the forecast for planning; they do not
+estimate personal dose or change the WHO-derived protection triggers.
 Temperature, wind,
 precipitation, and cloud percentage do not change forecast UVI or protection
 thresholds. The app does not know the user's shade, clothing, sunscreen use,
@@ -89,14 +111,15 @@ this prototype's general guidance is not tailored medical advice.
 
 - All hours below raw UVI 3: a practical takeaway without duplicate steps.
 - A 15-minute UVI 8 period followed by hours at UVI 0: timed protection,
-  extra shade, and sunscreen, but no claim that the whole outing is high UV.
+  extra shade, sunscreen, and a distinct lower-UV window, but no claim that
+  the whole outing is high UV.
 - Any covered UVI 3+ period: standard protection and general two-hour
   reapplication guidance for people using sunscreen, regardless of how many
   elevated forecast hours there are.
 - A late UVI 3+ period: sunscreen advice points to that part of the outing,
   rather than telling the person to apply only before the whole outing starts.
 - Separate high-UV periods: their durations accumulate, but the takeaway says
-  they are separate and the text does not claim continuous exposure.
+  they are separate and the timed actions do not claim continuous exposure.
 - Very cloudy at UVI 5: keep the protection advice and add a smaller context
   note; cloud cover never discounts the forecast UVI. Very cloudy only below
   UVI 3 adds no cloud note.

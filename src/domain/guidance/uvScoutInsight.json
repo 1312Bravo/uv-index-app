@@ -2,6 +2,7 @@
   "bulletTitles": {
     "protection": "Clothing and shade",
     "extraProtection": "Strongest hours",
+    "lowerUv": "Lower UV hours",
     "sunscreen": "Sunscreen",
     "cloudyElevatedUv": "Cloudy hours",
     "reflectiveConditions": "Bright surfaces"
@@ -10,6 +11,8 @@
     "periods": "Timing: {periods}."
   },
   "profileMessages": {
+    "takeawaySteady": "UV stays at {uv} for {coveredDuration}.",
+    "takeawayChanging": "UV ranges from {minimumUv} to {peakUv} (average {averageUv}), with the highest forecast hour at {peakTime}.",
     "steady": "UV stays at {uv} across the {coveredDuration} with forecast data, so the average is also {averageUv}.",
     "startEndAverage": "Across the forecasted hours, UV starts at {startUv} and ends at {endUv}. The average is {averageUv}.",
     "highest": "Highest UV is {uv} for about {duration}, during {periods}.",
@@ -19,41 +22,35 @@
     "elevatedAll": "UV remains at 3 or higher for the full {coveredDuration} with forecast data.",
     "elevatedPart": "UV reaches 3 or higher for about {duration}.",
     "elevatedSeparated": "UV reaches 3 or higher in {count} separate stretches, totaling about {duration}.",
-    "veryHigh": "UV reaches 8 or higher for about {duration}."
+    "veryHigh": "UV reaches 8 or higher for about {duration}.",
+    "lowerUv": "UV stays below 3 for about {duration}."
   },
   "actionMessages": {
-    "protection": "At UV 3+, cover exposed skin, wear a broad-brimmed hat and UV-protective sunglasses, and seek shade.",
-    "extraProtection": "At UV 8+, limit time in direct sun and prioritize shade.",
+    "protection": "During UV 3+ hours, cover exposed skin, wear a broad-brimmed hat and UV-protective sunglasses, and seek shade.",
+    "extraProtection": "During UV 8+ hours, limit time in direct sun and prioritize shade. Keep the other protection steps in place.",
+    "lowerUv": "For most people, these hours do not call for extra sun protection.",
     "sunscreenBasics": "Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before the UV 3+ part of your outing.",
     "sunscreenReapplication": "If you use sunscreen while outdoors, reapply at least every two hours and sooner after swimming, sweating, or towel drying. Follow the product label.",
     "cloudyElevatedUv": "Keep UV protection in place during {periods}, despite heavy cloud cover.",
     "reflectiveConditions": "Near snow, bright sand, or water, keep skin and eyes protected even in shade."
   },
+  "takeawayWindowMessages": {
+    "below-3": "From around {start} to around {end}, most people need no extra sun protection.",
+    "3-to-8": "From around {start} to around {end}, cover exposed skin, protect your eyes, seek shade, and use SPF 30+ sunscreen on uncovered skin.",
+    "8-plus": "From around {start} to around {end}, cover exposed skin, protect your eyes, use SPF 30+ sunscreen on uncovered skin, prioritize shade, and limit direct sun."
+  },
   "takeawayMessages": {
     "lowComplete": [
-      "UV stays below 3 throughout this outing.",
+      "UV stays below 3 throughout this outing (average {averageUv}; highest {peakUv}).",
       "For most people, no extra sun protection is needed during these hours."
     ],
     "lowPartial": [
-      "UV stays below 3 for the {duration} with forecast data.",
+      "UV stays below 3 for the {duration} with forecast data (average {averageUv}; highest {peakUv}).",
       "For most people, no extra sun protection is needed during those hours."
     ],
-    "protection": [
-      "UV reaches {peakUv} during the {peakTime} hour, with about {duration} at UV 3+.",
-      "Use sun protection during those hours."
-    ],
-    "protectionSeparated": [
-      "UV reaches {peakUv} during the {peakTime} hour, with about {duration} at UV 3+ in separate periods.",
-      "Use sun protection during those hours."
-    ],
-    "extraProtection": [
-      "UV peaks at {peakUv} during the {peakTime} hour, with about {veryHighDuration} at UV 8+.",
-      "Limit direct sun during the strongest hours and use sun protection."
-    ],
-    "extraProtectionSeparated": [
-      "UV peaks at {peakUv} during the {peakTime} hour.",
-      "Higher UV comes in separate periods, including about {veryHighDuration} at UV 8+.",
-      "Limit direct sun during the strongest hours and use sun protection."
+    "elevated": [
+      "{profileSummary}",
+      "{timedProtection}"
     ]
   },
   "messages": {

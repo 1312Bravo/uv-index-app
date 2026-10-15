@@ -91,6 +91,7 @@
   "evidenceAndProductBoundary": {
     "sourceBackedConcepts": [
       "WHO says higher UV Index means greater potential for skin and eye harm and less time before harm can occur.",
+      "WHO describes the duration and frequency of sun exposure as relevant to longer-term harm, without defining a safe outing duration from an hourly forecast.",
       "WHO recommends sun protection from UV Index 3 and describes clothing, shade, eye protection, and sunscreen for uncovered skin.",
       "WHO describes sunscreen reapplication every two hours, particularly after sweating, swimming, playing, or outdoor exercise.",
       "WHO notes that clouds do not always block UV and that snow, sand, and water can reflect UV."
@@ -100,7 +101,9 @@
       "Always give a practical outcome for covered UV below 3, without treating daytime and nighttime differently.",
       "When covered UVI reaches 3, show clothing, shade, eye protection, and sunscreen advice for the relevant hours; highlight UVI 8+ periods for extra shade.",
       "Show general two-hour reapplication guidance whenever sunscreen is recommended, without using cumulative elevated-UV time as a personal timer.",
-      "Keep WHO's general action table in Info; place a short UV Scout takeaway before the descriptive breakdown and practical actions in the outing result."
+      "Keep WHO's general action table in Info; place a short whole-outing UV profile and local-time, band-specific protection actions before the detailed breakdown and protection steps.",
+      "Round only the opening protection-window start down and end up to the local half hour and label them approximate; keep calculation and detailed action times unchanged.",
+      "When an outing mixes below-3 and 3+ UV, show the lower-UV hours separately rather than applying the higher-UV action to the whole outing."
     ],
     "notValidatedOrCalculated": [
       "personal UV dose or accumulated dose",

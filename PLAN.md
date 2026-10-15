@@ -37,11 +37,18 @@ helps people plan outdoor time around the current and forecast UV index.
   time, and practical guidance. Show WHO's general 0-2, 3-7, and 8+ reference
   table in Info. The outing result is UV Scout's own rule-based interpretation
   of covered raw-UV hours: an untitled actionable takeaway in short bullets
-  first, then a Breakdown list for start/end, average, highest and lowest
+  first. The first bullet summarizes the covered range/average; the second
+  follows the forecast in time order with a protection action for each
+  lower-UV, UVI 3-to-below-8, or UVI 8+ window. Its displayed starts round
+  down and ends round up to the local half hour, with "around" wording; exact
+  times still drive calculations. Then a Breakdown list gives
+  start/end, average, highest and lowest
   values with their durations and windows, and intervening values with their
   duration. Protection steps include the matching durations
   and local-time windows at raw UVI 3+ or 8+ when present, alongside the
-  detailed actions. General sunscreen reapplication guidance appears whenever
+  detailed actions. Mixed outings also identify below-3 hours separately;
+  an entirely below-3 outing needs no duplicate action list. General sunscreen
+  reapplication guidance appears whenever
   sunscreen is recommended, not only after two hours of elevated forecast UV.
   Cloud and reflective-surface notes are visually secondary, and below-3
   outings rely on the actionable takeaway without duplicate steps. The 2x2
@@ -227,6 +234,14 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Remove the cumulative UVI 3+ gate for sunscreen reapplication wording;
   keep the standard reminder conditional on using sunscreen, shorten the
   takeaway, and separate conditional context from main protection steps.
+- [x] Make the opening a compact whole-outing UV profile and matched action;
+  distinguish lower-UV hours in mixed outings and retain protection windows
+  in the detailed steps.
+- [x] Replace the opening's generic action sentence with protection matched to
+  each consecutive forecast window, in local-time order. Keep the first bullet,
+  Breakdown, and detailed Protection steps intact.
+- [x] Make opening protection times approximate by rounding window starts down
+  and ends up to local half hours; leave calculation and detailed times exact.
 
 ## Decisions
 

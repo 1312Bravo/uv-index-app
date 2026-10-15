@@ -1,6 +1,6 @@
 # Data and evidence sources
 
-Updated 2026-10-14. This is the source register for UV Scout. It records the
+Updated 2026-10-15. This is the source register for UV Scout. It records the
 origin of external forecast/location data and evidence used to shape app
 behavior, plus where each source enters the project and how it is interpreted.
 Topic-specific research notes contain the fuller evidence review and rationale.
@@ -49,11 +49,12 @@ usage notes in the runtime-provider table above are superseded by this correctio
 | Open-Meteo, [Weather Forecast API documentation](https://open-meteo.com/en/docs), `cloud_cover` definition; WHO, [UV radiation, clouds and haze](https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)) | Cloud cover describes the fraction/percentage of sky covered; it is not the percentage of UV blocked. Clouds can reduce UV, but do not guarantee low UV. | Provider value appears with hourly forecast bins; explanatory bands are in `src/domain/weather/cloudCoverBands.json`, interpreted in `src/domain/weather/getCloudCoverBand.ts`, and explained in `src/features/info/InfoScreen.tsx`. | The six cloud labels/ranges are simplified UV Scout wording, not an official cloud classification or UV adjustment. See [Info-tab research](info-tab-content-research.md). |
 | NOAA Global Monitoring Laboratory, [solar calculation details](https://gml.noaa.gov/grad/solcalc/calcdetails.html) and [civil twilight glossary](https://gml.noaa.gov/grad/solcalc/glossary.html); [SunCalc](https://github.com/mourner/suncalc) Meeus-style equations and event conventions | Approximate solar event times; civil dawn/dusk use the Sun's centre 6° below the horizon, and sunrise/sunset use the apparent horizon convention. | Pure calculation in `src/domain/daylight/getDaylightEvents.ts`; timestamps are displayed on the shared charts in `src/features/forecast/HourlyUvBarChart.tsx`. No daylight web service is called at runtime. | Times are approximate; refraction, terrain, and polar-day/night cases limit interpretation. NOAA's published precision describes NOAA's implementation, not a verified accuracy claim for UV Scout's calculation. The arc height is illustrative. Full rationale is in [daylight research](daylight-research.md). |
 
-### Active UV-guidance review, 2026-10-14
+### Active UV-guidance review, 2026-10-15
 
 Rechecked the WHO [UV Index Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index)
 (dated 20 June 2022), WHO [skin-cancer protection Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-protecting-against-skin-cancer)
 (dated 16 July 2024), [Open-Meteo forecast documentation](https://open-meteo.com/en/docs),
+WHO [known health effects of UV radiation](https://www.who.int/news-room/questions-and-answers/item/radiation-the-known-health-effects-of-ultraviolet-radiation),
 and [FDA sunscreen consumer guidance](https://www.fda.gov/drugs/understanding-over-counter-medicines/sunscreen-how-help-protect-your-skin-sun).
 No new runtime provider or personal-risk formula was added. WHO's UVI 3
 protection threshold, stronger protection at UVI 8+, and clothing, shade,
@@ -66,12 +67,27 @@ Open-Meteo provides hourly forecast values, transformed into covered outing
 durations by `src/domain/outing/calculateOutingForecast.ts`; it does not
 provide outing advice. The UI in `src/features/outing/OutingForecast.tsx` now
 shows a short forecast-based UV takeaway in bullets, then a flat Breakdown.
+The opening's first bullet combines covered UV range, duration-weighted
+average, and peak hour. Its second bullet gives local-time protection actions
+for each consecutive raw-UV band window: below 3, 3 to below 8, and 8 or
+higher. Only in that opening bullet, each displayed start is rounded down and
+each end rounded up to a half-hour boundary in the selected location's time
+zone and marked "around"; this does not alter provider values, actual outing
+overlaps, durations, or the more precise detailed time lines. For a steady
+forecast the first bullet uses a shorter
+level-and-duration line; all-below-3 outings keep their low-UV outcome.
+These are UV Scout presentation choices, not WHO's own combined
+recommendation algorithm. WHO's known-health-effects Q&A links duration and
+frequency of exposure with longer-term harm, but supplies no personal safe-time
+cutoff for this app.
 Breakdown describes the first and last covered hourly values, the
 duration-weighted average, the highest and lowest displayed hourly values and
 their total covered durations/local-time windows, and any intervening values
 and their total duration. The matching Protection steps retain covered time
-and local-time windows at raw UVI 3+ and 8+ when present. The main action list
-is followed by smaller cloud/reflective-surface notes when relevant. Low-UV
+and local-time windows at raw UVI 3+ and 8+ when present. It also identifies
+below-3 windows when an outing mixes lower and higher UV; lower-UV wording
+applies only to those covered hours. Smaller cloud/reflective-surface notes
+follow when relevant. Low-UV
 outings keep the practical outcome in the takeaway without a duplicate steps
 section.
 Trend grouping uses one-decimal displayed values, while protection decisions
@@ -88,6 +104,15 @@ behavior, scenarios, attribution, and
 limitations are in [active UV guidance](active-uv-guidance.md); earlier row
 descriptions of the full profile refer to calculations, not all currently
 displayed guidance bullets. Recheck provider terms before commercial release.
+
+Open-Meteo says most hourly weather values are instantaneous at the indicated
+hour. UV Scout assigns each UV value to the following hour for overlap,
+duration, and protection-window summaries in
+`src/domain/outing/calculateOutingForecast.ts` and
+`src/domain/guidance/getUvScoutInsight.ts`. That bin interpretation is UV
+Scout's simplifying assumption, not a provider-issued minute-by-minute UV
+forecast. Window starts/ends and durations are approximate, especially near
+transitions. Open-Meteo documentation rechecked 2026-10-15.
 
 ## UV Scout-authored definitions and decisions
 
