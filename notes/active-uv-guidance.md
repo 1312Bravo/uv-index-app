@@ -13,16 +13,18 @@ the covered range, duration-weighted average, and peak forecast hour. The
 second bullet follows consecutive forecast windows in local-time order, with
 different protection wording for below-3, 3-to-below-8, and 8+ UV. Adjacent
 hours in the same band share one window; gaps in coverage do not merge.
-Steady UV uses a simpler first-bullet duration summary. **Breakdown** is a flat bullet list, starting
+Steady UV uses a simpler first-bullet duration summary. **UV breakdown** is a flat bullet list, starting
 with start/end and average, then the highest and lowest displayed hourly UV
 values with their total covered durations and local-time
-windows, and any values between them with their total duration. **Protection
-steps** holds the detailed titled actions, with raw UVI 3+ and 8+ duration and
-local-time windows as quieter lines beneath the matching actions when relevant.
-When an outing mixes below-3 and higher UV, it also identifies the below-3
-hours and their windows, so the lower-UV part is not treated as if it needs
-the same protection. Sunscreen preparation and reapplication remain separate
-steps.
+windows, and any values between them with their total duration. When a mixed
+outing has several distinct below-3 values, UV breakdown also totals those
+lower-UV hours and their windows. The opening guidance already says what to
+do in those hours. **Protection steps** lists sunscreen preparation, clothing
+and shade, extra care at UVI 8+ when relevant, and sunscreen reapplication.
+The sunscreen step distinguishes UV 3+ at the selected start from a later
+first forecast UVI 3+ period. Clothing and shade names the total forecast
+time at UVI 3+; Strongest hours names the total at UVI 8+. Their exact
+local-time windows remain as quieter lines beneath those actions.
 Cloud and reflective-surface cautions appear below as smaller context notes.
 For all-below-3 outings, the takeaway gives the practical outcome and the
 duplicate Protection steps section is omitted. Both section headings are
@@ -37,8 +39,8 @@ remains in Info, separate from this UV Scout outing guidance.
 | All covered values are below raw UVI 3 | Say that most people do not need extra sun protection for the forecast hours. Do not use a separate night rule. |
 | Any covered time is at raw UVI 3 or higher | Name the relevant local-time periods and recommend clothing, a broad-brimmed hat, UV-protective sunglasses, available shade, and broad-spectrum SPF 30+ sunscreen on uncovered skin. |
 | Any covered time is at raw UVI 8 or higher | Additionally identify those periods and advise limiting direct sun and prioritizing shade. |
-| An outing has both below-3 and UVI 3+ covered time | Identify the below-3 duration and windows separately; say that most people do not need extra sun protection for those lower-UV hours. This does not cancel protection advice for the UVI 3+ hours. |
-| Any covered time is at raw UVI 3 or higher | Recommend SPF 30+ on uncovered skin before those elevated hours. If sunscreen is used outdoors, give the general at-least-every-two-hours reapplication advice, with earlier reapplication after swimming, sweating, or towel drying and product-label directions. This is not a personal timer based on forecast hours. |
+| An outing has both below-3 and UVI 3+ covered time | The opening guidance says that most people do not need extra sun protection during the below-3 windows. UV breakdown retains the lowest-value duration and windows, and adds a combined below-3 duration/window line only when lower UV spans more than that one value. This does not cancel protection advice for the UVI 3+ hours. |
+| Any covered time is at raw UVI 3 or higher | Recommend SPF 30+ on uncovered skin. If UVI 3+ is present at the selected start, say so; otherwise name the first forecast UVI 3+ start and advise applying before then. If sunscreen is used, give the general two-hour-after-application reapplication advice, with earlier reapplication after swimming, sweating, or towel drying and product-label directions. This is not a personal timer based on forecast hours. |
 | Cloud cover is at least 76% during any hour at raw UVI 3 or higher | Add a reminder to keep UV protection in place during those cloudy hours. The 76% boundary comes from UV Scout's editable display band, not a health threshold. |
 | Any covered time is at raw UVI 3 or higher | Add one conditional reminder about reflected UV near snow, bright sand, or water. The app does not know whether those surfaces are present. |
 | Some requested time has no forecast | Warn how much of the outing is covered. Never substitute zero UV for missing time. Low-UV advice applies only to known hours, and missing intervals split otherwise separate elevated periods. |
@@ -54,16 +56,23 @@ the first bullet's UV metrics. For only below-3 forecast values, the existing
 two-bullet low-UV outcome remains. A brief peak is not described as the level
 for the whole outing. All opening windows are shown, so a long outing with
 many UV changes may have a longer second bullet; the detailed Protection
-steps remain below. Local dates appear when an outing spans dates.
-The Breakdown reports the first and last covered hourly UV
+steps remain below. Recommendation times show hours only for one local day.
+For an outing spanning local days, they add full weekday names without a
+month or date number. The opening still rounds its display times to local
+half hours; the detailed times stay exact.
+The UV breakdown reports the first and last covered hourly UV
 values, the duration-weighted average, maximum and minimum displayed hourly
 values with their total covered durations and local-time windows, and any
-intervening hourly values with their total duration. If all covered values
-display the same UV, it uses one steady-value bullet. The Clothing and shade action
-carries the raw UVI 3+ duration and windows; Strongest hours carries the raw
-UVI 8+ duration and windows when present. Mixed outings also get a below-3
-action line with its duration and windows; outings entirely below 3 keep
-their advice only in the opening, without duplicate steps.
+intervening hourly values with their total duration. When below-3 time in a
+mixed outing is not already covered by the lowest-value bullet, the UV breakdown
+adds its combined duration and windows. If all covered values display the
+same UV, it uses one steady-value bullet. The Clothing and shade action
+states the raw UVI 3+ duration; Strongest hours states the raw UVI 8+
+duration when present. Exact windows appear beneath those actions. Sunscreen
+application points to the first forecast UVI 3+ start or says the selected
+start is already at UVI 3+. Reapplication is a conditional last step because
+the app does not know when sunscreen was applied. Outings entirely below
+3 keep their advice only in the opening, without duplicate steps.
 Separated higher-UV stretches are named as separate rather than continuous.
 These are forecast descriptions, not new protection-rule triggers, a personal
 UV dose, burn time, or a validated risk score. Hourly values stand in for their overlapping hour bins;

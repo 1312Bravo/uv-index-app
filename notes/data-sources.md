@@ -66,28 +66,30 @@ for sunscreen-label and reapplication wording, not a separate rule engine.
 Open-Meteo provides hourly forecast values, transformed into covered outing
 durations by `src/domain/outing/calculateOutingForecast.ts`; it does not
 provide outing advice. The UI in `src/features/outing/OutingForecast.tsx` now
-shows a short forecast-based UV takeaway in bullets, then a flat Breakdown.
+shows a short forecast-based UV takeaway in bullets, then a flat UV breakdown.
 The opening's first bullet combines covered UV range, duration-weighted
 average, and peak hour. Its second bullet gives local-time protection actions
 for each consecutive raw-UV band window: below 3, 3 to below 8, and 8 or
 higher. Only in that opening bullet, each displayed start is rounded down and
 each end rounded up to a half-hour boundary in the selected location's time
 zone and marked "around"; this does not alter provider values, actual outing
-overlaps, durations, or the more precise detailed time lines. For a steady
+overlaps, durations, or the more precise detailed time lines. Recommendation
+times use hours alone for one local day, or full weekday names across days;
+that display choice uses the provider-resolved timezone. For a steady
 forecast the first bullet uses a shorter
 level-and-duration line; all-below-3 outings keep their low-UV outcome.
 These are UV Scout presentation choices, not WHO's own combined
 recommendation algorithm. WHO's known-health-effects Q&A links duration and
 frequency of exposure with longer-term harm, but supplies no personal safe-time
 cutoff for this app.
-Breakdown describes the first and last covered hourly values, the
+UV breakdown describes the first and last covered hourly values, the
 duration-weighted average, the highest and lowest displayed hourly values and
 their total covered durations/local-time windows, and any intervening values
-and their total duration. The matching Protection steps retain covered time
-and local-time windows at raw UVI 3+ and 8+ when present. It also identifies
-below-3 windows when an outing mixes lower and higher UV; lower-UV wording
-applies only to those covered hours. Smaller cloud/reflective-surface notes
-follow when relevant. Low-UV
+and their total duration. It totals below-3 windows when lower UV spans more
+than the minimum value alone. Protection steps name the first forecast UVI 3+
+start and the total time at UVI 3+ or 8+ in the main action text; exact windows
+stay beneath the matching actions. These combinations are UV Scout presentation
+choices. Smaller cloud and reflective-surface notes follow when relevant. Low-UV
 outings keep the practical outcome in the takeaway without a duplicate steps
 section.
 Trend grouping uses one-decimal displayed values, while protection decisions

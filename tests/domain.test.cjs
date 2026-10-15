@@ -39,6 +39,12 @@ function timingLines(insight) {
     .flatMap(({ subItems }) => subItems ?? []);
 }
 
+function actionText(insight, title) {
+  const action = insight.practicalGuidance.find((item) => item.title === title);
+  assert.ok(action, `Expected ${title} protection step`);
+  return action.text;
+}
+
 test('WHO reference returns its three general action bands', () => {
   const table = getWhoGuidanceTable();
 
@@ -71,10 +77,11 @@ test('outing averages weight partial first and last hours by their overlap', () 
   assert.match(trendLines(insight)[0], /starts at 2\.0 and ends at 6\.0/);
   assert.match(trendLines(insight)[0], /average is 4\.0/);
   assert.match(trendLines(insight)[1], /Highest UV is 6\.0 for about 30 minutes/);
-  assert.match(trendLines(insight)[1], /Thu, Jan 1 1:00 AM-1:30 AM/);
+  assert.match(trendLines(insight)[1], /1:00 AM-1:30 AM/);
+  assert.doesNotMatch(insight.breakdown.join(' '), /Thu|Jan/);
   assert.match(trendLines(insight)[2], /Lowest UV is 2\.0 for about 30 minutes/);
-  assert.match(timingLines(insight)[0], /UV reaches 3 or higher for about 30 minutes/);
-  assert.match(timingLines(insight)[0], /Thu, Jan 1 1:00 AM-1:30 AM/);
+  assert.match(actionText(insight, 'Clothing and shade'), /UV reaches 3 or higher for about 30 minutes/);
+  assert.match(timingLines(insight)[0], /1:00 AM-1:30 AM/);
 });
 
 test('missing forecast time is disclosed and separates elevated UV periods', () => {
@@ -87,8 +94,8 @@ test('missing forecast time is disclosed and separates elevated UV periods', () 
   assert.match(insight.takeawayBullets[1], /around 12:00 AM to around 1:00 AM.*around 2:00 AM to around 3:00 AM/i);
   assert.match(insight.takeawayBullets[1], /cover exposed skin/i);
   assert.ok(insight.practicalGuidance.every((item) => item.title && item.text));
-  assert.match(timingLines(insight)[0], /2 separate stretches, totaling about 2 hours/);
-  assert.match(timingLines(insight)[0], /12:00 AM-1:00 AM and Thu, Jan 1 2:00 AM-3:00 AM/);
+  assert.match(actionText(insight, 'Clothing and shade'), /2 separate stretches, totaling about 2 hours/);
+  assert.match(timingLines(insight)[0], /12:00 AM-1:00 AM and 2:00 AM-3:00 AM/);
 });
 
 test('breakdown describes a sustained peak across consecutive forecast hours', () => {
@@ -99,11 +106,12 @@ test('breakdown describes a sustained peak across consecutive forecast hours', (
   assert.match(trendLines(insight)[0], /starts at 2\.0 and ends at 1\.0/);
   assert.match(trendLines(insight)[0], /average is 3\.8/);
   assert.match(trendLines(insight)[1], /Highest UV is 6\.0 for about 2 hours/);
-  assert.match(trendLines(insight)[1], /Thu, Jan 1 1:00 AM-3:00 AM/);
+  assert.match(trendLines(insight)[1], /1:00 AM-3:00 AM/);
   assert.match(trendLines(insight)[2], /Lowest UV is 1\.0 for about 1 hour/);
-  assert.match(trendLines(insight)[3], /Other hourly values are 2\.0 for about 1 hour/);
-  assert.match(timingLines(insight)[0], /UV reaches 3 or higher for about 2 hours/);
-  assert.equal(insight.breakdown.length, 4);
+  assert.match(trendLines(insight)[3], /remaining forecast hours, UV is 2\.0 for about 1 hour/);
+  assert.match(actionText(insight, 'Clothing and shade'), /UV reaches 3 or higher for about 2 hours/);
+  assert.match(trendLines(insight)[4], /UV stays below 3 for about 2 hours in total/);
+  assert.equal(insight.breakdown.length, 5);
 });
 
 test('UV trend totals separated minima and a range of intervening values', () => {
@@ -114,9 +122,11 @@ test('UV trend totals separated minima and a range of intervening values', () =>
 
   assert.match(trendLines(insight)[1], /Highest UV is 5\.0 for about 2 hours/);
   assert.match(trendLines(insight)[2], /Lowest UV is 1\.0 for about 2 hours/);
-  assert.match(trendLines(insight)[2], /12:00 AM-1:00 AM and Thu, Jan 1 5:00 AM-6:00 AM/);
-  assert.match(trendLines(insight)[3], /Other hourly values range from 2\.0 to 3\.0 for about 2 hours/);
-  assert.match(timingLines(insight)[0], /UV reaches 3 or higher for about 3 hours/);
+  assert.match(trendLines(insight)[2], /12:00 AM-1:00 AM and 5:00 AM-6:00 AM/);
+  assert.match(trendLines(insight)[3], /remaining forecast hours, UV ranges from 2\.0 to 3\.0 for about 2 hours/);
+  assert.match(actionText(insight, 'Clothing and shade'), /UV reaches 3 or higher for about 3 hours/);
+  assert.match(trendLines(insight)[4], /UV stays below 3 for about 3 hours in total/);
+  assert.match(trendLines(insight)[4], /12:00 AM-2:00 AM and 5:00 AM-6:00 AM/);
 });
 
 test('opening takeaway bullets give a compact profile and protection outcome', () => {
@@ -152,13 +162,29 @@ test('opening protection changes with the forecast windows without repeating the
   assert.ok(protection.indexOf('around 2:00 AM to') < protection.indexOf('around 3:00 AM to'));
 });
 
-test('opening protection keeps local dates when its windows cross midnight', () => {
+test('opening protection uses weekday names when its windows cross midnight', () => {
   const insight = getUvScoutInsight(summarize([
     hour(23 * 3600, 5), hour(24 * 3600, 8),
   ], 23 * 3600, 25 * 3600), 'UTC');
 
-  assert.match(insight.takeawayBullets[1], /around Thu, Jan 1 11:00 PM to around Fri, Jan 2 12:00 AM/i);
-  assert.match(insight.takeawayBullets[1], /around Fri, Jan 2 12:00 AM to around 1:00 AM.*limit direct sun/i);
+  assert.match(insight.takeawayBullets[1], /around Thursday 11:00 PM to around Friday 12:00 AM/i);
+  assert.match(insight.takeawayBullets[1], /around Friday 12:00 AM to around 1:00 AM.*limit direct sun/i);
+  assert.doesNotMatch(insight.takeawayBullets.join(' '), /Jan|\b1\b,?\s+11:00 PM/i);
+  assert.match(timingLines(insight)[0], /Thursday 11:00 PM-Friday 1:00 AM/i);
+  assert.match(actionText(insight, 'Sunscreen'), /UV is 3 or higher when this outing starts/i);
+});
+
+test('overnight advice identifies the peak and later sunscreen start by weekday', () => {
+  const insight = getUvScoutInsight(summarize([
+    hour(22 * 3600, 1), hour(23 * 3600, 1),
+    hour(24 * 3600, 6), hour(25 * 3600, 6),
+  ], 22 * 3600, 26 * 3600), 'UTC');
+
+  assert.match(insight.takeawayBullets[0], /highest forecast hour at Friday 12:00 AM/i);
+  assert.match(actionText(insight, 'Sunscreen'), /first forecast UV 3\+ period begins at Friday 12:00 AM/i);
+  assert.match(insight.breakdown[1], /Friday 12:00 AM-2:00 AM/i);
+  assert.match(timingLines(insight)[0], /Friday 12:00 AM-2:00 AM/i);
+  assert.doesNotMatch(insight.breakdown.join(' '), /Jan/);
 });
 
 test('opening protection rounds start down and end up to local half hours only for display', () => {
@@ -168,6 +194,15 @@ test('opening protection rounds start down and end up to local half hours only f
 
   assert.match(insight.takeawayBullets[1], /around 1:30 AM to around 5:00 AM/i);
   assert.match(timingLines(insight)[0], /1:53 AM-4:54 AM/i);
+});
+
+test('rounding a single-day outing end to midnight does not add a weekday', () => {
+  const insight = getUvScoutInsight(summarize([
+    hour(22 * 3600, 5), hour(23 * 3600, 5),
+  ], 22 * 3600 + 10 * 60, 23 * 3600 + 40 * 60), 'UTC');
+
+  assert.match(insight.takeawayBullets[1], /around 10:00 PM to around 12:00 AM/i);
+  assert.doesNotMatch(insight.takeawayBullets.join(' '), /Thursday|Friday|Jan/);
 });
 
 test('opening half-hour rounding follows local time in quarter-hour-offset zones', () => {
@@ -186,7 +221,7 @@ test('changing low UV still gets a numerical outing description without protecti
 
   assert.match(trendLines(insight)[0], /average is 1\.3/);
   assert.match(trendLines(insight)[1], /Highest UV is 2\.0 for about 1 hour/);
-  assert.match(trendLines(insight)[1], /Thu, Jan 1 1:00 AM-2:00 AM/);
+  assert.match(trendLines(insight)[1], /1:00 AM-2:00 AM/);
   assert.match(insight.takeaway, /below 3 throughout this outing/);
   assert.deepEqual(timingLines(insight), []);
 });
@@ -213,13 +248,20 @@ test('action guidance gives concrete protection steps for moderate and very high
   assert.match(moderateActions, /broad-spectrum SPF 30\+/i);
   assert.doesNotMatch(moderateActions, /12:00 AM-2:00 AM/i);
   assert.match(timingLines(moderate)[0],
-    /Thu, Jan 1 12:00 AM-2:00 AM/i);
+    /12:00 AM-2:00 AM/i);
   assert.match(timingLines(veryHigh)[1],
-    /Thu, Jan 1 12:00 AM-12:30 AM/i);
+    /12:00 AM-12:30 AM/i);
   assert.doesNotMatch(veryHighAction.text, /12:00 AM-12:30 AM/i);
   assert.match(veryHighAction.text, /prioritize shade/i);
+  assert.match(veryHighAction.text, /UV reaches 8 or higher for about 30 minutes/i);
   assert.match(veryHigh.takeawayBullets[1], /around 12:00 AM to around 12:30 AM/i);
   assert.match(veryHigh.takeaway, /limit direct sun/i);
+  assert.deepEqual(moderate.practicalGuidance.map(({ title }) => title), [
+    'Sunscreen', 'Clothing and shade', 'Reapply sunscreen',
+  ]);
+  assert.deepEqual(veryHigh.practicalGuidance.map(({ title }) => title), [
+    'Sunscreen', 'Clothing and shade', 'Strongest hours', 'Reapply sunscreen',
+  ]);
 });
 
 test('very cloudy hours overlapping elevated UV add a targeted cloud-context action only', () => {
@@ -231,7 +273,7 @@ test('very cloudy hours overlapping elevated UV add a targeted cloud-context act
   const cloudAction = overlap.contextNotes.find(({ title }) => title === 'Cloudy hours');
 
   assert.match(cloudAction.text, /despite heavy cloud cover/i);
-  assert.match(cloudAction.text, /Thu, Jan 1 12:00 AM-1:00 AM/i);
+  assert.match(cloudAction.text, /12:00 AM-1:00 AM/i);
   assert.equal(cloudAction.text.includes('1:00 AM-2:00 AM'), false);
   assert.match(cloudAction.text, /keep UV protection in place/i);
 
@@ -260,12 +302,19 @@ test('sunscreen reapplication advice does not depend on cumulative elevated-UV d
   const sustainedSunscreen = sustainedModerate.practicalGuidance
     .find(({ title }) => title === 'Sunscreen');
 
-  assert.match(briefSunscreen.text, /reapply at least every two hours/i);
-  assert.match(briefSunscreen.text, /sooner after swimming, sweating, or towel drying/i);
-  assert.match(lateSunscreen.text, /before the UV 3\+ part of your outing/i);
-  assert.match(sustainedSunscreen.text, /reapply at least every two hours/i);
+  const briefReapplication = briefActions.find(({ title }) => title === 'Reapply sunscreen');
+  const sustainedReapplication = sustainedModerate.practicalGuidance
+    .find(({ title }) => title === 'Reapply sunscreen');
+
+  assert.match(briefReapplication.text, /reapply it at least every two hours/i);
+  assert.match(briefReapplication.text, /sooner after swimming, sweating, or towel drying/i);
+  assert.match(lateSunscreen.text, /first forecast UV 3\+ period begins at 4:00 AM/i);
+  assert.match(lateSunscreen.text, /before then/i);
+  assert.doesNotMatch(lateSunscreen.text, /Thursday|Jan/);
+  assert.match(briefSunscreen.text, /UV is 3 or higher when this outing starts/i);
   assert.equal(briefSunscreen.text, sustainedSunscreen.text);
-  assert.equal(lateSunscreen.text, sustainedSunscreen.text);
+  assert.match(sustainedReapplication.text, /reapply it at least every two hours/i);
+  assert.equal(briefReapplication.text, sustainedReapplication.text);
   assert.equal(sustainedModerate.practicalGuidance.filter(({ title }) => title === 'Sunscreen').length, 1);
   assert.match(briefHighThenLow.takeawayBullets[1], /around 12:00 AM to around 1:00 AM.*limit direct sun/i);
 });
@@ -283,7 +332,8 @@ test('low UV gets a practical takeaway without duplicate steps, while sunscreen 
   assert.match(trendLines(low)[0], /UV stays at 2\.0/);
   assert.match(trendLines(low)[0], /average is also 2\.0/);
   assert.deepEqual(timingLines(low), []);
-  assert.match(elevatedSunscreen.text, /reapply at least every two hours/i);
+  assert.match(elevatedSunscreen.text, /SPF 30\+/i);
+  assert.equal(briefElevated.practicalGuidance.some(({ title }) => title === 'Reapply sunscreen'), true);
 });
 
 test('protection rules use raw UV 3 and 8 boundaries', () => {
@@ -303,14 +353,14 @@ test('a brief UV 8 window does not describe a mostly low-UV outing as all high U
   assert.match(result.takeawayBullets[1], /around 12:30 AM to around 1:00 AM.*limit direct sun/i);
   assert.match(result.takeawayBullets[0], /average 0\.5/i);
   assert.equal(result.practicalGuidance.some(({ title }) => title === 'Strongest hours'), true);
-  const lowerUv = result.practicalGuidance.find(({ title }) => title === 'Lower UV hours');
-  assert.match(lowerUv.text, /do not call for extra sun protection/i);
-  assert.match(lowerUv.subItems[0], /UV stays below 3 for about 4 hours/i);
-  assert.match(lowerUv.subItems[0], /Thu, Jan 1 1:00 AM-5:00 AM/i);
+  assert.equal(result.practicalGuidance.some(({ title }) => title === 'Lower UV hours'), false);
+  assert.match(result.breakdown[2], /Lowest UV is 0\.0 for about 4 hours/i);
+  assert.match(result.breakdown[2], /1:00 AM-5:00 AM/i);
+  assert.match(result.takeawayBullets[1], /no extra sun protection/i);
   assert.equal(result.practicalGuidance.some(({ title }) => title === 'Sunscreen'), true);
   assert.doesNotMatch(result.takeaway, /5 hours at UV 8\+/i);
-  assert.match(timingLines(result)[0], /UV reaches 3 or higher for about 15 minutes/);
-  assert.match(timingLines(result)[1], /UV reaches 8 or higher for about 15 minutes/);
+  assert.match(actionText(result, 'Clothing and shade'), /UV reaches 3 or higher for about 15 minutes/);
+  assert.match(actionText(result, 'Strongest hours'), /UV reaches 8 or higher for about 15 minutes/);
   assert.match(timingLines(result)[1], /12:45 AM-1:00 AM/);
   assert.equal(result.practicalGuidance.some(({ title }) => title === 'Clothing and shade'), true);
   assert.equal(result.practicalGuidance.some(({ title }) => title === 'Strongest hours'), true);
@@ -345,9 +395,11 @@ test('separated elevated periods stay distinct and long timing lists stay brief'
   const sunscreen = separated.practicalGuidance.find(({ title }) => title === 'Sunscreen');
 
   assert.match(separated.takeawayBullets[1], /around 12:00 AM to around 1:00 AM.*around 2:00 AM to around 3:00 AM.*around 4:00 AM to around 5:00 AM.*around 6:00 AM to around 7:00 AM/i);
-  assert.match(timingLines(separated)[0], /4 separate stretches, totaling about 4 hours/);
-  assert.doesNotMatch(protection.text, /periods/i);
+  assert.match(protection.text, /4 separate stretches, totaling about 4 hours/);
+  assert.doesNotMatch(protection.text, /Timing:/i);
   assert.match(timingLines(separated)[0], /and 2 more periods/i);
-  assert.match(sunscreen.text, /reapply at least every two hours/i);
+  assert.match(sunscreen.text, /SPF 30\+/i);
+  assert.match(separated.practicalGuidance.find(({ title }) => title === 'Reapply sunscreen').text,
+    /reapply it at least every two hours/i);
   assert.doesNotMatch(sunscreen.text, /continuous|extended elevated/i);
 });

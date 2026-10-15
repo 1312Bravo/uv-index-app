@@ -98,16 +98,23 @@ recommended; it is not a forecast-duration trigger or personal timer. The text
 file separates action titles/messages, profile narrative templates, time-window
 detail messages, takeaway-message arrays (one item per opening bullet), and
 short band-specific `takeawayWindowMessages` for the second opening bullet.
-Breakdown groups one-decimal displayed hourly values into highest, lowest, and
-intervening values and totals only their actual overlap with the outing.
-The matching protection steps carry raw UVI 3+ and 8+ duration/window lines;
-mixed outings also get a below-3 window line so the higher-UV action is not
-implied for every hour. The first opening bullet describes the covered UV
-range or steady value; the second walks through consecutive lower, UV 3-to-
+UV breakdown groups one-decimal displayed hourly values into highest, lowest, and
+intervening values and totals only their actual overlap with the outing. In a
+mixed outing, it adds a combined below-3 duration/window line only if the
+lowest-value bullet does not already cover all below-3 time. Protection steps
+show sunscreen preparation and reapplication as separate actions, with clothing,
+shade, and any extra UVI 8+ action between them. The matching steps carry raw
+UVI 3+ and 8+ durations in their main text and exact window times below.
+Sunscreen wording differs when UVI 3+ begins at the selected start or later;
+reapplication timing depends on when sunscreen was applied, which the app
+does not ask for. The first opening bullet describes the
+covered UV range or steady value; the second walks through consecutive lower, UV 3-to-
 below-8, and UV 8+ windows in local-time order with matching actions.
 Only those opening action windows round their displayed starts down and ends
 up to local half hours, using "around" wording. The exact overlap and
 duration calculations and the detailed action times stay unchanged.
+Recommendation text shows times alone for one local day, and full weekday
+names without calendar dates when the outing crosses local days.
 Cloud and reflective-surface context is returned separately for subdued display.
 Low-UV outings keep their practical result in the opening takeaway, without
 a duplicate steps section. These choices do not change the action thresholds.

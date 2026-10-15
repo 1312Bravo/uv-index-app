@@ -24,7 +24,9 @@ helps people plan outdoor time around the current and forecast UV index.
 - The central flow asks for a place, start time, and duration or end time. The
   planner does not ask the user to classify shade; guidance recommends general
   shade use without treating it as a numeric UV adjustment.
-- Start time defaults to Now. Duration/end time has no default and must be chosen by the user.
+- Plan an Outing defaults to a selected timeframe from Now for 4 hours.
+  Forecast metrics, UV breakdown, protection guidance, and the hourly chart all
+  use this same selected timeframe.
 - If the user switches from Now to a scheduled outing, offer only future times
   relative to the current time at the selected location.
 - With Now selected, show a horizontal UV trend with five earlier hourly bins,
@@ -41,12 +43,19 @@ helps people plan outdoor time around the current and forecast UV index.
   follows the forecast in time order with a protection action for each
   lower-UV, UVI 3-to-below-8, or UVI 8+ window. Its displayed starts round
   down and ends round up to the local half hour, with "around" wording; exact
-  times still drive calculations. Then a Breakdown list gives
+  times still drive calculations. Then a UV breakdown list gives
   start/end, average, highest and lowest
   values with their durations and windows, and intervening values with their
-  duration. Protection steps include the matching durations
-  and local-time windows at raw UVI 3+ or 8+ when present, alongside the
-  detailed actions. Mixed outings also identify below-3 hours separately;
+  duration. In mixed outings, it totals below-3 time separately only when
+  that time is not already fully described by the lowest-value bullet.
+  Protection steps are ordered by action: sunscreen preparation, clothing
+  and shade, extra care during 8+ hours when present, and sunscreen
+  reapplication. The main action text names when UV protection first becomes
+  relevant and how long UVI 3+ or 8+ is forecast; smaller lines retain the
+  exact local-time windows. Recommendation times use hours alone for a
+  single local day and full weekday names for outings crossing days.
+  Reapplication remains conditional on sunscreen
+  use and when it was applied. The opening guidance identifies lower-UV windows;
   an entirely below-3 outing needs no duplicate action list. General sunscreen
   reapplication guidance appears whenever
   sunscreen is recommended, not only after two hours of elevated forecast UV.
@@ -105,9 +114,9 @@ helps people plan outdoor time around the current and forecast UV index.
 Start with a location-based MVP:
 
 1. User searches for a place or chooses to share device location on Android or web.
-2. Start time defaults to Now and immediately shows the rolling hourly UV trend.
-   The user may choose a future time and must choose a duration for an outing
-   assessment. Do not require a shade or other protection-context selection.
+2. Plan an Outing defaults to Now for 4 hours and immediately shows the outing
+   assessment. The user may choose a future start, change the duration, or set
+   an end time. Do not require a shade or other protection-context selection.
 3. The app shows hourly UV, temperature, cloud cover, and precipitation context
    for that period, its highest UV category, and an explanation of what that
    category means.
@@ -159,8 +168,10 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Place the general UV explanation near the start of the app and keep the
   per-outing result focused on that forecast.
 - [x] Keep earlier/later comparisons in the future.
-- [x] Default start time to Now and require the user to select a duration.
-- [x] Show a 5-past / Now / 18-future hourly UV trend before duration is chosen.
+- [x] Default the selected outing to Now for 4 hours, with controls to change
+  duration or set an end time.
+- [x] Show the rolling 5-past / Now / 18-future hourly UV trend independently
+  of the outing timeframe.
 - [x] Choose Open-Meteo for keyless UV and temperature forecasts in the prototype.
 - [x] Confirm and implement the first recommendation rules and safety wording.
 - [x] Scaffold the Expo project with Android and web support.
@@ -215,6 +226,8 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Keep outing choices when switching tabs or changing location, explain
   when the new forecast cannot cover them, and add Reset for outing choices
   only while preserving the selected location.
+- [x] Use the normal outing assessment for the default Now-to-4-hours selection,
+  including metrics, UV breakdown, protection guidance, and hourly chart.
 - [x] Add a central source register and require it to be updated when app data
   providers, scientific evidence, or calculation references are introduced.
 - [x] Review the active outing rules and copy, give low-UV hours a practical
@@ -242,6 +255,14 @@ calculation, supported platform versions, and the final visual polish.
   Breakdown, and detailed Protection steps intact.
 - [x] Make opening protection times approximate by rounding window starts down
   and ends up to local half hours; leave calculation and detailed times exact.
+- [x] Clarify the remaining-value wording in the UV breakdown, keep lower-UV timing
+  there when it adds information, and reorder Protection steps by action
+  without changing the opening guidance or the protection thresholds.
+- [x] Make the detailed Protection steps reflect the selected outing: name the
+  first forecast UVI 3+ start when it is later, put UVI 3+/8+ durations in the
+  action text, and keep exact windows below the matching actions.
+- [x] Keep recommendation time labels compact: show hours for one local day;
+  add weekday names when the selected outing crosses local days.
 
 ## Decisions
 
@@ -279,8 +300,8 @@ calculation, supported platform versions, and the final visual polish.
 - Use standard UV categories with colors and plain-language labels.
 - Let the user choose start time and duration or end time; do not ask for shade
   in the default planner.
-- Default the start time to Now; provide only future scheduled times and do not
-  preselect a duration or end time.
+- Default the selected outing to Now for 4 hours; provide only future scheduled
+  alternatives and allow users to change the duration or set an end time.
 - Provide duration presets of 30 minutes, 1 hour, 2 hours, 3 hours, and 4 hours,
   plus custom minutes. Allow the user to switch to an explicit end time instead.
 - Present planner choices as compact selector rows with vertically revealed
@@ -291,7 +312,7 @@ calculation, supported platform versions, and the final visual polish.
   bar, plus the current local weekday, date, and time. Keep the initial viewport
   slightly into the earlier-hours window so Now is left of center with more
   upcoming hours visible; all five earlier hours remain available by scrolling
-  left. Keep it available without a duration selection. Add daylight markers later.
+  left. Keep it independent of the outing timeframe. Add daylight markers later.
 - Give concise general advice about seeking shade and explain its limits; do not
   infer route shade or use a shade multiplier. Do not include a shade selector.
 - Defer optional “Tailor this advice” questions (for example, shade, clothing
@@ -325,7 +346,7 @@ calculation, supported platform versions, and the final visual polish.
   Recalculate for the selected location; if the forecast cannot support a
   selection, explain the issue without silently resetting the planner. Provide
   a clear, explicit reset action. Reset clears only outing choices to their
-  defaults (start time `Now`, no duration/end time) and keeps the selected
+  defaults (start time `Now`, duration 4 hours) and keeps the selected
   location. Persistence across app restarts is a separate
   decision and is not implied by this behavior.
 - Use English for the first version.

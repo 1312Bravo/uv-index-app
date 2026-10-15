@@ -88,20 +88,26 @@ export function TimePlanner({ onChange }: Props) {
   const [startMode, setStartMode] = useState<StartMode>('now');
   const [scheduledStart, setScheduledStart] = useState<Date | null>(null);
   const [endMode, setEndMode] = useState<EndMode>('duration');
-  const [duration, setDuration] = useState<number | null>(null);
+  const [duration, setDuration] = useState<number | null>(240);
   const [isCustomDuration, setIsCustomDuration] = useState(false);
   const [customHours, setCustomHours] = useState('');
   const [customMinutes, setCustomMinutes] = useState('');
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<OpenSection>(null);
+  const [currentTime, setCurrentTime] = useState(() => new Date());
 
   const clearPlan = useCallback(() => {
     onChange(null);
   }, [onChange]);
 
   useEffect(() => {
-    const now = new Date();
+    const timer = setInterval(() => setCurrentTime(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const now = currentTime;
     const start = startMode === 'now' ? now : scheduledStart;
     if (!start) {
       setError(null);
@@ -157,7 +163,7 @@ export function TimePlanner({ onChange }: Props) {
     setError(null);
     const plan = { start, end, durationMinutes };
     onChange(plan);
-  }, [clearPlan, customHours, customMinutes, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode]);
+  }, [clearPlan, currentTime, customHours, customMinutes, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode]);
 
   const selectedDuration = duration !== null
     ? duration
@@ -169,7 +175,7 @@ export function TimePlanner({ onChange }: Props) {
     setStartMode('now');
     setScheduledStart(null);
     setEndMode('duration');
-    setDuration(null);
+    setDuration(240);
     setIsCustomDuration(false);
     setCustomHours('');
     setCustomMinutes('');

@@ -169,7 +169,7 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
                 ))}
               </View>
               <View style={styles.guidanceDetails}>
-                <Text style={styles.guidanceGroupHeading}>Breakdown</Text>
+                <Text style={styles.guidanceGroupHeading}>UV breakdown</Text>
                 <View style={styles.insightList}>
                   {guidance.breakdown.map((text, index) => (
                     <PlainGuidanceBullet key={`detail-${index}`} text={text} />

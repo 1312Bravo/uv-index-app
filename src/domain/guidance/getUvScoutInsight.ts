@@ -51,10 +51,12 @@ function validateDefinitions() {
     throw new Error('All three UV Scout exposure bands must be defined.');
   }
   const requiredTitles = [
-    'protection', 'extraProtection', 'lowerUv', 'sunscreen', 'cloudyElevatedUv', 'reflectiveConditions',
+    'protection', 'extraProtection', 'sunscreen', 'reapplySunscreen',
+    'cloudyElevatedUv', 'reflectiveConditions',
   ] as const;
   const requiredActions = [
-    'protection', 'extraProtection', 'lowerUv', 'sunscreenBasics', 'sunscreenReapplication',
+    'protection', 'extraProtection', 'sunscreenAtStart', 'sunscreenLater',
+    'sunscreenReapplication',
     'cloudyElevatedUv', 'reflectiveConditions',
   ] as const;
   if (requiredTitles.some((key) => !definitions.bulletTitles[key]?.trim()) ||
@@ -170,13 +172,28 @@ function formatLocalTime(time: number, timezone: string): string {
   }).format(new Date(time * 1000));
 }
 
-function formatLocalDate(time: number, timezone: string): string {
+function formatLocalDayKey(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
+    year: 'numeric', month: 'numeric', day: 'numeric',
     timeZone: timezone,
   }).format(new Date(time * 1000));
+}
+
+function formatLocalWeekday(time: number, timezone: string): string {
+  return new Intl.DateTimeFormat('en', {
+    weekday: 'long', timeZone: timezone,
+  }).format(new Date(time * 1000));
+}
+
+function spansLocalDays(start: number, end: number, timezone: string): boolean {
+  return formatLocalDayKey(start, timezone) !== formatLocalDayKey(end, timezone);
+}
+
+function formatRecommendationTime(time: number, summary: OutingForecastSummary, timezone: string): string {
+  const timeText = formatLocalTime(time, timezone);
+  return spansLocalDays(summary.startSeconds, summary.endSeconds, timezone)
+    ? `${formatLocalWeekday(time, timezone)} ${timeText}`
+    : timeText;
 }
 
 type UvPeriod = { start: number; end: number };
@@ -200,14 +217,16 @@ function getUvPeriods(
   return periods;
 }
 
-function describePeriods(periods: UvPeriod[], timezone: string): string {
+function describePeriods(periods: UvPeriod[], summary: OutingForecastSummary, timezone: string): string {
+  const includeWeekday = spansLocalDays(summary.startSeconds, summary.endSeconds, timezone);
   const firstTwo = periods.slice(0, 2).map(({ start, end }) => {
-    const date = formatLocalDate(start, timezone);
-    const startTime = formatLocalTime(start, timezone);
+    const startTime = includeWeekday
+      ? `${formatLocalWeekday(start, timezone)} ${formatLocalTime(start, timezone)}`
+      : formatLocalTime(start, timezone);
     const endTime = formatLocalTime(end, timezone);
-    return formatLocalDate(start, timezone) === formatLocalDate(end - 1, timezone)
-      ? `${date} ${startTime}-${endTime}`
-      : `${date} ${startTime}-${formatLocalDate(end, timezone)} ${endTime}`;
+    return spansLocalDays(start, end, timezone)
+      ? `${startTime}-${formatLocalWeekday(end, timezone)} ${endTime}`
+      : `${startTime}-${endTime}`;
   });
   const remaining = periods.length - firstTwo.length;
   return remaining > 0
@@ -232,15 +251,13 @@ function getApproximateTakeawayTimes(
 ): { start: string; end: string } {
   const start = roundLocalHalfHour(period.start, timezone, 'start');
   const end = roundLocalHalfHour(period.end, timezone, 'end');
-  const includeDate = formatLocalDate(
-    roundLocalHalfHour(summary.startSeconds, timezone, 'start'), timezone,
-  ) !== formatLocalDate(roundLocalHalfHour(summary.endSeconds, timezone, 'end'), timezone);
-  const crossesDate = formatLocalDate(start, timezone) !== formatLocalDate(end, timezone);
-  const startDate = includeDate || crossesDate ? `${formatLocalDate(start, timezone)} ` : '';
-  const endDate = crossesDate ? `${formatLocalDate(end, timezone)} ` : '';
+  const includeWeekday = spansLocalDays(summary.startSeconds, summary.endSeconds, timezone);
+  const crossesDay = spansLocalDays(start, end, timezone);
+  const startDay = includeWeekday ? `${formatLocalWeekday(start, timezone)} ` : '';
+  const endDay = includeWeekday && crossesDay ? `${formatLocalWeekday(end, timezone)} ` : '';
   return {
-    start: `${startDate}${formatLocalTime(start, timezone)}`,
-    end: `${endDate}${formatLocalTime(end, timezone)}`,
+    start: `${startDay}${formatLocalTime(start, timezone)}`,
+    end: `${endDay}${formatLocalTime(end, timezone)}`,
   };
 }
 
@@ -316,12 +333,12 @@ function getBreakdown(summary: OutingForecastSummary, timezone: string): string[
     trend.push(fillMessage(definitions.profileMessages.highest, {
       uv: maximumUv.toFixed(1),
       duration: formatDuration(totalSeconds(highestPeriods)),
-      periods: describePeriods(highestPeriods, timezone),
+      periods: describePeriods(highestPeriods, summary, timezone),
     }));
     trend.push(fillMessage(definitions.profileMessages.lowest, {
       uv: minimumUv.toFixed(1),
       duration: formatDuration(totalSeconds(lowestPeriods)),
-      periods: describePeriods(lowestPeriods, timezone),
+      periods: describePeriods(lowestPeriods, summary, timezone),
     }));
     if (betweenPeriods.length > 0) {
       const betweenValues = hours.map((hour) => displayedUv(hour.uv))
@@ -338,6 +355,16 @@ function getBreakdown(summary: OutingForecastSummary, timezone: string): string[
           maximumUv: maximumBetweenUv.toFixed(1),
           duration,
         }));
+    }
+
+    const lowerUvPeriods = getUvPeriods(summary, ({ uv }) => uv < elevatedUv);
+    const lowerUvSeconds = totalSeconds(lowerUvPeriods);
+    if (hours.some(({ uv }) => uv >= elevatedUv) &&
+      lowerUvSeconds > totalSeconds(lowestPeriods)) {
+      trend.push(fillMessage(definitions.profileMessages.lowerUv, {
+        duration: formatDuration(lowerUvSeconds),
+        periods: describePeriods(lowerUvPeriods, summary, timezone),
+      }));
     }
   }
 
@@ -356,7 +383,7 @@ function getTakeawayProfile(summary: OutingForecastSummary, timezone: string): s
       minimumUv: minimumUv.toFixed(1),
       peakUv: summary.highestUv.toFixed(1),
       averageUv: summary.averageUv.toFixed(1),
-      peakTime: formatLocalTime(summary.highestUvTime, timezone),
+      peakTime: formatRecommendationTime(summary.highestUvTime, summary, timezone),
     });
 }
 
@@ -370,18 +397,24 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
   const elevatedSeconds = (bandSeconds.get(elevatedBandKey) ?? 0) +
     (bandSeconds.get(extraAttentionBandKey) ?? 0);
   const veryHighSeconds = bandSeconds.get(extraAttentionBandKey) ?? 0;
-  const lowerUvSeconds = bandSeconds.get('below-3') ?? 0;
   const elevatedPeriods = getUvPeriods(summary, ({ uv }) => uv >= elevatedUv);
   const veryHighPeriods = getUvPeriods(summary, ({ uv }) => uv >= veryHighUv);
-  const lowerUvPeriods = lowerUvSeconds > 0
-    ? getUvPeriods(summary, ({ uv }) => uv < elevatedUv)
-    : [];
   const coverageComplete = summary.coveredSeconds >=
     summary.requestedSeconds - rules.guidanceTriggers.coverageToleranceSeconds;
 
   const practicalGuidance: UvScoutInsightItem[] = [];
   const contextNotes: UvScoutInsightItem[] = [];
   if (elevatedSeconds > 0) {
+    const firstElevatedPeriod = elevatedPeriods[0];
+    if (!firstElevatedPeriod) throw new Error('UV 3+ forecast time has no matching period.');
+    const sunscreenMessage = firstElevatedPeriod.start <= summary.startSeconds
+      ? definitions.actionMessages.sunscreenAtStart
+      : fillMessage(definitions.actionMessages.sunscreenLater, {
+        start: formatRecommendationTime(firstElevatedPeriod.start, summary, timezone),
+      });
+    practicalGuidance.push(createInsightItem(
+      'sunscreen', sunscreenMessage,
+    ));
     const coveredDuration = formatDuration(summary.coveredSeconds);
     const exposure = elevatedPeriods.length > 1
       ? fillMessage(definitions.profileMessages.elevatedSeparated, {
@@ -394,31 +427,23 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
           duration: formatDuration(elevatedSeconds),
         });
     const periodText = (periods: UvPeriod[]) => fillMessage(definitions.detailMessages.periods, {
-      periods: describePeriods(periods, timezone),
+      periods: describePeriods(periods, summary, timezone),
     });
     practicalGuidance.push(createInsightItem(
-      'protection', definitions.actionMessages.protection,
-      [`${exposure} ${periodText(elevatedPeriods)}`],
+      'protection', `${exposure} ${definitions.actionMessages.protection}`,
+      [periodText(elevatedPeriods)],
     ));
     if (veryHighSeconds > 0) {
       const veryHighTiming = fillMessage(definitions.profileMessages.veryHigh, {
         duration: formatDuration(veryHighSeconds),
       });
       practicalGuidance.push(createInsightItem(
-        'extraProtection', definitions.actionMessages.extraProtection,
-        [`${veryHighTiming} ${periodText(veryHighPeriods)}`],
-      ));
-    }
-    if (lowerUvSeconds > 0) {
-      practicalGuidance.push(createInsightItem(
-        'lowerUv', definitions.actionMessages.lowerUv,
-        [`${fillMessage(definitions.profileMessages.lowerUv, {
-          duration: formatDuration(lowerUvSeconds),
-        })} ${periodText(lowerUvPeriods)}`],
+        'extraProtection', `${veryHighTiming} ${definitions.actionMessages.extraProtection}`,
+        [periodText(veryHighPeriods)],
       ));
     }
     practicalGuidance.push(createInsightItem(
-      'sunscreen', `${definitions.actionMessages.sunscreenBasics} ${definitions.actionMessages.sunscreenReapplication}`,
+      'reapplySunscreen', definitions.actionMessages.sunscreenReapplication,
     ));
     for (const rule of rules.weatherContextRules) {
       const matchingPeriods = getUvPeriods(summary, (hour) =>
@@ -430,7 +455,7 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
           rule.messageKey as keyof typeof definitions.bulletTitles,
           fillMessage(definitions.actionMessages[
             rule.messageKey as keyof typeof definitions.actionMessages
-          ], { periods: describePeriods(matchingPeriods, timezone) }),
+          ], { periods: describePeriods(matchingPeriods, summary, timezone) }),
         ));
       }
     }

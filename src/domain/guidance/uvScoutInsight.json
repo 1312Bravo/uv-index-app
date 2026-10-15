@@ -2,8 +2,8 @@
   "bulletTitles": {
     "protection": "Clothing and shade",
     "extraProtection": "Strongest hours",
-    "lowerUv": "Lower UV hours",
     "sunscreen": "Sunscreen",
+    "reapplySunscreen": "Reapply sunscreen",
     "cloudyElevatedUv": "Cloudy hours",
     "reflectiveConditions": "Bright surfaces"
   },
@@ -17,20 +17,20 @@
     "startEndAverage": "Across the forecasted hours, UV starts at {startUv} and ends at {endUv}. The average is {averageUv}.",
     "highest": "Highest UV is {uv} for about {duration}, during {periods}.",
     "lowest": "Lowest UV is {uv} for about {duration}, during {periods}.",
-    "betweenSingle": "Other hourly values are {uv} for about {duration} in total.",
-    "betweenRange": "Other hourly values range from {minimumUv} to {maximumUv} for about {duration} in total.",
+    "betweenSingle": "In the remaining forecast hours, UV is {uv} for about {duration} in total.",
+    "betweenRange": "In the remaining forecast hours, UV ranges from {minimumUv} to {maximumUv} for about {duration} in total.",
     "elevatedAll": "UV remains at 3 or higher for the full {coveredDuration} with forecast data.",
     "elevatedPart": "UV reaches 3 or higher for about {duration}.",
     "elevatedSeparated": "UV reaches 3 or higher in {count} separate stretches, totaling about {duration}.",
     "veryHigh": "UV reaches 8 or higher for about {duration}.",
-    "lowerUv": "UV stays below 3 for about {duration}."
+    "lowerUv": "UV stays below 3 for about {duration} in total, during {periods}."
   },
   "actionMessages": {
-    "protection": "During UV 3+ hours, cover exposed skin, wear a broad-brimmed hat and UV-protective sunglasses, and seek shade.",
-    "extraProtection": "During UV 8+ hours, limit time in direct sun and prioritize shade. Keep the other protection steps in place.",
-    "lowerUv": "For most people, these hours do not call for extra sun protection.",
-    "sunscreenBasics": "Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before the UV 3+ part of your outing.",
-    "sunscreenReapplication": "If you use sunscreen while outdoors, reapply at least every two hours and sooner after swimming, sweating, or towel drying. Follow the product label.",
+    "protection": "At those times, cover exposed skin, wear a broad-brimmed hat and UV-protective sunglasses, and seek shade.",
+    "extraProtection": "At those times, limit time in direct sun and prioritize shade. Keep the other protection steps in place.",
+    "sunscreenAtStart": "UV is 3 or higher when this outing starts. Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin.",
+    "sunscreenLater": "The first forecast UV 3+ period begins at {start}. Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before then.",
+    "sunscreenReapplication": "If you are still outdoors after applying sunscreen for this outing, reapply it at least every two hours. Reapply sooner after swimming, sweating, or towel drying, and follow the product label.",
     "cloudyElevatedUv": "Keep UV protection in place during {periods}, despite heavy cloud cover.",
     "reflectiveConditions": "Near snow, bright sand, or water, keep skin and eyes protected even in shade."
   },
