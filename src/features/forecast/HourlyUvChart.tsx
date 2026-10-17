@@ -64,7 +64,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
 }
 
 const styles = StyleSheet.create({
-  section: { marginTop: 32 },
+  section: { marginTop: 24 },
   heading: { color: '#151515', fontSize: 18, fontWeight: '600', textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },

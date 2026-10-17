@@ -52,11 +52,12 @@ function validateDefinitions() {
     throw new Error('All three UV Scout exposure bands must be defined.');
   }
   const requiredTitles = [
-    'protection', 'extraProtection', 'sunscreen', 'reapplySunscreen',
+    'lowProtection', 'protection', 'extraProtection', 'sunscreen', 'reapplySunscreen',
     'cloudyElevatedUv', 'reflectiveConditions',
   ] as const;
   const requiredActions = [
-    'protection', 'extraProtection', 'sunscreenAtStart', 'sunscreenLater',
+    'lowProtectionComplete', 'lowProtectionPartial', 'protection', 'extraProtection',
+    'sunscreenAtStart', 'sunscreenLater',
     'sunscreenReapplication',
     'cloudyElevatedUv', 'reflectiveConditions',
   ] as const;
@@ -424,7 +425,13 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
 
   const practicalGuidance: UvScoutInsightItem[] = [];
   const contextNotes: UvScoutInsightItem[] = [];
-  if (elevatedSeconds > 0) {
+  if (elevatedSeconds === 0) {
+    practicalGuidance.push(createInsightItem(
+      'lowProtection', coverageComplete
+        ? definitions.actionMessages.lowProtectionComplete
+        : definitions.actionMessages.lowProtectionPartial,
+    ));
+  } else {
     const firstElevatedPeriod = elevatedPeriods[0];
     if (!firstElevatedPeriod) throw new Error('UV 3+ forecast time has no matching period.');
     const sunscreenMessage = firstElevatedPeriod.start <= summary.startSeconds

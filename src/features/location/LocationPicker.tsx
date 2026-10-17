@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     textAlign: 'center',
   },
-  selected: { alignItems: 'center', marginBottom: 16 },
+  selected: { alignItems: 'center', marginBottom: 12 },
   selectedName: { color: '#333333', fontSize: 15, fontWeight: '600', lineHeight: 20, textAlign: 'center' },
   selectedCoordinates: { color: '#777777', fontSize: 12, marginTop: 3, textAlign: 'center' },
   message: {

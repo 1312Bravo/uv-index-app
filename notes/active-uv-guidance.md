@@ -29,8 +29,8 @@ local-time windows remain as quieter lines beneath those actions.
 Cloud and reflective-surface cautions appear below as smaller context notes.
 When a rounded display category crosses a raw-UVI protection boundary, a
 small note explains why the action still follows the unrounded value.
-For all-below-3 outings, the takeaway gives the practical outcome and the
-duplicate Protection steps section is omitted. Both section headings are
+For all-below-3 outings, the opening includes a short protection outcome and
+Protection steps adds a concrete sunscreen action for the covered hours. Both section headings are
 centered. There is no separate Summary at the bottom. The four
 weather/UV metrics and hourly chart follow. WHO's general three-band reference
 remains in Info, separate from this UV Scout outing guidance.
@@ -59,8 +59,10 @@ displayed start is rounded down and its end rounded up to the nearest local
 half hour, with "around" wording. The exact selected times and forecast-bin
 overlaps still drive every calculation, and Breakdown and Protection steps
 keep their existing times. The second bullet does not repeat
-the first bullet's UV metrics. For only below-3 forecast values, the existing
-two-bullet low-UV outcome remains. A brief peak is not described as the level
+the first bullet's UV metrics. For only below-3 forecast values, the opening
+has a forecast-summary bullet and a short protection bullet. Protection steps
+adds a concrete sunscreen action for those hours.
+A brief peak is not described as the level
 for the whole outing. All covered opening windows are shown, even when grouped;
 the detailed Protection
 steps remain below. Recommendation times show hours only for one local day.
@@ -79,7 +81,8 @@ duration when present. Exact windows appear beneath those actions. Sunscreen
 application points to the first forecast UVI 3+ start or says the selected
 start is already at UVI 3+. Reapplication is a conditional last step because
 the app does not know when sunscreen was applied. Outings entirely below
-3 keep their advice only in the opening, without duplicate steps.
+3 keep their short protection outcome in the opening and a sunscreen item
+under Protection steps.
 Separated higher-UV stretches are named as separate rather than continuous.
 These are forecast descriptions, not new protection-rule triggers, a personal
 UV dose, burn time, or a validated risk score. Hourly values stand in for their overlapping hour bins;
@@ -126,7 +129,7 @@ this prototype's general guidance is not tailored medical advice.
 
 ## Scenario review
 
-- All hours below raw UVI 3: a practical takeaway without duplicate steps.
+- All hours below raw UVI 3: a forecast summary, a short protection bullet, and a separate low-UV sunscreen step.
 - A 15-minute UVI 8 period followed by hours at UVI 0: timed protection,
   extra shade, sunscreen, and a distinct lower-UV window, but no claim that
   the whole outing is high UV.

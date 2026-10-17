@@ -182,24 +182,22 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
                   ))}
                 </View>
               </View>
-              {guidance.practicalGuidance.length > 0 && (
-                <View style={styles.guidanceActions}>
-                  <Text style={styles.guidanceGroupHeading}>Protection steps</Text>
-                  <View style={styles.guidanceActionList}>
-                    {guidance.practicalGuidance.map((item, index) => (
-                      <GuidanceBullet key={`action-${index}`} item={item} />
+              <View style={styles.guidanceActions}>
+                <Text style={styles.guidanceGroupHeading}>Protection steps</Text>
+                <View style={styles.guidanceActionList}>
+                  {guidance.practicalGuidance.map((item, index) => (
+                    <GuidanceBullet key={`action-${index}`} item={item} />
+                  ))}
+                </View>
+                {guidance.contextNotes.length > 0 && (
+                  <View style={styles.guidanceContext}>
+                    <Text style={styles.guidanceContextHeading}>Also consider</Text>
+                    {guidance.contextNotes.map((item, index) => (
+                      <ContextNote key={`context-${index}`} item={item} />
                     ))}
                   </View>
-                  {guidance.contextNotes.length > 0 && (
-                    <View style={styles.guidanceContext}>
-                      <Text style={styles.guidanceContextHeading}>Also consider</Text>
-                      {guidance.contextNotes.map((item, index) => (
-                        <ContextNote key={`context-${index}`} item={item} />
-                      ))}
-                    </View>
-                  )}
-                </View>
-              )}
+                )}
+              </View>
             </View>
           )}
 
@@ -265,11 +263,11 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
 }
 
 const styles = StyleSheet.create({
-  section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 36, paddingTop: 24 },
+  section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 28, paddingTop: 20 },
   timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
-  summaryGrid: { marginTop: 24 },
+  summaryGrid: { marginTop: 20 },
   summaryRow: { alignItems: 'stretch', flexDirection: 'row' },
   summaryItem: { alignItems: 'center', flex: 1, justifyContent: 'flex-start', paddingHorizontal: 4, paddingVertical: 7 },
   summaryDivider: { alignSelf: 'stretch', backgroundColor: '#DDDDDD', marginHorizontal: 7, marginVertical: 5, width: 1 },

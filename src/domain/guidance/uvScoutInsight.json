@@ -1,5 +1,6 @@
 {
   "bulletTitles": {
+    "lowProtection": "Low UV",
     "protection": "Clothing and shade",
     "extraProtection": "Strongest hours",
     "sunscreen": "Sunscreen",
@@ -26,6 +27,8 @@
     "lowerUv": "UV stays below 3 for about {duration} in total, during {periods}."
   },
   "actionMessages": {
+    "lowProtectionComplete": "Most people do not need to add sunscreen for this outing.",
+    "lowProtectionPartial": "Most people do not need to add sunscreen during the hours with forecast data.",
     "protection": "At those times, cover exposed skin, wear a broad-brimmed hat and UV-protective sunglasses, and seek shade.",
     "extraProtection": "At those times, limit time in direct sun and prioritize shade. Keep the other protection steps in place.",
     "sunscreenAtStart": "UV is 3 or higher when this outing starts. Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin.",

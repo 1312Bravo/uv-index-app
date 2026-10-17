@@ -128,7 +128,7 @@ test('UV trend totals separated minima and a range of intervening values', () =>
   assert.match(trendLines(insight)[4], /12:00 AM-2:00 AM and 5:00 AM-6:00 AM/);
 });
 
-test('opening takeaway bullets give a compact profile and protection outcome', () => {
+test('opening takeaway includes the low-UV protection outcome and keeps Protection steps', () => {
   const low = getUvScoutInsight(summarize([hour(0, 2)], 0, 3600), 'UTC');
   const high = getUvScoutInsight(summarize([hour(0, 8), hour(3600, 2)], 0, 7200), 'UTC');
 
@@ -137,7 +137,9 @@ test('opening takeaway bullets give a compact profile and protection outcome', (
     assert.equal(insight.takeawayBullets.join(' '), insight.takeaway);
     assert.ok(insight.takeawayBullets.every((bullet) => bullet.length > 0));
   }
+  assert.equal(low.takeawayBullets.length, 2);
   assert.match(low.takeawayBullets[1], /no extra sun protection/i);
+  assert.match(actionText(low, 'Low UV'), /do not need to add sunscreen/i);
   assert.match(low.takeawayBullets[0], /average 2\.0; highest 2\.0/i);
   assert.match(high.takeawayBullets[0], /ranges from 2\.0 to 8\.0 \(average 5\.0\)/i);
   assert.match(high.takeawayBullets[1], /around 12:00 AM to around 1:00 AM.*limit direct sun/i);
@@ -319,16 +321,17 @@ test('sunscreen reapplication advice does not depend on cumulative elevated-UV d
   assert.match(briefHighThenLow.takeawayBullets[1], /around 12:00 AM to around 1:00 AM.*limit direct sun/i);
 });
 
-test('low UV gets a practical takeaway without duplicate steps, while sunscreen starts at raw UV 3', () => {
+test('low UV keeps protection advice in both guidance and steps, while sunscreen starts at raw UV 3', () => {
   const low = getUvScoutInsight(summarize([hour(0, 2)], 0, 1800), 'UTC');
   const briefElevated = getUvScoutInsight(summarize([hour(0, 3)], 0, 1800), 'UTC');
   const elevatedSunscreen = briefElevated.practicalGuidance
     .find(({ title }) => title === 'Sunscreen');
 
-  assert.equal(low.practicalGuidance.length, 0);
+  assert.equal(low.practicalGuidance.length, 1);
   assert.equal(low.contextNotes.length, 0);
   assert.match(low.takeaway, /stays below 3 throughout/i);
   assert.match(low.takeaway, /no extra sun protection/i);
+  assert.match(actionText(low, 'Low UV'), /do not need to add sunscreen/i);
   assert.match(trendLines(low)[0], /UV stays at 2\.0/);
   assert.match(trendLines(low)[0], /average is also 2\.0/);
   assert.deepEqual(timingLines(low), []);
@@ -391,7 +394,8 @@ test('missing later forecast never turns a known UV 3+ period into a low-UV resu
 test('low UV with incomplete coverage limits its recommendation to known hours', () => {
   const result = getUvScoutInsight(summarize([hour(0, 1)], 0, 7200), 'UTC');
 
-  assert.equal(result.practicalGuidance.length, 0);
+  assert.equal(result.practicalGuidance.length, 1);
+  assert.match(actionText(result, 'Low UV'), /during the hours with forecast data/i);
   assert.match(result.takeaway, /1 hour with forecast data/i);
   assert.doesNotMatch(result.takeaway, /throughout/i);
   assert.match(result.coverageMessage, /remaining time has no forecast/i);

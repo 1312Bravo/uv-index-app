@@ -61,11 +61,11 @@ helps people plan outdoor time around the current and forecast UV index.
   single local day and full weekday names for outings crossing days.
   Reapplication remains conditional on sunscreen
   use and when it was applied. The opening guidance identifies lower-UV windows;
-  an entirely below-3 outing needs no duplicate action list. General sunscreen
+  an entirely below-3 outing keeps its short protection bullet and one practical
+  item under Protection steps. General sunscreen
   reapplication guidance appears whenever
   sunscreen is recommended, not only after two hours of elevated forecast UV.
-  Cloud and reflective-surface notes are visually secondary, and below-3
-  outings rely on the actionable takeaway without duplicate steps. The 2x2
+  Cloud and reflective-surface notes are visually secondary. The 2x2
   card still shows the average. A small note explains when the rounded display
   category crosses a raw-UVI protection threshold. This is not a personal dose or medical-risk
   calculation. Do not present the WHO table as an outing-specific algorithm.
@@ -265,6 +265,9 @@ calculation, supported platform versions, and the final visual polish.
   action text, and keep exact windows below the matching actions.
 - [x] Keep recommendation time labels compact: show hours for one local day;
   add weekday names when the selected outing crosses local days.
+- [x] Show Protection steps for every outing with forecast coverage. For UV
+  below 3, keep the short protection bullet in UV guidance and add a concrete
+  sunscreen step under Protection steps.
 
 ## Decisions
 

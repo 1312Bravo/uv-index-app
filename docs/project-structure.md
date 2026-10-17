@@ -126,8 +126,8 @@ duration calculations and the detailed action times stay unchanged.
 Recommendation text shows times alone for one local day, and full weekday
 names without calendar dates when the outing crosses local days.
 Cloud and reflective-surface context is returned separately for subdued display.
-Low-UV outings keep their practical result in the opening takeaway, without
-a duplicate steps section. These choices do not change the action thresholds.
+Low-UV outings keep a short protection bullet in the opening and show a
+concrete sunscreen item under Protection steps. These choices do not change the action thresholds.
 Each time-window description
 lists up to two local-time periods and then counts any remaining periods. Keep stable
 keys and message placeholders unchanged unless the
