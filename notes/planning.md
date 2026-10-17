@@ -10,8 +10,9 @@
   after the start. Crossing midnight is allowed.
 - Scheduled start/end use a native Android date/time flow and a browser
   `datetime-local` control on web.
-- The first controls use the device's local time. Location-specific timezone
-  handling should be completed before the recommendation flow is finalized.
+- Scheduled start and end controls use the selected location's time zone. If the
+  location changes, keep the chosen local calendar date and clock time, then
+  resolve them in the new time zone. `Now` remains the actual current instant.
 - Show Start, End, and Duration as compact rows with the selected value visible;
   tapping a row reveals its choices vertically, with only one list open at a time.
 - The planner produces a `TimePlan` once start and end/duration are selected;

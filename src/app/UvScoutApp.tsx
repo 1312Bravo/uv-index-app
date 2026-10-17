@@ -8,20 +8,25 @@ import type { TimePlan } from '../domain/outing/timePlan';
 import { HourlyUvChart } from '../features/forecast/HourlyUvChart';
 import { InfoScreen } from '../features/info/InfoScreen';
 import { LocationPicker } from '../features/location/LocationPicker';
+import { LocationSummary } from '../features/location/LocationSummary';
+import { useLocationTimeZone } from '../features/location/useLocationTimeZone';
 import { OutingForecast } from '../features/outing/OutingForecast';
 import { TimePlanner } from '../features/planning/TimePlanner';
-import { formatLocationCoordinates, getLocationName } from '../features/location/formatLocation';
 import { TopTabs, type AppPage } from './TopTabs';
 
 export function UvScoutApp() {
   const [location, setLocation] = useState<SelectedLocation | null>(null);
   const [isMapInteracting, setIsMapInteracting] = useState(false);
   const [timePlan, setTimePlan] = useState<TimePlan | null>(null);
-  const [locationTimeZone, setLocationTimeZone] = useState<string | null>(null);
   const [page, setPage] = useState<AppPage>('location');
   const coordinates = location ? getLocationCoordinates(location) : null;
   const latitude = coordinates?.latitude;
   const longitude = coordinates?.longitude;
+  const {
+    timeZone: locationTimeZone,
+    unavailable: timeZoneUnavailable,
+    updateFromForecast: updateLocationTimeZone,
+  } = useLocationTimeZone(latitude, longitude);
 
   return (
     <View style={styles.screen}>
@@ -37,29 +42,34 @@ export function UvScoutApp() {
 
         <TopTabs activePage={page} hasLocation={location !== null} onSelect={setPage} />
 
-        <View style={page === 'location' ? undefined : styles.hidden}>
+        {page === 'location' && !location && (
+          <LocationSummary location={null} timeZone={null} timeZoneUnavailable={false} />
+        )}
+        {location && page !== 'info' && (
+          <LocationSummary
+            location={location}
+            timeZone={locationTimeZone}
+            timeZoneUnavailable={timeZoneUnavailable}
+          />
+        )}
+
+        <View
+          style={page === 'location' ? styles.locationPickerAfterSummary : styles.hidden}
+        >
           <LocationPicker
             onMapInteractionChange={setIsMapInteracting}
             onSelect={(nextLocation) => {
-              setLocationTimeZone(null);
               setLocation(nextLocation);
             }}
           />
         </View>
-
-        {location && page !== 'location' && page !== 'info' && (
-          <View style={styles.locationContext}>
-            <Text style={styles.locationName}>{getLocationName(location)}</Text>
-            <Text style={styles.locationCoordinates}>{formatLocationCoordinates(location)}</Text>
-          </View>
-        )}
 
         {page === 'outlook' && latitude !== undefined && longitude !== undefined && (
           <HourlyUvChart
             key={`${latitude},${longitude}`}
             latitude={latitude}
             longitude={longitude}
-            onTimezoneChange={setLocationTimeZone}
+            onTimezoneChange={updateLocationTimeZone}
           />
         )}
         <View style={page === 'plan' ? undefined : styles.hidden}>
@@ -69,7 +79,7 @@ export function UvScoutApp() {
           <OutingForecast
             latitude={latitude}
             longitude={longitude}
-            onTimezoneChange={setLocationTimeZone}
+            onTimezoneChange={updateLocationTimeZone}
             plan={timePlan}
           />
         )}
@@ -100,22 +110,8 @@ const styles = StyleSheet.create({
   hidden: {
     display: 'none',
   },
-  locationContext: {
-    alignItems: 'center',
-    borderBottomColor: '#EEEEEE',
-    borderBottomWidth: 1,
+  locationPickerAfterSummary: {
     marginTop: 24,
-    paddingBottom: 12,
-  },
-  locationName: {
-    color: '#151515',
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  locationCoordinates: {
-    color: '#777777',
-    fontSize: 12,
-    marginTop: 3,
   },
   title: {
     color: '#151515',

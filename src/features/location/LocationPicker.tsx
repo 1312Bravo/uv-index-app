@@ -12,7 +12,7 @@ import {
 import type { Place, SelectedLocation } from '../../domain/location/locationTypes';
 import { reverseGeocodePlace } from '../../services/location/reverseGeocode';
 import { searchPlaces } from '../../services/location/searchPlaces';
-import { formatLocationCoordinates, formatPlaceName, getLocationName } from './formatLocation';
+import { formatPlaceName } from './formatLocation';
 import { LocationMap } from './LocationMap';
 
 type Props = {
@@ -151,13 +151,6 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
 
   return (
     <View>
-      {selected && (
-        <View style={styles.selected}>
-          <Text style={styles.selectedName}>{getLocationName(selected)}</Text>
-          <Text style={styles.selectedCoordinates}>{formatLocationCoordinates(selected)}</Text>
-        </View>
-      )}
-
       <Text style={styles.heading}>Location</Text>
 
       <View style={styles.locationMethods}>
@@ -321,9 +314,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     textAlign: 'center',
   },
-  selected: { alignItems: 'center', marginBottom: 12 },
-  selectedName: { color: '#333333', fontSize: 15, fontWeight: '600', lineHeight: 20, textAlign: 'center' },
-  selectedCoordinates: { color: '#777777', fontSize: 12, marginTop: 3, textAlign: 'center' },
   message: {
     color: '#666666',
     fontSize: 14,

@@ -31,6 +31,10 @@ helps people plan outdoor time around the current and forecast UV index.
   not the device's time zone. When the selected location changes, preserve the
   chosen local calendar date and clock time, then resolve them in the new
   location's time zone before recalculating the forecast.
+- Show the selected location's current local date and time beside its name and
+  coordinates in the shared header on the first three tabs. Resolve the zone as
+  soon as a location is selected, and use it consistently for planner and
+  forecast times.
 - If the user switches from Now to a scheduled outing, offer only future times
   relative to the current time at the selected location.
 - With Now selected, show a horizontal UV trend with five earlier hourly bins,

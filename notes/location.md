@@ -35,3 +35,14 @@ licensing details.
   improve IP-geolocation data; include this in future privacy disclosures.
 - Selected coordinates feed the Open-Meteo UV and temperature forecast. The app
   does not persist them.
+- The shared location summary on Location, UV Outlook, and Plan an Outing shows
+  the place, coordinates, and a live local date and time. Open-Meteo resolves
+  the time zone from selected coordinates as soon as a location is chosen; the
+  app formats the device's current instant in that zone. Until it resolves,
+  show a loading label rather than the device's local time. If the lookup fails,
+  say local time is unavailable; a later forecast response may still supply the
+  zone. Changing locations never shows the previous place's time zone.
+- Before any location is selected, the Location tab still shows the current
+  date and time in the device's own time zone. This fallback is only for the
+  no-location state; once a location is selected, show that location's time or
+  an explicit loading/unavailable state instead.

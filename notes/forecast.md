@@ -33,8 +33,11 @@ attribution, and limitations.
   forecast.
 - Show the current local weekday, date, and time below the chart so the hourly
   outlook has explicit time context.
+- The shared location summary above the Location, UV Outlook, and Plan an Outing
+  content also shows the current date and time in the selected location's zone.
+  Forecast and outing times use that same provider-resolved zone.
 - Above the UV Outlook chart, show a compact "Current UV" section
-  section based on its Now bin:
+  based on its Now bin:
   current UV estimate, rounded display category, category meaning, and short
   protection actions. It uses no assumed outing duration and does not use
   future bins to describe the current conditions. The service prefers Open-Meteo

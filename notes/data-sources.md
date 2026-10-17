@@ -23,6 +23,30 @@ re-verified that day.
 | [BigDataCloud client-side reverse-geocoding API](https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api) | Best-effort locality/city label derived from the current device coordinates the user chose to share. It labels a place; it does not provide the device coordinates. | `src/services/location/reverseGeocode.ts`, called by the device-location flow in `src/features/location/LocationPicker.tsx`. If lookup fails, the app can keep the generic location label and coordinates. | Provider endpoint and [fair-use policy](https://www.bigdatacloud.com/docs/article/fair-use-policy-for-free-client-side-reverse-geocoding-api) checked 2026-10-05. The policy requires current, permission-based device coordinates and a direct client-side call. BigDataCloud says it receives coordinates alongside request/network signals and uses anonymous pairings to improve IP-geolocation data; account for that in future privacy explanations. The app does not save a location history. Current provider docs name the parameter `latitude`; the implementation currently sends `lat`, so verify endpoint compatibility and align it before relying on this label. See [location notes](location.md). |
 | Device operating-system location services via Expo Location | Coordinates from the device only after the user taps the location control and grants foreground permission. | Device-location flow in `src/features/location/LocationPicker.tsx`; `expo-location` requests coordinates, which are passed to the forecast service. | Accuracy and underlying positioning methods depend on the device and OS. Coordinates are not persisted by the first-version app. |
 
+### Selected-location local time (checked 2026-10-17)
+
+- The [Open-Meteo Forecast API](https://open-meteo.com/en/docs) documents
+  `timezone=auto`, which resolves a time-zone identifier from requested
+  coordinates. On location selection,
+  `src/services/location/getLocationTimeZone.ts` requests that identifier with
+  `current=temperature_2m`; the returned temperature is discarded.
+  `src/features/location/useLocationTimeZone.ts` keeps the result tied to those
+  coordinates. Existing full forecast responses can also supply the same
+  time-zone field.
+- `src/features/location/LocationSummary.tsx` formats the device's current
+  instant with `Intl.DateTimeFormat` in that time zone and refreshes the visible
+  clock. The selected-location zone also drives scheduled planner controls,
+  chart labels, and outing time descriptions. This formatting is a UV Scout
+  presentation choice, not a provider-supplied clock reading.
+- If no location has been selected yet, the Location tab shows the current
+  date and time in the device's own time zone. This is not used as a fallback
+  after a location is selected.
+- The displayed local time depends on the device clock being correct. A failed
+  zone request leaves the clock unavailable until a forecast supplies the zone;
+  the app does not substitute the device's own time zone for a selected
+  location. The non-commercial Open-Meteo attribution and licensing limits
+  stated above also apply here.
+
 ### Current UV Outlook guidance (checked 2026-10-17)
 
 - [Open-Meteo Forecast API](https://open-meteo.com/en/docs) says its `current`

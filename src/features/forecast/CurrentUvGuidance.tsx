@@ -36,7 +36,7 @@ export function CurrentUvGuidance({
         </View>
         <View style={styles.divider} />
         <View style={styles.protection}>
-          <Text style={styles.readingLabel}>GUIDANCE</Text>
+          <Text style={[styles.readingLabel, styles.guidanceLabel]}>GUIDANCE</Text>
           <View style={styles.actions}>
             {guidancePoints.map((point, index) => (
               <View key={index} style={styles.actionRow}>
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
   uvBlock: { alignItems: 'center', flex: 0.85, justifyContent: 'flex-start', paddingHorizontal: 8 },
   uvValue: { color: '#151515', fontSize: 30, lineHeight: 36, textAlign: 'center' },
   readingLabel: { color: '#777777', fontSize: 9, letterSpacing: 0.6 },
+  guidanceLabel: { textAlign: 'center' },
   divider: { alignSelf: 'stretch', backgroundColor: '#E1E1E1', marginVertical: 4, width: 1 },
   category: { color: '#333333', fontSize: 15, fontWeight: '500' },
   protection: { flex: 1.4, paddingLeft: 12 },
