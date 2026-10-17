@@ -36,6 +36,11 @@ helps people plan outdoor time around the current and forecast UV index.
 - With Now selected, show a horizontal UV trend with five earlier hourly bins,
   the current hour, and eighteen later hourly bins, even before duration is chosen.
   The window may cross into the next local day.
+- UV Outlook gives a compact current UV estimate and protection actions above
+  the chart. It uses the current-hour value, without assuming an outing duration
+  or describing later forecast hours as current conditions. Show the provider's
+  current-conditions time in the selected location's time zone. Refresh the open
+  outlook about every 15 minutes.
 - Keep the full two local forecast days available to Plan an Outing through
   tomorrow's end; the UV Outlook chart remains the rolling five-past/Now/18-future
   window. Explain the forecast boundary when a planned outing extends beyond it.
@@ -268,6 +273,8 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Show Protection steps for every outing with forecast coverage. For UV
   below 3, keep the short protection bullet in UV guidance and add a concrete
   sunscreen step under Protection steps.
+- [x] Add a compact current UV estimate and protection actions to UV Outlook,
+  using the existing raw UV bands and relevant cloud context.
 
 ## Decisions
 

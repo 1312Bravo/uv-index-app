@@ -31,8 +31,20 @@ attribution, and limitations.
   the selected timestamp: the sun during daylight or the crescent moon at night.
   The moon is an illustration of nighttime, not a moon-phase or moon-position
   forecast.
-- Show the current local weekday, date, and time above the chart so the hourly
+- Show the current local weekday, date, and time below the chart so the hourly
   outlook has explicit time context.
+- Above the UV Outlook chart, show a compact "Current UV" section
+  section based on its Now bin:
+  current UV estimate, rounded display category, category meaning, and short
+  protection actions. It uses no assumed outing duration and does not use
+  future bins to describe the current conditions. The service prefers Open-Meteo
+  `current` model values in that bin and falls back to the current hourly value
+  when a current field is unavailable. Show Open-Meteo's `current.time` beside
+  the estimate in the selected location's time zone when current conditions are
+  available. The open outlook refetches at each
+  15-minute clock slot; this is a refresh choice, not a claim that the forecast
+  is an observation. Cloud cover can add a reminder at elevated UV but does not
+  change the UV value or protection band.
 - Temperature is context only, not part of UV risk or protection calculations.
 - Show hourly precipitation probability and expected amount in millimeters below
   the hourly labels in both outlook and outing charts. These remain weather context

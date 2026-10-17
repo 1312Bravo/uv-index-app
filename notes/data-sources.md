@@ -23,6 +23,31 @@ re-verified that day.
 | [BigDataCloud client-side reverse-geocoding API](https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api) | Best-effort locality/city label derived from the current device coordinates the user chose to share. It labels a place; it does not provide the device coordinates. | `src/services/location/reverseGeocode.ts`, called by the device-location flow in `src/features/location/LocationPicker.tsx`. If lookup fails, the app can keep the generic location label and coordinates. | Provider endpoint and [fair-use policy](https://www.bigdatacloud.com/docs/article/fair-use-policy-for-free-client-side-reverse-geocoding-api) checked 2026-10-05. The policy requires current, permission-based device coordinates and a direct client-side call. BigDataCloud says it receives coordinates alongside request/network signals and uses anonymous pairings to improve IP-geolocation data; account for that in future privacy explanations. The app does not save a location history. Current provider docs name the parameter `latitude`; the implementation currently sends `lat`, so verify endpoint compatibility and align it before relying on this label. See [location notes](location.md). |
 | Device operating-system location services via Expo Location | Coordinates from the device only after the user taps the location control and grants foreground permission. | Device-location flow in `src/features/location/LocationPicker.tsx`; `expo-location` requests coordinates, which are passed to the forecast service. | Accuracy and underlying positioning methods depend on the device and OS. Coordinates are not persisted by the first-version app. |
 
+### Current UV Outlook guidance (checked 2026-10-17)
+
+- [Open-Meteo Forecast API](https://open-meteo.com/en/docs) says its `current`
+  conditions are based on 15-minute weather-model data, not a personal UV
+  measurement. `src/services/forecast/getHourlyForecast.ts` prefers current UV,
+  temperature, and cloud cover for the Now chart bin, falling back to hourly
+  model values when needed. `src/features/forecast/HourlyUvChart.tsx` uses that
+  same bin for the current advice, displays the provider's `current.time` in
+  the location's time zone when it is available, and refetches while open every
+  15 minutes.
+  Open-Meteo remains credited in the UI; its non-commercial licensing and
+  grid-cell limitations are described in the provider row above. The refresh
+  interval is a UV Scout product choice, not the model's guaranteed update rate.
+- WHO's [UV Index Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index)
+  (20 June 2022) describes protection from UVI 3 and stronger precautions at
+  UVI 8+. WHO's [skin-cancer protection Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-protecting-against-skin-cancer)
+  (16 July 2024) supports clothing, hat, UV-protective eyewear, shade, and
+  broad-spectrum SPF 30+ on uncovered skin. These sources inform the editable
+  `src/domain/guidance/currentUvGuidance.json` actions, interpreted by
+  `getCurrentUvGuidance.ts`. UV Scout uses the same raw 3 and 8 thresholds as
+  outing guidance. The five display categories, decimal rounding, the 76%
+  cloud reminder trigger, and concise current-only wording are UV Scout
+  choices. Cloud cover never numerically adjusts the forecast UV. This advice
+  assumes no activity, duration, personal sensitivity, or measured exposure.
+
 ## Interactive map providers
 
 | Source | Data used and how it is used | Where it enters the app | Attribution, licensing, and limits |

@@ -13,6 +13,7 @@ export function useHourlyForecast(
   latitude: number,
   longitude: number,
   errorMessage: string,
+  refreshKey = 0,
 ): HourlyForecastState {
   const [forecast, setForecast] = useState<HourlyForecast | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export function useHourlyForecast(
       });
 
     return () => controller.abort();
-  }, [errorMessage, latitude, longitude]);
+  }, [errorMessage, latitude, longitude, refreshKey]);
 
   return { forecast, error, loading };
 }

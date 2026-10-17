@@ -13,6 +13,7 @@ export type ForecastHour = {
 
 export type HourlyForecast = {
   timezone: string;
+  currentConditionsTime: number | null;
   hours: ForecastHour[];
   daylight: DaylightEvents[];
 };

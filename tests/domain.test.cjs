@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const { test } = require('node:test');
 
 const domainBuild = '../node_modules/.cache/uv-scout-domain-tests/domain';
+const { getCurrentUvGuidance } = require(`${domainBuild}/guidance/getCurrentUvGuidance.js`);
 const { getUvScoutInsight } = require(`${domainBuild}/guidance/getUvScoutInsight.js`);
 const { getWhoGuidanceTable } = require(`${domainBuild}/guidance/getWhoGuidance.js`);
 const { summarizeOutingForecast } = require(`${domainBuild}/outing/calculateOutingForecast.js`);
@@ -57,6 +58,29 @@ test('UV display category rounds decimal values with .5 upward', () => {
   assert.equal(getUvCategory(2.4).key, 'low');
   assert.equal(getUvCategory(2.5).key, 'moderate');
   assert.equal(getUvCategory(5.5).key, 'high');
+});
+
+test('current UV guidance uses raw protection bands and explains rounded category crossings', () => {
+  const low = getCurrentUvGuidance(2.9, 40);
+  const moderate = getCurrentUvGuidance(3, 40);
+  const nearVeryHigh = getCurrentUvGuidance(7.9, 40);
+  const veryHigh = getCurrentUvGuidance(8, 40);
+
+  assert.equal(low.category, 'Moderate');
+  assert.match(low.actions[0], /no extra sun protection/i);
+  assert.match(low.categoryNote, /unrounded UV value/i);
+  assert.equal(moderate.categoryNote, null);
+  assert.match(moderate.actions.join(' '), /SPF 30\+/i);
+  assert.doesNotMatch(nearVeryHigh.actions.join(' '), /limit direct sun/i);
+  assert.match(nearVeryHigh.categoryNote, /unrounded UV value/i);
+  assert.match(veryHigh.actions.join(' '), /limit direct sun/i);
+});
+
+test('current cloud reminder follows the UV and cloud thresholds', () => {
+  assert.equal(getCurrentUvGuidance(2, 100).cloudNote, null);
+  assert.equal(getCurrentUvGuidance(5, 75).cloudNote, null);
+  assert.match(getCurrentUvGuidance(5, 76).cloudNote, /cloud cover/i);
+  assert.equal(getCurrentUvGuidance(5, null).cloudNote, null);
 });
 
 test('outing averages weight partial first and last hours by their overlap', () => {

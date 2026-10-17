@@ -40,6 +40,11 @@ export async function getHourlyForecast(
   const times: unknown[] = data.hourly.time;
   const now = Date.now() / 1000;
   const currentIndex = times.findLastIndex((time) => isNumber(time) && time <= now);
+  const current = data.current;
+  const currentConditionsTime = isNumber(current?.time) &&
+    isNumber(current?.uv_index) && isNumber(current?.temperature_2m)
+    ? current.time
+    : null;
   if (currentIndex < 5 || currentIndex + 18 >= times.length) {
     throw new Error('The full hourly window is unavailable.');
   }
@@ -54,9 +59,8 @@ export async function getHourlyForecast(
     const hourlyPrecipitationProbability = data.hourly.precipitation_probability?.[index];
     const hourlyPrecipitation = data.hourly.precipitation?.[index];
     const hourlyWindSpeed = data.hourly.wind_speed_10m?.[index];
-    const current = data.current;
     const useCurrent = index === currentIndex &&
-      isNumber(current?.uv_index) && isNumber(current?.temperature_2m);
+      currentConditionsTime !== null;
     const uv = useCurrent ? current.uv_index : hourlyUv;
     const temperature = useCurrent ? current.temperature_2m : hourlyTemperature;
     const cloudCover = useCurrent && isNumber(current?.cloud_cover)
@@ -91,5 +95,5 @@ export async function getHourlyForecast(
   ])];
   const daylight = dates.map((date) => getDaylightEvents(date, latitude, longitude));
 
-  return { timezone: data.timezone, hours, daylight };
+  return { timezone: data.timezone, currentConditionsTime, hours, daylight };
 }

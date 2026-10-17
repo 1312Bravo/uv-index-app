@@ -1,0 +1,75 @@
+import { StyleSheet, Text, View } from 'react-native';
+
+import type { CurrentUvGuidance as CurrentUvGuidanceResult } from '../../domain/guidance/getCurrentUvGuidance';
+
+function formatEstimateTime(time: number, timezone: string): string {
+  return new Intl.DateTimeFormat('en', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: timezone,
+  }).format(new Date(time * 1000));
+}
+
+export function CurrentUvGuidance({
+  guidance,
+  estimateTime,
+  timezone,
+}: {
+  guidance: CurrentUvGuidanceResult;
+  estimateTime: number | null;
+  timezone: string;
+}) {
+  const guidancePoints = [guidance.meaning, ...guidance.actions];
+
+  return (
+    <View style={styles.section}>
+      <Text style={styles.heading}>Current UV</Text>
+      {estimateTime !== null && (
+        <Text style={styles.estimateTime}>Estimate for {formatEstimateTime(estimateTime, timezone)}</Text>
+      )}
+      <View style={styles.reading}>
+        <View style={styles.uvBlock}>
+          <Text style={styles.readingLabel}>UV INDEX</Text>
+          <Text style={styles.uvValue}>{guidance.uv.toFixed(1)}</Text>
+          <Text style={styles.category}>{guidance.category}</Text>
+        </View>
+        <View style={styles.divider} />
+        <View style={styles.protection}>
+          <Text style={styles.readingLabel}>GUIDANCE</Text>
+          <View style={styles.actions}>
+            {guidancePoints.map((point, index) => (
+              <View key={index} style={styles.actionRow}>
+                <Text style={styles.marker}>-</Text>
+                <Text style={styles.actionText}>{point}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+      <View style={styles.notes}>
+        {guidance.cloudNote && <Text style={styles.note}>{guidance.cloudNote}</Text>}
+        {guidance.categoryNote && <Text style={styles.note}>{guidance.categoryNote}</Text>}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  section: { borderBottomColor: '#E6E6E6', borderBottomWidth: 1, paddingBottom: 18 },
+  heading: { color: '#151515', fontSize: 16, fontWeight: '600', textAlign: 'center' },
+  estimateTime: { color: '#777777', fontSize: 11, marginTop: 3, textAlign: 'center' },
+  reading: { alignItems: 'stretch', flexDirection: 'row', marginTop: 14 },
+  uvBlock: { alignItems: 'center', flex: 0.85, justifyContent: 'flex-start', paddingHorizontal: 8 },
+  uvValue: { color: '#151515', fontSize: 30, lineHeight: 36, textAlign: 'center' },
+  readingLabel: { color: '#777777', fontSize: 9, letterSpacing: 0.6 },
+  divider: { alignSelf: 'stretch', backgroundColor: '#E1E1E1', marginVertical: 4, width: 1 },
+  category: { color: '#333333', fontSize: 15, fontWeight: '500' },
+  protection: { flex: 1.4, paddingLeft: 12 },
+  actions: { marginTop: 7, rowGap: 5 },
+  actionRow: { alignItems: 'flex-start', flexDirection: 'row' },
+  marker: { color: '#555555', fontSize: 12, lineHeight: 16, marginRight: 5, width: 8 },
+  actionText: { color: '#333333', flex: 1, fontSize: 11, lineHeight: 16 },
+  notes: { marginTop: 8 },
+  note: { color: '#777777', fontSize: 10, lineHeight: 14, marginTop: 5 },
+});

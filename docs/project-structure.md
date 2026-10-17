@@ -137,6 +137,17 @@ Scout's profile interpreter. Forecast overlap and coverage calculations stay
 in `src/domain/outing/calculateOutingForecast.ts`. Rule rationale and source
 provenance belong in the guidance research notes and `notes/data-sources.md`.
 
+UV Outlook's current advice is separate from the outing profile. Edit
+`src/domain/guidance/currentUvGuidance.json` for its short protection text;
+`src/domain/guidance/getCurrentUvGuidance.ts` interprets it using the raw bands
+in `uvScoutRecommendationRules.json` and the existing display categories.
+Those bands are raw UVI below 3, 3 to below 8, and 8 or higher. A cloud
+reminder appears at 76% cover or more only when raw UVI is at least 3;
+cloud cover does not change the protection band. The displayed category
+still rounds the UV value to a whole number.
+`src/features/forecast/CurrentUvGuidance.tsx` renders the result above the
+hourly chart. The open outlook refreshes its forecast every 15 minutes.
+
 | Change | Home |
 | --- | --- |
 | Tab order, app layout, shared screen state | `src/app/` |

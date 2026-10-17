@@ -1,0 +1,18 @@
+{
+  "actions": {
+    "below-3": [
+      "For most people, no extra sun protection is needed at this UV level."
+    ],
+    "3-to-8": [
+      "Cover exposed skin, wear a broad-brimmed hat and UV-protective sunglasses, and use shade.",
+      "Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before going outside."
+    ],
+    "8-plus": [
+      "Cover exposed skin, wear a broad-brimmed hat and UV-protective sunglasses.",
+      "Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before going outside.",
+      "Limit direct sun and prioritize shade while UV is this strong."
+    ]
+  },
+  "cloudNote": "Heavy cloud cover does not replace UV protection.",
+  "roundedCategoryNote": "The category is rounded for display. Protection advice uses the unrounded UV value."
+}
