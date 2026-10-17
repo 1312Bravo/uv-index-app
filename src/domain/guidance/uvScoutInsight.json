@@ -30,7 +30,7 @@
     "extraProtection": "At those times, limit time in direct sun and prioritize shade. Keep the other protection steps in place.",
     "sunscreenAtStart": "UV is 3 or higher when this outing starts. Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin.",
     "sunscreenLater": "The first forecast UV 3+ period begins at {start}. Apply broad-spectrum SPF 30+ sunscreen generously to uncovered skin before then.",
-    "sunscreenReapplication": "If you are still outdoors after applying sunscreen for this outing, reapply it at least every two hours. Reapply sooner after swimming, sweating, or towel drying, and follow the product label.",
+    "sunscreenReapplication": "If you use sunscreen, follow the product label and reapply at least every two hours, sooner after swimming, sweating, or towel drying.",
     "cloudyElevatedUv": "Keep UV protection in place during {periods}, despite heavy cloud cover.",
     "reflectiveConditions": "Near snow, bright sand, or water, keep skin and eyes protected even in shade."
   },
@@ -38,6 +38,11 @@
     "below-3": "From around {start} to around {end}, most people need no extra sun protection.",
     "3-to-8": "From around {start} to around {end}, cover exposed skin, protect your eyes, seek shade, and use SPF 30+ sunscreen on uncovered skin.",
     "8-plus": "From around {start} to around {end}, cover exposed skin, protect your eyes, use SPF 30+ sunscreen on uncovered skin, prioritize shade, and limit direct sun."
+  },
+  "compactWindowMessages": {
+    "below-3": "When UV is below 3 ({periods}), most people need no extra sun protection.",
+    "3-to-8": "When UV is 3 to below 8 ({periods}), cover exposed skin, protect your eyes, seek shade, and use SPF 30+ sunscreen on uncovered skin.",
+    "8-plus": "When UV is 8 or higher ({periods}), cover exposed skin, protect your eyes, use SPF 30+ sunscreen on uncovered skin, prioritize shade, and limit direct sun."
   },
   "takeawayMessages": {
     "lowComplete": [
@@ -54,6 +59,8 @@
     ]
   },
   "messages": {
-    "coverageIncomplete": "Forecast available for {coveredDuration} of the planned {plannedDuration}. The remaining time has no forecast."
+    "coverageIncomplete": "Forecast available for {coveredDuration} of the planned {plannedDuration}. The remaining time has no forecast.",
+    "roundedModerateBelowProtection": "The category is rounded for display. The covered forecast hours stay below UV 3, which is the threshold used for protection advice.",
+    "roundedVeryHighBelowExtraProtection": "The category is rounded for display. Extra protection advice starts at the unrounded UV value of 8."
   }
 }

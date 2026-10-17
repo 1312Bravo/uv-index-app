@@ -18,6 +18,7 @@ export type UvScoutInsight = {
   takeaway: string;
   takeawayBullets: string[];
   coverageMessage: string | null;
+  categoryNote: string | null;
 };
 
 const expectedBandKeys: UvBandKey[] = ['below-3', '3-to-8', '8-plus'];
@@ -26,7 +27,7 @@ const veryCloudyBand = cloudCoverBands.find((band) => band.key === 'very-cloudy'
 function validateDefinitions() {
   const usedBandKeys = new Set<string>();
 
-  if (rules.schemaVersion !== 3 || !rules.modelNote.trim()) {
+  if (rules.schemaVersion !== 4 || !rules.modelNote.trim()) {
     throw new Error('UV Scout recommendation rules have an unsupported schema or empty model note.');
   }
 
@@ -61,7 +62,8 @@ function validateDefinitions() {
   ] as const;
   if (requiredTitles.some((key) => !definitions.bulletTitles[key]?.trim()) ||
     requiredActions.some((key) => !definitions.actionMessages[key]?.trim()) ||
-    expectedBandKeys.some((key) => !definitions.takeawayWindowMessages[key]?.trim()) ||
+    expectedBandKeys.some((key) => !definitions.takeawayWindowMessages[key]?.trim() ||
+      !definitions.compactWindowMessages[key]?.trim()) ||
     Object.values(definitions.detailMessages).some((message) => !message.trim()) ||
     Object.values(definitions.profileMessages).some((message) => !message.trim()) ||
     !definitions.takeawayMessages.elevated?.every((part) => part.trim()) ||
@@ -111,6 +113,10 @@ function validateDefinitions() {
   }
   if (
     !definitions.messages.coverageIncomplete.trim() ||
+    !definitions.messages.roundedModerateBelowProtection.trim() ||
+    !definitions.messages.roundedVeryHighBelowExtraProtection.trim() ||
+    !Number.isInteger(rules.takeawayPresentation.compactWhenWindowCountAtLeast) ||
+    rules.takeawayPresentation.compactWhenWindowCountAtLeast < 2 ||
     !Number.isFinite(rules.guidanceTriggers.coverageToleranceSeconds) ||
     rules.guidanceTriggers.coverageToleranceSeconds < 0 ||
     !rules.forecastCoverage.neverFillMissingWithZero ||
@@ -297,11 +303,25 @@ function getTimedProtection(summary: OutingForecastSummary, timezone: string): s
       windows.push({ key, start: overlap.start, end: overlap.end });
     }
   }
-  return windows
-    .map(({ key, start, end }) => fillMessage(definitions.takeawayWindowMessages[key], {
-      ...getApproximateTakeawayTimes({ start, end }, summary, timezone),
-    }))
-    .join(' ');
+  if (windows.length < rules.takeawayPresentation.compactWhenWindowCountAtLeast) {
+    return windows
+      .map(({ key, start, end }) => fillMessage(definitions.takeawayWindowMessages[key], {
+        ...getApproximateTakeawayTimes({ start, end }, summary, timezone),
+      }))
+      .join(' ');
+  }
+
+  const orderedBands = [...new Set(windows.map(({ key }) => key))];
+  return orderedBands.map((key) => {
+    const periods = windows.filter((window) => window.key === key).map(({ start, end }) => {
+      const times = getApproximateTakeawayTimes({ start, end }, summary, timezone);
+      return `around ${times.start} to around ${times.end}`;
+    });
+    const periodList = periods.length > 1
+      ? `${periods.slice(0, -1).join(', ')} and ${periods.at(-1)}`
+      : periods[0];
+    return fillMessage(definitions.compactWindowMessages[key], { periods: periodList });
+  }).join(' ');
 }
 
 function getBreakdown(summary: OutingForecastSummary, timezone: string): string[] {
@@ -488,6 +508,11 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
       plannedDuration: formatDuration(summary.requestedSeconds),
     })
     : null;
+  const categoryNote = summary.highestUv < elevatedUv && summary.highestCategory.key !== 'low'
+    ? definitions.messages.roundedModerateBelowProtection
+    : summary.highestUv < veryHighUv && summary.highestCategory.key === 'very-high'
+      ? definitions.messages.roundedVeryHighBelowExtraProtection
+      : null;
   return {
     practicalGuidance,
     contextNotes,
@@ -495,5 +520,6 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
     takeaway,
     takeawayBullets,
     coverageMessage,
+    categoryNote,
   };
 }

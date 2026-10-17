@@ -1,10 +1,10 @@
 # UV Scout
 
-A minimal Expo app for planning time outdoors around the UV Index. You can
-search for a place or use your device location on Android and web. The app then
-shows a rolling hourly UV Index chart and temperature from Open-Meteo. The first
-page is for location and the chart; the **UV Outlook** and **Plan an Outing**
-tabs switch between the overview and planning flow.
+A minimal Expo app for planning time outdoors around the UV Index. On Android
+and web, choose a location by search, device location, or map. UV Outlook shows
+the hourly forecast; Plan an Outing adds a time range and practical UV guidance.
+Info explains the displayed UV and weather values. Forecast data comes from
+Open-Meteo.
 
 Run `pnpm install` once, then `pnpm start` to preview the app with Expo Go.
 See [development preview instructions](docs/development.md) for phone and web

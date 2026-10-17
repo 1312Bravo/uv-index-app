@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "modelNote": "General UV protection actions from the covered hourly forecast. This is not a personal exposure, dose, burn-time, or health-risk estimate.",
   "uvBands": [
     { "key": "below-3", "minimumUvInclusive": 0, "maximumUvExclusive": 3, "label": "the UV Index stays below 3" },
@@ -10,6 +10,9 @@
     "elevatedBandKey": "3-to-8",
     "extraAttentionBandKey": "8-plus",
     "coverageToleranceSeconds": 1
+  },
+  "takeawayPresentation": {
+    "compactWhenWindowCountAtLeast": 5
   },
   "conditionalContextRules": [
     {
@@ -103,7 +106,9 @@
       "Show general two-hour reapplication guidance whenever sunscreen is recommended, without using cumulative elevated-UV time as a personal timer.",
       "Keep WHO's general action table in Info; place a short whole-outing UV profile and local-time, band-specific protection actions before the detailed breakdown and protection steps.",
       "Round only the opening protection-window start down and end up to the local half hour and label them approximate; keep calculation and detailed action times unchanged.",
-      "When an outing mixes below-3 and 3+ UV, show the lower-UV hours separately rather than applying the higher-UV action to the whole outing."
+      "When an outing mixes below-3 and 3+ UV, show the lower-UV hours separately rather than applying the higher-UV action to the whole outing.",
+      "For five or more changing UV-band windows, group their approximate times by band and state each protection action once. Keep shorter outings in time order.",
+      "Explain rounded display categories when they cross a raw-UVI protection threshold."
     ],
     "notValidatedOrCalculated": [
       "personal UV dose or accumulated dose",

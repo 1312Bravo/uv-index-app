@@ -306,14 +306,15 @@ test('sunscreen reapplication advice does not depend on cumulative elevated-UV d
   const sustainedReapplication = sustainedModerate.practicalGuidance
     .find(({ title }) => title === 'Reapply sunscreen');
 
-  assert.match(briefReapplication.text, /reapply it at least every two hours/i);
+  assert.match(briefReapplication.text, /reapply at least every two hours/i);
+  assert.match(briefReapplication.text, /follow the product label/i);
   assert.match(briefReapplication.text, /sooner after swimming, sweating, or towel drying/i);
   assert.match(lateSunscreen.text, /first forecast UV 3\+ period begins at 4:00 AM/i);
   assert.match(lateSunscreen.text, /before then/i);
   assert.doesNotMatch(lateSunscreen.text, /Thursday|Jan/);
   assert.match(briefSunscreen.text, /UV is 3 or higher when this outing starts/i);
   assert.equal(briefSunscreen.text, sustainedSunscreen.text);
-  assert.match(sustainedReapplication.text, /reapply it at least every two hours/i);
+  assert.match(sustainedReapplication.text, /reapply at least every two hours/i);
   assert.equal(briefReapplication.text, sustainedReapplication.text);
   assert.equal(sustainedModerate.practicalGuidance.filter(({ title }) => title === 'Sunscreen').length, 1);
   assert.match(briefHighThenLow.takeawayBullets[1], /around 12:00 AM to around 1:00 AM.*limit direct sun/i);
@@ -343,6 +344,18 @@ test('protection rules use raw UV 3 and 8 boundaries', () => {
   assert.equal(adviceAt(3).practicalGuidance.some(({ title }) => title === 'Sunscreen'), true);
   assert.equal(adviceAt(7.9).practicalGuidance.some(({ title }) => title === 'Strongest hours'), false);
   assert.equal(adviceAt(8).practicalGuidance.some(({ title }) => title === 'Strongest hours'), true);
+});
+
+test('rounded categories explain only cross-threshold protection differences', () => {
+  const adviceAt = (uv) => getUvScoutInsight(summarize([hour(0, uv)], 0, 3600), 'UTC');
+
+  assert.equal(adviceAt(2.4).categoryNote, null);
+  assert.match(adviceAt(2.9).categoryNote, /covered forecast hours stay below UV 3/i);
+  assert.match(adviceAt(2.9).takeaway, /no extra sun protection/i);
+  assert.equal(adviceAt(3).categoryNote, null);
+  assert.match(adviceAt(7.9).categoryNote, /unrounded UV value of 8/i);
+  assert.equal(adviceAt(7.9).practicalGuidance.some(({ title }) => title === 'Strongest hours'), false);
+  assert.equal(adviceAt(8).categoryNote, null);
 });
 
 test('a brief UV 8 window does not describe a mostly low-UV outing as all high UV', () => {
@@ -395,11 +408,13 @@ test('separated elevated periods stay distinct and long timing lists stay brief'
   const sunscreen = separated.practicalGuidance.find(({ title }) => title === 'Sunscreen');
 
   assert.match(separated.takeawayBullets[1], /around 12:00 AM to around 1:00 AM.*around 2:00 AM to around 3:00 AM.*around 4:00 AM to around 5:00 AM.*around 6:00 AM to around 7:00 AM/i);
+  assert.equal((separated.takeawayBullets[1].match(/cover exposed skin/g) ?? []).length, 1);
+  assert.equal((separated.takeawayBullets[1].match(/no extra sun protection/g) ?? []).length, 1);
   assert.match(protection.text, /4 separate stretches, totaling about 4 hours/);
   assert.doesNotMatch(protection.text, /Timing:/i);
   assert.match(timingLines(separated)[0], /and 2 more periods/i);
   assert.match(sunscreen.text, /SPF 30\+/i);
   assert.match(separated.practicalGuidance.find(({ title }) => title === 'Reapply sunscreen').text,
-    /reapply it at least every two hours/i);
+    /reapply at least every two hours/i);
   assert.doesNotMatch(sunscreen.text, /continuous|extended elevated/i);
 });

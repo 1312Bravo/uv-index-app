@@ -8,6 +8,7 @@ src/
     TopTabs.tsx
   domain/                     Product knowledge and shared data types
     forecast/forecastTypes.ts
+    time/                      Local wall-time and time-zone conversion
     daylight/                  Civil dawn, sunrise, sunset, and civil dusk calculations
     location/locationTypes.ts
     outing/                   Time plan and forecast overlap/coverage calculations
@@ -24,7 +25,11 @@ src/
     forecast/                 Open-Meteo forecasts
     location/                 Place search and reverse geocoding
   features/                   UI components, formatting, React hooks
-    forecast/                 Hourly chart and forecast loading hook
+    forecast/                 Forecast loading and shared hourly chart
+      HourlyUvBarChart.tsx    Scroll window and chart composition
+      DaylightTrack.tsx       Dawn/dusk markers and sun/moon trace
+      HourBin.tsx             UV bar and hourly weather values
+      hourlyChartLayout.ts   Shared bin width and selection type
     location/                 Location search, map selection, and formatting
       LocationMap.native.tsx  Leaflet/OpenStreetMap map in native WebView
       nativeMapDocument.ts    Native map HTML, tiles, and tap bridge
@@ -97,7 +102,10 @@ reapplication wording is general guidance shown whenever sunscreen is
 recommended; it is not a forecast-duration trigger or personal timer. The text
 file separates action titles/messages, profile narrative templates, time-window
 detail messages, takeaway-message arrays (one item per opening bullet), and
-short band-specific `takeawayWindowMessages` for the second opening bullet.
+band-specific `takeawayWindowMessages` for up to four consecutive windows,
+`compactWindowMessages` for five or more, and small rounded-category notes.
+The window-count switch is in `uvScoutRecommendationRules.json` under
+`takeawayPresentation`; it changes wording only, not health thresholds.
 UV breakdown groups one-decimal displayed hourly values into highest, lowest, and
 intervening values and totals only their actual overlap with the outing. In a
 mixed outing, it adds a combined below-3 duration/window line only if the
@@ -108,8 +116,10 @@ UVI 3+ and 8+ durations in their main text and exact window times below.
 Sunscreen wording differs when UVI 3+ begins at the selected start or later;
 reapplication timing depends on when sunscreen was applied, which the app
 does not ask for. The first opening bullet describes the
-covered UV range or steady value; the second walks through consecutive lower, UV 3-to-
-below-8, and UV 8+ windows in local-time order with matching actions.
+covered UV range or steady value; the second walks through up to four
+consecutive lower, UV 3-to-below-8, and UV 8+ windows in local-time order.
+With five or more windows, it lists all their approximate times grouped by
+band and says each action once.
 Only those opening action windows round their displayed starts down and ends
 up to local half hours, using "around" wording. The exact overlap and
 duration calculations and the detailed action times stay unchanged.
@@ -165,6 +175,9 @@ scenarios, and the source/product boundary are in
 `notes/recommendation-tree-draft.md`, `notes/recommendation-model-research.md`,
 and `notes/protection-guidance-research.md`.
 
-This structure pass preserves existing behavior, including the rolling forecast
-window and device-local planner inputs. Changes to forecast coverage, time-zone
-handling, and recommendation rules are separate product work.
+The forecast's resolved time zone is passed from app-level shared state to the
+planner. Local wall-time conversion and daylight-saving behavior live in
+`src/domain/time/`; nonexistent spring-forward times move forward to the first
+valid local time, and repeated fall-back times resolve to the earlier instance.
+Platform input and rendering stay in `src/features/planning/`. The rolling chart
+window is separate from scheduled outing input and aggregation.

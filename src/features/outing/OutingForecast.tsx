@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { getUvScoutInsight, type UvScoutInsightItem } from '../../domain/guidance/getUvScoutInsight';
@@ -13,6 +14,7 @@ import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
 type Props = {
   latitude: number;
   longitude: number;
+  onTimezoneChange: (timeZone: string) => void;
   plan: TimePlan;
 };
 
@@ -130,12 +132,16 @@ function ContextNote({ item }: { item: UvScoutInsightItem }) {
   );
 }
 
-export function OutingForecast({ latitude, longitude, plan }: Props) {
+export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: Props) {
   const { forecast, error, loading } = useHourlyForecast(
     latitude,
     longitude,
     'Could not load the forecast for this outing.',
   );
+
+  useEffect(() => {
+    if (forecast) onTimezoneChange(forecast.timezone);
+  }, [forecast, onTimezoneChange]);
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
   const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;
@@ -236,6 +242,9 @@ export function OutingForecast({ latitude, longitude, plan }: Props) {
               />
             </View>
           </View>
+          {guidance?.categoryNote && (
+            <Text style={styles.guidanceCategoryNote}>{guidance.categoryNote}</Text>
+          )}
 
           <Text style={styles.subheading}>UV &amp; weather by hour</Text>
           <HourlyUvBarChart
@@ -274,6 +283,7 @@ const styles = StyleSheet.create({
   guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14, textAlign: 'center' },
   guidanceCoverage: { color: '#666666', fontSize: 13, lineHeight: 19, marginTop: 10 },
   guidanceTakeawayList: { marginTop: 10 },
+  guidanceCategoryNote: { color: '#777777', fontSize: 11, lineHeight: 16, marginTop: 8, textAlign: 'center' },
   guidanceTakeawayBulletText: { color: '#333333', flex: 1, fontSize: 13, lineHeight: 19 },
   guidanceDetails: { marginTop: 12 },
   guidanceActions: { borderTopColor: '#E6E6E6', borderTopWidth: 1, marginTop: 18, paddingTop: 2 },

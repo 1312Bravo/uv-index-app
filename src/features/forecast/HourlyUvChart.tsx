@@ -7,6 +7,7 @@ import { HourlyUvBarChart } from './HourlyUvBarChart';
 type Props = {
   latitude: number;
   longitude: number;
+  onTimezoneChange: (timeZone: string) => void;
 };
 
 const INITIAL_SCROLL_HOURS = 2;
@@ -23,7 +24,7 @@ function formatCurrentDateTime(time: number, timezone: string): string {
   }).format(new Date(time));
 }
 
-export function HourlyUvChart({ latitude, longitude }: Props) {
+export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) {
   const { forecast, error, loading } = useHourlyForecast(
     latitude,
     longitude,
@@ -35,6 +36,10 @@ export function HourlyUvChart({ latitude, longitude }: Props) {
     const timer = setInterval(() => setCurrentTime(Date.now()), 60_000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (forecast) onTimezoneChange(forecast.timezone);
+  }, [forecast, onTimezoneChange]);
 
   return (
     <View style={styles.section}>

@@ -77,10 +77,10 @@ attribution, and limitations.
 - Show the forecast and actionable protection guidance as soon as start and
   end are selected; no shade or activity input is required. When covered
   forecast UV reaches raw UVI 3+, include clothing, eye protection, shade,
-  sunscreen application, and conditional reapplication after water/sweat. Add
-  the two-hour planning reminder only when covered UVI 3+ totals at least two
-  hours; this is not a personal timer or application tracker. Name the local
-  forecast time windows for UVI 3–<8 and 8+. If very cloudy hours (76%+ per the
+  sunscreen application, and conditional general two-hour reapplication
+  guidance with earlier reapplication after water/sweat. This is not a personal
+  timer or application tracker. Name the local forecast time windows for
+  UVI 3–<8 and 8+. If very cloudy hours (76%+ per the
   Info mapping) overlap with UVI 3+, clarify that cloud cover does not replace
   the UVI forecast. Temperature and precipitation remain context, not UV
-  modifiers. See the [recommendation tree](recommendation-tree-draft.md).
+  modifiers. See the [active UV guidance](active-uv-guidance.md).

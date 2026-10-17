@@ -3,30 +3,30 @@
     "key": "low",
     "label": "Low",
     "minimumUvInclusive": 0,
-    "meaning": "The lowest UV exposure category."
+    "meaning": "UV is relatively weak compared with higher levels."
   },
   {
     "key": "moderate",
     "label": "Moderate",
     "minimumUvInclusive": 3,
-    "meaning": "UV is more intense than in the Low range and can affect unprotected skin and eyes."
+    "meaning": "UV can affect unprotected skin and eyes during outdoor time."
   },
   {
     "key": "high",
     "label": "High",
     "minimumUvInclusive": 6,
-    "meaning": "The potential for harm from unprotected exposure is higher than in the Moderate range."
+    "meaning": "Stronger UV can harm unprotected skin and eyes sooner."
   },
   {
     "key": "very-high",
     "label": "Very high",
     "minimumUvInclusive": 8,
-    "meaning": "Unprotected skin and eyes can be harmed quickly at these UV levels."
+    "meaning": "Unprotected skin and eyes can be harmed quickly."
   },
   {
     "key": "extreme",
     "label": "Extreme",
     "minimumUvInclusive": 11,
-    "meaning": "The highest UV exposure category; unprotected skin and eyes can be harmed very quickly."
+    "meaning": "The strongest UV levels can harm unprotected skin and eyes very quickly."
   }
 ]

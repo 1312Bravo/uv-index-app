@@ -1,14 +1,14 @@
 {
-  "note": "WHO recommends sun protection from UV Index 3.",
-  "context": "Higher UV levels can harm skin and eyes sooner. Time outdoors also matters.",
+  "note": "WHO recommends sun protection at UV Index 3 or higher.",
+  "context": "Higher UV can harm skin and eyes sooner. Time outdoors also matters.",
   "levels": [
     {
       "key": "low",
       "minimumUvInclusive": 0,
       "label": "Low UV",
       "actions": [
-        "At UV Index 0-2, you can enjoy being outdoors.",
-        "Fresh snow and other bright surfaces can add reflected UV."
+        "Most people need no extra sun protection under normal conditions.",
+        "Bright surfaces, especially fresh snow, can reflect UV."
       ]
     },
     {
@@ -16,9 +16,8 @@
       "minimumUvInclusive": 3,
       "label": "Protection recommended",
       "actions": [
-        "Seek shade during midday hours.",
-        "Cover exposed skin, and wear a wide-brimmed hat and UV-protective sunglasses.",
-        "Use broad-spectrum SPF 30+ sunscreen generously on uncovered skin. Reapply every two hours and after swimming or sweating."
+        "Seek shade around midday. Cover exposed skin and wear a wide-brimmed hat and UV-protective sunglasses.",
+        "Use broad-spectrum SPF 30+ sunscreen on uncovered skin. Reapply at least every two hours, sooner after swimming or sweating."
       ]
     },
     {
@@ -26,9 +25,8 @@
       "minimumUvInclusive": 8,
       "label": "Extra protection",
       "actions": [
-        "If possible, limit time outdoors around midday and seek shade when outside.",
-        "Cover exposed skin, and wear a wide-brimmed hat and UV-protective sunglasses.",
-        "Use broad-spectrum SPF 30+ sunscreen generously on uncovered skin. Reapply every two hours and after swimming or sweating."
+        "Limit direct sun around midday when possible and seek shade.",
+        "Keep the clothing, hat, sunglasses, and sunscreen steps above in place."
       ]
     }
   ]

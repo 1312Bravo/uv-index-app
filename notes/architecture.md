@@ -19,8 +19,9 @@
   Keep calculations and algorithms in TypeScript; use this data/logic split when
   the content is naturally a mapping or configuration.
 - Use `src/domain/outing/` for time-window calculations and outing summaries.
-- Use `src/domain/guidance/` later for practical protection rules and wording.
-- Use `src/domain/daylight/` later for dawn, sunrise, sunset, and dusk logic.
+- Use `src/domain/guidance/` for WHO reference data and UV Scout's separate
+  outing rules and wording.
+- Use `src/domain/daylight/` for dawn, sunrise, sunset, and dusk calculations.
 - Keep actual UI state, loading states, and layout in `src/features/`.
 - Do not call this layer `data-science` yet: the first rules are explicit,
   testable product logic. If statistical or machine-learning models are added,

@@ -17,6 +17,7 @@ export function UvScoutApp() {
   const [location, setLocation] = useState<SelectedLocation | null>(null);
   const [isMapInteracting, setIsMapInteracting] = useState(false);
   const [timePlan, setTimePlan] = useState<TimePlan | null>(null);
+  const [locationTimeZone, setLocationTimeZone] = useState<string | null>(null);
   const [page, setPage] = useState<AppPage>('location');
   const coordinates = location ? getLocationCoordinates(location) : null;
   const latitude = coordinates?.latitude;
@@ -39,7 +40,10 @@ export function UvScoutApp() {
         <View style={page === 'location' ? undefined : styles.hidden}>
           <LocationPicker
             onMapInteractionChange={setIsMapInteracting}
-            onSelect={setLocation}
+            onSelect={(nextLocation) => {
+              setLocationTimeZone(null);
+              setLocation(nextLocation);
+            }}
           />
         </View>
 
@@ -51,13 +55,23 @@ export function UvScoutApp() {
         )}
 
         {page === 'outlook' && latitude !== undefined && longitude !== undefined && (
-          <HourlyUvChart key={`${latitude},${longitude}`} latitude={latitude} longitude={longitude} />
+          <HourlyUvChart
+            key={`${latitude},${longitude}`}
+            latitude={latitude}
+            longitude={longitude}
+            onTimezoneChange={setLocationTimeZone}
+          />
         )}
         <View style={page === 'plan' ? undefined : styles.hidden}>
-          <TimePlanner onChange={setTimePlan} />
+          <TimePlanner onChange={setTimePlan} timeZone={locationTimeZone} />
         </View>
         {page === 'plan' && timePlan && latitude !== undefined && longitude !== undefined && (
-          <OutingForecast latitude={latitude} longitude={longitude} plan={timePlan} />
+          <OutingForecast
+            latitude={latitude}
+            longitude={longitude}
+            onTimezoneChange={setLocationTimeZone}
+            plan={timePlan}
+          />
         )}
         {page === 'info' && <InfoScreen />}
       </ScrollView>

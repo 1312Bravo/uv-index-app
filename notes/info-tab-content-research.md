@@ -16,8 +16,8 @@ Sources:
 - World Health Organization, “Global solar UV index: a practical guide,” 13
   June 2002, https://www.who.int/publications/i/item/9241590076
 - World Health Organization, “Radiation: The ultraviolet (UV) index,” 20 June
-  2022,
-  https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)-index
+  2022, checked 17 October 2026,
+  https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index
 
 **Product choice:** UV Scout keeps the forecast decimal visible and rounds it to
 the nearest integer for category selection, with .5 rounded up. The Info tab
@@ -25,6 +25,9 @@ states this explicitly because it changes category boundaries for decimals.
 Recommendation thresholds use the unrounded forecast: general protection starts
 at raw UVI 3 and extra protection at 8. A value such as 2.5 can therefore show
 the Moderate category while remaining below the protection threshold.
+The Info tab now puts this distinction directly after the five category labels,
+then presents WHO's separate three-range general protection table. Its shorter
+category meanings and WHO actions are explanatory paraphrases, not new rules.
 
 ## Cloud cover
 
@@ -73,7 +76,9 @@ precipitation is rain. UV Scout uses “Very intense rain” instead of the WMO
 guide's potentially confusing highest-band term. The app does not classify
 forecast values automatically: an hourly total cannot show short bursts, the
 provider's total may include snow, and an outing sum spans multiple hours. The
-chart and outing summary keep displaying numeric amounts.
+chart and outing summary keep displaying numeric amounts. The Info tab now
+explains the preceding-hour timing with a clock example and labels zero as
+“0 mm expected,” not a guarantee of no precipitation.
 
 ## Wind speed
 

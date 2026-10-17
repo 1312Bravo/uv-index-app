@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DateTimeField } from './DateTimeField';
 import type { TimePlan } from '../../domain/outing/timePlan';
+import { convertInstantPreservingLocalTime, getNextHourInTimeZone } from '../../domain/time/zonedDateTime';
 
 type Props = {
   onChange: (plan: TimePlan | null) => void;
+  timeZone: string | null;
 };
 
 type StartMode = 'now' | 'scheduled';
@@ -35,13 +37,6 @@ function getCustomDurationMinutes(hoursText: string, minutesText: string): numbe
 
   const totalMinutes = hours * 60 + minutes;
   return totalMinutes > 0 ? totalMinutes : null;
-}
-
-function nextHour(): Date {
-  const value = new Date();
-  value.setMinutes(0, 0, 0);
-  value.setHours(value.getHours() + 1);
-  return value;
 }
 
 function SelectorRow({
@@ -84,7 +79,7 @@ function SelectorOption({ active, label, onPress }: { active: boolean; label: st
   );
 }
 
-export function TimePlanner({ onChange }: Props) {
+export function TimePlanner({ onChange, timeZone }: Props) {
   const [startMode, setStartMode] = useState<StartMode>('now');
   const [scheduledStart, setScheduledStart] = useState<Date | null>(null);
   const [endMode, setEndMode] = useState<EndMode>('duration');
@@ -96,6 +91,7 @@ export function TimePlanner({ onChange }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<OpenSection>(null);
   const [currentTime, setCurrentTime] = useState(() => new Date());
+  const previousTimeZone = useRef<string | null>(null);
 
   const clearPlan = useCallback(() => {
     onChange(null);
@@ -107,6 +103,27 @@ export function TimePlanner({ onChange }: Props) {
   }, []);
 
   useEffect(() => {
+    if (!timeZone) return;
+
+    const previous = previousTimeZone.current;
+    if (previous && previous !== timeZone) {
+      setScheduledStart((value) => value ? convertInstantPreservingLocalTime(value, previous, timeZone) : value);
+      setEndTime((value) => value ? convertInstantPreservingLocalTime(value, previous, timeZone) : value);
+    }
+    previousTimeZone.current = timeZone;
+  }, [timeZone]);
+
+  useEffect(() => {
+    if (startMode === 'scheduled' && !scheduledStart) {
+      if (timeZone) setScheduledStart(getNextHourInTimeZone(currentTime, timeZone));
+    }
+  }, [currentTime, scheduledStart, startMode, timeZone]);
+
+  useEffect(() => {
+    if (startMode === 'scheduled' && !timeZone) {
+      clearPlan();
+      return;
+    }
     const now = currentTime;
     const start = startMode === 'now' ? now : scheduledStart;
     if (!start) {
@@ -163,7 +180,7 @@ export function TimePlanner({ onChange }: Props) {
     setError(null);
     const plan = { start, end, durationMinutes };
     onChange(plan);
-  }, [clearPlan, currentTime, customHours, customMinutes, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode]);
+  }, [clearPlan, currentTime, customHours, customMinutes, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode, timeZone]);
 
   const selectedDuration = duration !== null
     ? duration
@@ -219,22 +236,24 @@ export function TimePlanner({ onChange }: Props) {
             label="Choose a start time"
             onPress={() => {
               setStartMode('scheduled');
-              if (!scheduledStart) setScheduledStart(nextHour());
+              if (!scheduledStart && timeZone) setScheduledStart(getNextHourInTimeZone(currentTime, timeZone));
               setOpenSection(null);
             }}
           />
         </View>
       )}
 
-      {startMode === 'scheduled' && (
+      {startMode === 'scheduled' && timeZone && (
         <DateTimeField
           accessibilityLabel="Start date and time"
           minimumDate={new Date()}
           onChange={setScheduledStart}
           placeholder="Choose start date and time"
+          timeZone={timeZone}
           value={scheduledStart}
         />
       )}
+      {startMode === 'scheduled' && !timeZone && <Text style={styles.hint}>Loading the selected location's time zone...</Text>}
 
       <SelectorRow
         expanded={openSection === 'end'}
@@ -324,18 +343,21 @@ export function TimePlanner({ onChange }: Props) {
             </View>
           )}
         </>
-      ) : (
+      ) : timeZone ? (
         <DateTimeField
           accessibilityLabel="End date and time"
           minimumDate={startMode === 'scheduled' ? scheduledStart ?? new Date() : new Date()}
           onChange={setEndTime}
           placeholder="Choose end date and time"
+          timeZone={timeZone}
           value={endTime}
         />
+      ) : (
+        <Text style={styles.hint}>Loading the selected location's time zone...</Text>
       )}
 
       {error && <Text style={styles.error}>{error}</Text>}
-      <Text style={styles.hint}>Times use your device's local time.</Text>
+      {timeZone && <Text style={styles.hint}>Times are local to the selected location.</Text>}
     </View>
   );
 }

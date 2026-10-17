@@ -1,6 +1,6 @@
 # UV Scout outing guidance: active MVP rules
 
-Reviewed 2026-10-15. This is the current, reviewable description of the rules
+Reviewed 2026-10-17. This is the current, reviewable description of the rules
 the app runs. The older [recommendation-model research](recommendation-model-research.md)
 and [recommendation-tree draft](recommendation-tree-draft.md) preserve the evidence
 and earlier proposals; they are not the source of truth for current behavior.
@@ -10,8 +10,9 @@ and earlier proposals; they are not the source of truth for current behavior.
 In Plan an Outing, **UV guidance** shows any forecast-coverage warning
 and a short, untitled bulleted takeaway. For mixed UV, the first bullet gives
 the covered range, duration-weighted average, and peak forecast hour. The
-second bullet follows consecutive forecast windows in local-time order, with
-different protection wording for below-3, 3-to-below-8, and 8+ UV. Adjacent
+second bullet follows up to four consecutive forecast windows in local-time
+order. With five or more windows, it groups approximate times by UV band and
+states each matching protection action once. Adjacent
 hours in the same band share one window; gaps in coverage do not merge.
 Steady UV uses a simpler first-bullet duration summary. **UV breakdown** is a flat bullet list, starting
 with start/end and average, then the highest and lowest displayed hourly UV
@@ -26,6 +27,8 @@ first forecast UVI 3+ period. Clothing and shade names the total forecast
 time at UVI 3+; Strongest hours names the total at UVI 8+. Their exact
 local-time windows remain as quieter lines beneath those actions.
 Cloud and reflective-surface cautions appear below as smaller context notes.
+When a rounded display category crosses a raw-UVI protection boundary, a
+small note explains why the action still follows the unrounded value.
 For all-below-3 outings, the takeaway gives the practical outcome and the
 duplicate Protection steps section is omitted. Both section headings are
 centered. There is no separate Summary at the bottom. The four
@@ -44,18 +47,22 @@ remains in Info, separate from this UV Scout outing guidance.
 | Cloud cover is at least 76% during any hour at raw UVI 3 or higher | Add a reminder to keep UV protection in place during those cloudy hours. The 76% boundary comes from UV Scout's editable display band, not a health threshold. |
 | Any covered time is at raw UVI 3 or higher | Add one conditional reminder about reflected UV near snow, bright sand, or water. The app does not know whether those surfaces are present. |
 | Some requested time has no forecast | Warn how much of the outing is covered. Never substitute zero UV for missing time. Low-UV advice applies only to known hours, and missing intervals split otherwise separate elevated periods. |
+| Five or more consecutive UV-band windows | Group their approximate times by band, ordered by first appearance, and say each band action once. Include every covered window; this is a readability rule, not a protection threshold. |
+| Rounded category crosses raw UVI 3 or 8 boundary | Add a small explanation. Keep the same raw-UVI actions. |
 
 The takeaway first describes the range and weighted average (or steady level)
-of the covered forecast. Its second bullet is a chronological protection plan:
-each band window has an approximate local-time range and matching action. Its
+of the covered forecast. Its second bullet is a chronological protection plan
+for up to four windows: each band window has an approximate local-time range
+and matching action. With five or more windows, it groups times by band in
+first-appearance order and states each action once. Its
 displayed start is rounded down and its end rounded up to the nearest local
 half hour, with "around" wording. The exact selected times and forecast-bin
 overlaps still drive every calculation, and Breakdown and Protection steps
 keep their existing times. The second bullet does not repeat
 the first bullet's UV metrics. For only below-3 forecast values, the existing
 two-bullet low-UV outcome remains. A brief peak is not described as the level
-for the whole outing. All opening windows are shown, so a long outing with
-many UV changes may have a longer second bullet; the detailed Protection
+for the whole outing. All covered opening windows are shown, even when grouped;
+the detailed Protection
 steps remain below. Recommendation times show hours only for one local day.
 For an outing spanning local days, they add full weekday names without a
 month or date number. The opening still rounds its display times to local
@@ -79,15 +86,16 @@ UV dose, burn time, or a validated risk score. Hourly values stand in for their 
 first and last hours are weighted by actual outing overlap. Trend minimum,
 maximum, and between-value grouping uses values rounded to one decimal for
 display only; protection thresholds still use raw UVI. Consecutive matching
-hourly bins form one time window. The opening names each consecutive band
-window in order. The detailed action lines list at most two periods and then
+hourly bins form one time window. The opening names up to four consecutive band
+windows in order, then groups windows by band. The detailed action lines list at most two periods and then
 a count, so many short episodes do not flood those lines.
 
 Displayed UV categories round decimal values to a whole number with .5 upward,
 but **action thresholds use raw values**. A displayed 2.9 can therefore carry
 the rounded category Moderate while remaining below the raw protection trigger
-of 3. The outing card labels its category as rounded to make this distinction
-visible. The five display categories and WHO's static three-band action table
+of 3. The outing card labels its category as rounded, and a small note explains
+this mismatch at raw values below 3 with a Moderate category or below 8 with a
+Very high category. The five display categories and WHO's static three-band action table
 are different presentations, not two competing recommendation models.
 
 ## Evidence and product boundary
@@ -138,3 +146,8 @@ this prototype's general guidance is not tailored medical advice.
 The corresponding executable checks are in `tests/domain.test.cjs`. Review
 these scenarios again if thresholds, source guidance, copy, or provider data
 semantics change.
+
+A broader [generated-output review](outing-guidance-output-review.md) compares
+brief peaks, sustained and alternating UV, equal averages with different
+profiles, threshold boundaries, short outings, partial coverage, and cloud
+context. Its follow-up records which presentation issues this rule pass resolved.

@@ -27,6 +27,10 @@ helps people plan outdoor time around the current and forecast UV index.
 - Plan an Outing defaults to a selected timeframe from Now for 4 hours.
   Forecast metrics, UV breakdown, protection guidance, and the hourly chart all
   use this same selected timeframe.
+- Scheduled start and end fields use the selected location's local time zone,
+  not the device's time zone. When the selected location changes, preserve the
+  chosen local calendar date and clock time, then resolve them in the new
+  location's time zone before recalculating the forecast.
 - If the user switches from Now to a scheduled outing, offer only future times
   relative to the current time at the selected location.
 - With Now selected, show a horizontal UV trend with five earlier hourly bins,
@@ -40,8 +44,9 @@ helps people plan outdoor time around the current and forecast UV index.
   table in Info. The outing result is UV Scout's own rule-based interpretation
   of covered raw-UV hours: an untitled actionable takeaway in short bullets
   first. The first bullet summarizes the covered range/average; the second
-  follows the forecast in time order with a protection action for each
-  lower-UV, UVI 3-to-below-8, or UVI 8+ window. Its displayed starts round
+  follows up to four forecast windows in time order with a protection action
+  for each lower-UV, UVI 3-to-below-8, or UVI 8+ window. Five or more windows
+  are grouped by UV band so repeated actions appear once. Its displayed starts round
   down and ends round up to the local half hour, with "around" wording; exact
   times still drive calculations. Then a UV breakdown list gives
   start/end, average, highest and lowest
@@ -61,7 +66,8 @@ helps people plan outdoor time around the current and forecast UV index.
   sunscreen is recommended, not only after two hours of elevated forecast UV.
   Cloud and reflective-surface notes are visually secondary, and below-3
   outings rely on the actionable takeaway without duplicate steps. The 2x2
-  card still shows the average. This is not a personal dose or medical-risk
+  card still shows the average. A small note explains when the rounded display
+  category crosses a raw-UVI protection threshold. This is not a personal dose or medical-risk
   calculation. Do not present the WHO table as an outing-specific algorithm.
   Default planning requires no extra protection-context choices; unknown
   conditions stay conditional.
@@ -141,14 +147,10 @@ after the core flow has been tested.
   outing examples; revise after user testing rather than adding more metrics.
 - Whether to add separate episode counts or an explicitly labelled UVI-hours
   ambient proxy; neither is currently shown.
-- Whether a future optional tailoring section collects sunscreen application
-  time, swimming/heavy sweating, clothing coverage, or reflective surroundings.
-- Whether to add optional questions for application time, swimming/heavy sweating,
-  clothing coverage, or reflective surroundings.
-- Whether later tailoring questions would add enough value to justify more
-  complexity; the current guidance uses only known forecast inputs.
+- Whether an optional tailoring section would add enough value to justify
+  asking about sunscreen use, swimming or sweating, clothing, and reflective
+  surroundings. Current guidance uses only known forecast inputs.
 - How far ahead planning should work.
-- Whether clothing/skin coverage is an optional detail in version one.
 - Revisit Open-Meteo's commercial licence and capacity before a commercial release.
 - Exact result wording, including future-only time comparisons and daylight flags.
 
@@ -349,6 +351,10 @@ calculation, supported platform versions, and the final visual polish.
   defaults (start time `Now`, duration 4 hours) and keeps the selected
   location. Persistence across app restarts is a separate
   decision and is not implied by this behavior.
+- Use the forecast provider's resolved location time zone for all scheduled
+  planner inputs on Android and web. On location changes, retain scheduled
+  wall-clock date/time and recalculate its instant in the new zone; keep
+  duration-based outings at their selected elapsed duration.
 - Use English for the first version.
 - Do not include accounts or history in the first version.
 - Start with a neutral, straightforward visual style.
@@ -367,6 +373,10 @@ calculation, supported platform versions, and the final visual polish.
 
 ## Progress
 
+- Refined the Info tab as a quick reference for UV, clouds, precipitation, and
+  wind. Kept editable thresholds and WHO guidance separate, made the category
+  rounding versus raw protection threshold explicit, and shortened supporting
+  copy without changing forecast or recommendation calculations.
 - Added an interactive location map for Android and web. The unselected map
   opens over Europe; taps select coordinates, and search/device selections
   recenter it. Both native and web now use Leaflet with attributed OpenStreetMap
@@ -438,7 +448,23 @@ calculation, supported platform versions, and the final visual polish.
 
 - Kept the outing planner mounted across tab changes so its local selections
   survive navigation; changing location recalculates the outing forecast.
-  Added Reset to restore Now/no duration/no shade without clearing location.
+  Added Reset to restore Now/4-hour duration/no shade without clearing location.
+- Scheduled start and end inputs now use the selected place's resolved local
+  time zone on web and Android. Changing locations preserves the selected local
+  date and time, re-resolves the instants for the new time zone, and keeps
+  duration-based outings at their selected elapsed duration.
+- Reconciled the older guidance scenario notes with the active sunscreen
+  reapplication rule. Reviewed generated advice for contrasting synthetic
+  outings and recorded presentation findings in
+  `notes/outing-guidance-output-review.md`. The recommendation rules did not
+  change in this review.
+- Followed up on that output review: grouped five or more changing UV windows
+  by band to avoid repeating actions, shortened the conditional sunscreen
+  reapplication sentence, and explained rounded-category/raw-threshold
+  mismatches in the outing guidance. The UVI 3 and 8 action triggers did not change.
+- Split the shared hourly chart into a small scroll/layout component, a daylight
+  track, and an hourly value bin. Updated the project map and removed duplicate
+  or stale descriptions in the README, architecture note, and open decisions.
 
 - Repository instruction file created.
 - Planning started before project scaffolding.
