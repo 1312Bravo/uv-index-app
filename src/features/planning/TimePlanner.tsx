@@ -357,7 +357,9 @@ export function TimePlanner({ onChange, timeZone }: Props) {
       )}
 
       {error && <Text style={styles.error}>{error}</Text>}
-      {timeZone && <Text style={styles.hint}>Times are local to the selected location.</Text>}
+      {timeZone && (startMode === 'scheduled' || endMode === 'end-time') && (
+        <Text style={styles.hint}>Times are local to the selected location.</Text>
+      )}
     </View>
   );
 }

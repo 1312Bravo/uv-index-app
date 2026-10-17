@@ -374,9 +374,10 @@ calculation, supported platform versions, and the final visual polish.
 ## Progress
 
 - Refined the Info tab as a quick reference for UV, clouds, precipitation, and
-  wind. Kept editable thresholds and WHO guidance separate, made the category
-  rounding versus raw protection threshold explicit, and shortened supporting
-  copy without changing forecast or recommendation calculations.
+  wind. Removed internal rounding details and repeated explanatory notes while
+  keeping the explanations needed to read forecast values. The outing guidance
+  still explains a rounded-category threshold difference when it affects that
+  outing. No forecast or recommendation calculations changed.
 - Added an interactive location map for Android and web. The unselected map
   opens over Europe; taps select coordinates, and search/device selections
   recenter it. Both native and web now use Leaflet with attributed OpenStreetMap

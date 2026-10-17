@@ -55,12 +55,12 @@ Rechecked WHO's [UV Index Q&A](https://www.who.int/news-room/questions-and-answe
 (20 June 2022), [skin-cancer protection Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-protecting-against-skin-cancer)
 (16 July 2024), and [UV radiation Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv))
 (9 March 2016), plus the [Open-Meteo forecast field definitions](https://open-meteo.com/en/docs).
-Shorter explanatory text now appears in `src/domain/uv/uvCategories.json`,
-`src/domain/guidance/whoGuidance.json`,
-`src/domain/weather/precipitationRateGuide.json`, and
-`src/features/info/InfoScreen.tsx`. UV Scout's category rounding, simplified
-cloud/wind labels, and hourly rain comparisons remain product interpretations;
-the UV/WHO/rain/wind thresholds and outing recommendation rules did not change.
+The Info tab keeps explanations needed to read the values, and omits internal
+rounding mechanics, repeated cloud cautions, and technical wind-height details.
+WHO's three action bands remain in `src/domain/guidance/whoGuidance.json`; the
+calculator thresholds and outing recommendation rules did not change. UV
+category rounding, simplified cloud/wind labels, and hourly rain comparisons
+remain product interpretations.
 The WMO rain-rate and NWS wind-scale references were not rechecked in this
 wording pass. See [Info-tab research](info-tab-content-research.md).
 

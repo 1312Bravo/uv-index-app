@@ -20,14 +20,12 @@ Sources:
   https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index
 
 **Product choice:** UV Scout keeps the forecast decimal visible and rounds it to
-the nearest integer for category selection, with .5 rounded up. The Info tab
-states this explicitly because it changes category boundaries for decimals.
-Recommendation thresholds use the unrounded forecast: general protection starts
-at raw UVI 3 and extra protection at 8. A value such as 2.5 can therefore show
-the Moderate category while remaining below the protection threshold.
-The Info tab now puts this distinction directly after the five category labels,
-then presents WHO's separate three-range general protection table. Its shorter
-category meanings and WHO actions are explanatory paraphrases, not new rules.
+the nearest integer for category selection, with .5 rounded up. Recommendation
+thresholds use the unrounded forecast: general protection starts at raw UVI 3
+and extra protection at 8. The Info tab keeps the five concise category
+descriptions and the separate WHO three-range protection table, but omits the
+rounding mechanics. The outing guidance explains a category/threshold mismatch
+only when that difference affects the selected outing.
 
 ## Cloud cover
 
@@ -46,9 +44,8 @@ Sources:
 
 **Product choice:** The human-readable labels in
 `src/domain/weather/cloudCoverBands.json` are simplified UV Scout descriptions.
-They are not an official meteorological scale. The exact percentage remains
-visible, and the interface says not to interpret it as UV reduction or route
-shade.
+They are not an official meteorological scale. The Info tab says cloud cover
+does not show UV strength; users should follow the UV Index.
 
 ## Precipitation amount
 
@@ -76,9 +73,10 @@ precipitation is rain. UV Scout uses “Very intense rain” instead of the WMO
 guide's potentially confusing highest-band term. The app does not classify
 forecast values automatically: an hourly total cannot show short bursts, the
 provider's total may include snow, and an outing sum spans multiple hours. The
-chart and outing summary keep displaying numeric amounts. The Info tab now
-explains the preceding-hour timing with a clock example and labels zero as
-“0 mm expected,” not a guarantee of no precipitation.
+chart and outing summary keep displaying numeric amounts. The Info tab explains
+the preceding-hour timing with a clock example and labels zero as “0 mm expected,”
+not a guarantee of no precipitation. Its outing note clarifies that peak hourly
+chance and the rain guide are not whole-outing values.
 
 ## Wind speed
 

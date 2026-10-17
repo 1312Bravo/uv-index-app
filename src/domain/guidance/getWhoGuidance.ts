@@ -10,8 +10,6 @@ export type WhoGuidanceBand = {
 };
 
 export type WhoGuidanceTable = {
-  note: string;
-  context: string;
   bands: WhoGuidanceBand[];
 };
 
@@ -19,10 +17,6 @@ const expectedLevelKeys: WhoGuidanceLevelKey[] = ['low', 'protection', 'extra-pr
 
 function validateDefinitions() {
   const usedKeys = new Set<string>();
-
-  if (!definitions.note.trim() || !definitions.context.trim()) {
-    throw new Error('WHO guidance note and context must not be empty.');
-  }
 
   for (const [index, level] of definitions.levels.entries()) {
     if (
@@ -53,8 +47,6 @@ validateDefinitions();
 // Return WHO's general reference table for the Info screen, not an outing-specific result.
 export function getWhoGuidanceTable(): WhoGuidanceTable {
   return {
-    note: definitions.note,
-    context: definitions.context,
     bands: definitions.levels.map((level, index) => {
       const nextLevel = definitions.levels[index + 1];
       const upperBound = nextLevel ? nextLevel.minimumUvInclusive - 1 : null;

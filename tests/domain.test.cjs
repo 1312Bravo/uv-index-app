@@ -50,7 +50,6 @@ test('WHO reference returns its three general action bands', () => {
 
   assert.deepEqual(table.bands.map(({ range }) => range), ['0-2', '3-7', '8+']);
   assert.ok(table.bands.every(({ actions }) => actions.length > 0));
-  assert.match(table.context, /time outdoors also matters/i);
   assert.doesNotMatch(table.bands[0].actions.join(' '), /the forecast stays/i);
 });
 

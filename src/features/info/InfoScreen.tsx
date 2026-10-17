@@ -44,8 +44,8 @@ function UvIndexExplanation() {
   return (
     <>
       <Text style={styles.description}>
-        The UV Index shows how strong the sun's UV radiation is. Higher values
-        mean more potential harm to skin and eyes. It is separate from temperature.
+        The UV Index shows the strength of the sun's ultraviolet radiation. It is
+        separate from temperature.
       </Text>
       <View style={styles.list}>
         {uvCategories.map((category, index) => (
@@ -58,17 +58,11 @@ function UvIndexExplanation() {
           </View>
         ))}
       </View>
-      <Text style={styles.note}>
-        UV Scout rounds the UV value to the nearest whole number for the category
-        (0.5 rounds up). Protection advice uses the unrounded value. For example,
-        2.9 displays as Moderate but stays below UV 3.
-      </Text>
       <Text style={styles.metricHeading}>WHO protection guidance</Text>
       <Text style={styles.description}>
-        The five labels above describe UV strength. WHO groups general protection
-        advice into three ranges. {whoGuidance.note}
+        The five categories describe UV strength. WHO's general protection advice
+        uses three ranges.
       </Text>
-      <Text style={styles.note}>{whoGuidance.context}</Text>
       <View style={styles.whoBands}>
         {whoGuidance.bands.map((band) => (
           <View key={band.level} style={styles.whoBand}>
@@ -98,8 +92,8 @@ function CloudCoverExplanation() {
   return (
     <>
       <Text style={styles.description}>
-        Cloud cover is the share of sky expected to be covered. It does not show
-        how much UV is blocked.
+        Cloud cover estimates how much of the sky is covered. It does not show
+        UV levels; check the UV Index.
       </Text>
       <View style={styles.list}>
         {cloudCoverBands.map((band) => (
@@ -114,10 +108,6 @@ function CloudCoverExplanation() {
           </View>
         ))}
       </View>
-      <Text style={styles.note}>
-        These are UV Scout labels, not official weather categories. UV can still
-        be high under clouds. Use the forecast UV Index to plan protection.
-      </Text>
       <SourceLink
         label="WHO: UV radiation, clouds and haze"
         url="https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)"
@@ -160,8 +150,7 @@ function PrecipitationExplanation() {
         ))}
       </View>
       <Text style={styles.note}>
-        The outing amount adds complete forecast hours only. Peak chance is the
-        highest single-hour chance, not the chance for the whole outing. The rain
+        Peak chance is for the highest single hour, not the whole outing. The rain
         guide applies to one hour, not the outing total.
       </Text>
       <SourceLink
@@ -180,8 +169,7 @@ function WindExplanation() {
   return (
     <>
       <Text style={styles.description}>
-        Wind speed is forecast at 10 meters above ground in km/h. These ranges
-        describe typical effects on land; local conditions may differ.
+        Wind speed is shown in km/h. These ranges describe typical effects on land.
       </Text>
       <View style={styles.list}>
         {windSpeedBands.map((band) => (
@@ -194,9 +182,6 @@ function WindExplanation() {
           </View>
         ))}
       </View>
-      <Text style={styles.note}>
-        These are simplified UV Scout groupings of the Beaufort scale.
-      </Text>
       <SourceLink
         label="U.S. National Weather Service: Beaufort wind scale"
         url="https://www.weather.gov/mfl/beaufort"
