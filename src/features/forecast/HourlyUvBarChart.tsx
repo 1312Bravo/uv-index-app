@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { DaylightEvents } from '../../domain/daylight/daylightTypes';
@@ -14,6 +14,10 @@ type Props = {
   sunTime: number;
   initialScrollHours?: number;
   selectedRange?: SelectedRange;
+  showFullOutlook?: boolean;
+  useHourlyForecast?: boolean;
+  selectedHourTime?: number;
+  scrollTarget?: { time: number };
 };
 
 const BIN_GAP = 0;
@@ -21,8 +25,9 @@ const OUTING_CONTEXT_HOURS = 3;
 const OUTLOOK_PAST_HOURS = 5;
 const OUTLOOK_FUTURE_HOURS = 18;
 
-function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange): ForecastHour[] {
+function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange, showFullOutlook = false): ForecastHour[] {
   if (!selectedRange) {
+    if (showFullOutlook) return hours;
     const currentIndex = hours.findIndex((hour) => hour.period === 'now');
     if (currentIndex < 0) return hours;
     return hours.slice(
@@ -46,10 +51,25 @@ function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange): Fo
   return hours.slice(firstSelected - contextHours, lastSelected + contextHours + 1);
 }
 
-export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialScrollHours = 0, selectedRange }: Props) {
+export function HourlyUvBarChart({
+  hours, timezone, daylight, sunTime, initialScrollHours = 0, selectedRange,
+  showFullOutlook = false, useHourlyForecast = false, selectedHourTime, scrollTarget,
+}: Props) {
   const chartRef = useRef<ScrollView | null>(null);
-  const chartHours = getChartHours(hours, selectedRange);
-  const scale = Math.max(8, ...chartHours.map((hour) => hour.uv));
+  const chartHours = useMemo(
+    () => getChartHours(hours, selectedRange, showFullOutlook),
+    [hours, selectedRange, showFullOutlook],
+  );
+  const scale = Math.max(8, ...chartHours.map((hour) =>
+    useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv,
+  ));
+
+  useEffect(() => {
+    if (scrollTarget === undefined) return;
+    const index = chartHours.findIndex((hour) => hour.time === scrollTarget.time);
+    if (index < 0) return;
+    chartRef.current?.scrollTo({ x: Math.max(0, (index - 3) * BIN_WIDTH), animated: true });
+  }, [chartHours, scrollTarget]);
 
   return (
     <View style={styles.chartFrame}>
@@ -58,7 +78,11 @@ export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialSc
         horizontal
         contentContainerStyle={styles.chartContent}
         onContentSizeChange={() => {
-          if (initialScrollHours > 0) {
+          const targetTime = scrollTarget?.time ?? selectedHourTime;
+          if (targetTime !== undefined) {
+            const index = chartHours.findIndex((hour) => hour.time === targetTime);
+            if (index >= 0) chartRef.current?.scrollTo({ x: Math.max(0, (index - 3) * BIN_WIDTH), animated: false });
+          } else if (initialScrollHours > 0) {
             chartRef.current?.scrollTo({ x: initialScrollHours * BIN_WIDTH, animated: false });
           }
         }}
@@ -80,6 +104,8 @@ export function HourlyUvBarChart({ hours, timezone, daylight, sunTime, initialSc
                   scale={scale}
                   showDay={index === 0 || day !== previousDay}
                   selectedRange={selectedRange}
+                  selectedHourTime={selectedHourTime}
+                  useHourlyForecast={useHourlyForecast}
                 />
               );
             })}

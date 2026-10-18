@@ -2,9 +2,15 @@
 
 This project uses one Expo app for Android and web. The current screen lets you
 search for a place or use your device location. After selecting one, it shows
-five earlier hourly values, Now, and eighteen future hours in a horizontally
-scrollable UV chart with cloud cover, temperature, precipitation, and wind
-context. The chart can cross midnight.
+five earlier hourly values, Now, and future hours through tomorrow in a
+horizontally scrollable UV chart with cloud cover, temperature, precipitation,
+and wind context. The UV reading defaults to Now. Choose Custom time to open
+one list of future half-hour slots; Today and Tomorrow appear within the list.
+The selected choice shows the full local date and time, centered above the list.
+On the hour, the reading uses Open-Meteo's hourly UV forecast. Half-hour UV is
+estimated between adjacent hourly values and labeled approximate. The chart
+still shows the original hourly values. Exact local time remains in the shared
+location summary.
 The first page keeps this overview focused. Use the **Plan an Outing** tab to
 open the planner, which supports Now or a scheduled start, duration presets
 including 3 hours, custom minutes, or an explicit end time. Android uses

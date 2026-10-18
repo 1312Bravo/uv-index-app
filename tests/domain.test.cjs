@@ -2,7 +2,8 @@ const assert = require('node:assert/strict');
 const { test } = require('node:test');
 
 const domainBuild = '../node_modules/.cache/uv-scout-domain-tests/domain';
-const { getCurrentUvGuidance } = require(`${domainBuild}/guidance/getCurrentUvGuidance.js`);
+const { getUvForecastAtTime } = require(`${domainBuild}/forecast/getUvForecastAtTime.js`);
+const { getHourlyUvGuidance } = require(`${domainBuild}/guidance/getHourlyUvGuidance.js`);
 const { getUvScoutInsight } = require(`${domainBuild}/guidance/getUvScoutInsight.js`);
 const { getWhoGuidanceTable } = require(`${domainBuild}/guidance/getWhoGuidance.js`);
 const { summarizeOutingForecast } = require(`${domainBuild}/outing/calculateOutingForecast.js`);
@@ -21,6 +22,22 @@ function hour(time, uv, overrides = {}) {
     ...overrides,
   };
 }
+
+test('half-hour UV is estimated between adjacent hourly forecasts', () => {
+  const hours = [
+    hour(0, 9, { hourlyUv: 2 }),
+    hour(3600, 4, { hourlyUv: 4 }),
+  ];
+
+  assert.deepEqual(getUvForecastAtTime(hours, 0), { uv: 2, interpolated: false });
+  assert.deepEqual(getUvForecastAtTime(hours, 1800), { uv: 3, interpolated: true });
+  assert.match(getHourlyUvGuidance(getUvForecastAtTime(hours, 1800).uv, null).actions.join(' '), /SPF 30\+/);
+});
+
+test('half-hour UV is unavailable without the following hourly forecast', () => {
+  assert.equal(getUvForecastAtTime([hour(0, 2)], 1800), null);
+  assert.equal(getUvForecastAtTime([hour(0, 2), hour(7200, 4)], 1800), null);
+});
 
 function forecast(hours) {
   return { timezone: 'UTC', hours, daylight: [] };
@@ -60,11 +77,11 @@ test('UV display category rounds decimal values with .5 upward', () => {
   assert.equal(getUvCategory(5.5).key, 'high');
 });
 
-test('current UV guidance uses raw protection bands and explains rounded category crossings', () => {
-  const low = getCurrentUvGuidance(2.9, 40);
-  const moderate = getCurrentUvGuidance(3, 40);
-  const nearVeryHigh = getCurrentUvGuidance(7.9, 40);
-  const veryHigh = getCurrentUvGuidance(8, 40);
+test('single-hour UV guidance uses raw protection bands and explains rounded category crossings', () => {
+  const low = getHourlyUvGuidance(2.9, 40);
+  const moderate = getHourlyUvGuidance(3, 40);
+  const nearVeryHigh = getHourlyUvGuidance(7.9, 40);
+  const veryHigh = getHourlyUvGuidance(8, 40);
 
   assert.equal(low.category, 'Moderate');
   assert.match(low.actions[0], /no extra sun protection/i);
@@ -76,11 +93,11 @@ test('current UV guidance uses raw protection bands and explains rounded categor
   assert.match(veryHigh.actions.join(' '), /limit direct sun/i);
 });
 
-test('current cloud reminder follows the UV and cloud thresholds', () => {
-  assert.equal(getCurrentUvGuidance(2, 100).cloudNote, null);
-  assert.equal(getCurrentUvGuidance(5, 75).cloudNote, null);
-  assert.match(getCurrentUvGuidance(5, 76).cloudNote, /cloud cover/i);
-  assert.equal(getCurrentUvGuidance(5, null).cloudNote, null);
+test('single-hour cloud reminder follows the UV and cloud thresholds', () => {
+  assert.equal(getHourlyUvGuidance(2, 100).cloudNote, null);
+  assert.equal(getHourlyUvGuidance(5, 75).cloudNote, null);
+  assert.match(getHourlyUvGuidance(5, 76).cloudNote, /cloud cover/i);
+  assert.equal(getHourlyUvGuidance(5, null).cloudNote, null);
 });
 
 test('outing averages weight partial first and last hours by their overlap', () => {

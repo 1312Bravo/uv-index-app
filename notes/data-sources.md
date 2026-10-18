@@ -1,6 +1,6 @@
 # Data and evidence sources
 
-Updated 2026-10-17. This is the source register for UV Scout. It records the
+Updated 2026-10-18. This is the source register for UV Scout. It records the
 origin of external forecast/location data and evidence used to shape app
 behavior, plus where each source enters the project and how it is interpreted.
 Topic-specific research notes contain the fuller evidence review and rationale.
@@ -18,7 +18,7 @@ re-verified that day.
 
 | Source | Data used and how it is used | Where it enters the app | Attribution, licensing, and limits |
 | --- | --- | --- | --- |
-| [Open-Meteo Forecast API](https://open-meteo.com/en/docs) | `uv_index`, `temperature_2m`, `cloud_cover`, `precipitation_probability`, `precipitation`, `wind_speed_10m`, timestamps, and resolved timezone. `timezone=auto` resolves the timezone for the requested coordinates; this timezone is used to display and interpret scheduled start/end wall times in the planner. The planner resolves the chosen local date and clock time to an instant before selecting forecast intervals. When location changes, it preserves the chosen local date/time and resolves it in the new location's zone; duration remains elapsed time. The app requests two local forecast days and retains all returned hourly values from five hours before the current hour through the end of tomorrow for outing planning. The UV Outlook chart independently selects its rolling five-past/Now/18-future window. Current conditions are preferred for UV, temperature, cloud cover, and wind speed in the current chart bin when present; hourly model values fill surrounding bins. Precipitation chance and amount remain hourly weather context and do not affect UV guidance. `precipitation_probability` is the chance of more than 0.1 mm in the preceding hour; `precipitation` is the preceding-hour total in mm, including rain, showers, and snow. Wind speed is forecast at 10 m above ground in km/h by default and is displayed as a rounded hourly weather value; it does not alter UV values or protection guidance. UV/temperature outing averages and UV exposure summaries are app-derived, not provider-issued outing aggregates. `src/domain/outing/calculateOutingForecast.ts` also calculates duration-weighted outing cloud cover and range, sums precipitation amounts only for fully contained preceding-hour intervals (without prorating partial hours), and reports the maximum hourly probability among overlapping intervals; hourly probabilities are never combined into an outing-wide chance. | `src/services/forecast/getHourlyForecast.ts` parses into `src/domain/forecast/forecastTypes.ts`; location timezone is passed by `src/app/UvScoutApp.tsx` to `src/features/planning/TimePlanner.tsx`, with wall-time conversion in `src/domain/time/zonedDateTime.ts` and platform fields in `src/features/planning/DateTimeField.tsx`. Shared per-hour chart rows render in `src/features/forecast/HourlyUvBarChart.tsx` in both UV Outlook and Plan an Outing. Field explanations are in `src/features/info/InfoScreen.tsx`. UV, weather aggregation, and coverage are in `src/domain/outing/calculateOutingForecast.ts`; the outing summary and UV Scout profile guidance render in `src/features/outing/OutingForecast.tsx` using `src/domain/guidance/getUvScoutInsight.ts`. | API field definitions and timezone behavior checked 2026-10-17. The two-day request is UV Scout's near-term product choice, not the provider's maximum horizon. Selected for the non-commercial prototype and credited in the UI. Forecasts are model estimates, not personal exposure measurements; the selected grid cell may not exactly match the requested coordinate. UV Scout profile guidance uses estimated time in raw-UV bands, peak/time, average, continuity, and coverage; WHO's independent general table is displayed in Info. These are not a personal dose calculation. Category rounding is for display. The free API is limited to non-commercial use under its stated terms and CC BY 4.0 attribution; recheck current [terms](https://open-meteo.com/en/terms) before release or any change in use. See [forecast notes](forecast.md) and [recommendation-model research](recommendation-model-research.md). |
+| [Open-Meteo Forecast API](https://open-meteo.com/en/docs) | `uv_index`, `temperature_2m`, `cloud_cover`, `precipitation_probability`, `precipitation`, `wind_speed_10m`, timestamps, and resolved timezone. `timezone=auto` resolves the timezone for the requested coordinates; this timezone is used to display and interpret scheduled start/end wall times in the planner. The planner resolves the chosen local date and clock time to an instant before selecting forecast intervals. When location changes, it preserves the chosen local date/time and resolves it in the new location's zone; duration remains elapsed time. The app requests two local forecast days and retains all returned hourly values from five hours before the current hour through the end of tomorrow for outing planning. The UV Outlook chart exposes the available hours from five before Now through tomorrow; its Now/Custom time controls sit above the UV reading. The Now choice is labeled simply Now; exact local time remains in the shared location summary, while the estimate panel shows the provider's current-conditions timestamp. Custom time offers half-hour slots through tomorrow. On-the-hour readings use the hourly model value; half-hour UV is interpolated between adjacent hourly values and labeled approximate. The chart keeps the original hourly values and highlights the containing hour. This selection behavior is implemented by `src/features/forecast/getOutlookTimeSlots.ts`, `src/features/forecast/OutlookTimeSelector.tsx`, and `src/domain/forecast/getUvForecastAtTime.ts`. Current conditions are preferred for UV, temperature, cloud cover, and wind speed in the current chart bin when present; hourly model values fill surrounding bins. Precipitation chance and amount remain hourly weather context and do not affect UV guidance. `precipitation_probability` is the chance of more than 0.1 mm in the preceding hour; `precipitation` is the preceding-hour total in mm, including rain, showers, and snow. Wind speed is forecast at 10 m above ground in km/h by default and is displayed as a rounded hourly weather value; it does not alter UV values or protection guidance. UV/temperature outing averages and UV exposure summaries are app-derived, not provider-issued outing aggregates. `src/domain/outing/calculateOutingForecast.ts` also calculates duration-weighted outing cloud cover and range, sums precipitation amounts only for fully contained preceding-hour intervals (without prorating partial hours), and reports the maximum hourly probability among overlapping intervals; hourly probabilities are never combined into an outing-wide chance. | `src/services/forecast/getHourlyForecast.ts` parses into `src/domain/forecast/forecastTypes.ts`; location timezone is passed by `src/app/UvScoutApp.tsx` to `src/features/planning/TimePlanner.tsx`, with wall-time conversion in `src/domain/time/zonedDateTime.ts` and platform fields in `src/features/planning/DateTimeField.tsx`. Shared per-hour chart rows render in `src/features/forecast/HourlyUvBarChart.tsx` in both UV Outlook and Plan an Outing. Field explanations are in `src/features/info/InfoScreen.tsx`. UV, weather aggregation, and coverage are in `src/domain/outing/calculateOutingForecast.ts`; the outing summary and UV Scout profile guidance render in `src/features/outing/OutingForecast.tsx` using `src/domain/guidance/getUvScoutInsight.ts`. | API field definitions and timezone behavior checked 2026-10-17. The two-day request is UV Scout's near-term product choice, not the provider's maximum horizon. Selected for the non-commercial prototype and credited in the UI. Forecasts are model estimates, not personal exposure measurements; the selected grid cell may not exactly match the requested coordinate. UV Scout profile guidance uses estimated time in raw-UV bands, peak/time, average, continuity, and coverage; WHO's independent general table is displayed in Info. These are not a personal dose calculation. Category rounding is for display. The free API is limited to non-commercial use under its stated terms and CC BY 4.0 attribution; recheck current [terms](https://open-meteo.com/en/terms) before release or any change in use. See [forecast notes](forecast.md) and [recommendation-model research](recommendation-model-research.md). |
 | [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api), using GeoNames place data | English place suggestions and coordinates used after the user selects a search result. The app requests up to five suggestions. | `src/services/location/searchPlaces.ts`; selected-place presentation and attribution in `src/features/location/LocationPicker.tsx`. | Checked 2026-10-05. Results are credited to Open-Meteo and GeoNames. The free service is intended for non-commercial use; verify applicable terms/licensing before a commercial release. See [location notes](location.md). |
 | [BigDataCloud client-side reverse-geocoding API](https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api) | Best-effort locality/city label derived from the current device coordinates the user chose to share. It labels a place; it does not provide the device coordinates. | `src/services/location/reverseGeocode.ts`, called by the device-location flow in `src/features/location/LocationPicker.tsx`. If lookup fails, the app can keep the generic location label and coordinates. | Provider endpoint and [fair-use policy](https://www.bigdatacloud.com/docs/article/fair-use-policy-for-free-client-side-reverse-geocoding-api) checked 2026-10-05. The policy requires current, permission-based device coordinates and a direct client-side call. BigDataCloud says it receives coordinates alongside request/network signals and uses anonymous pairings to improve IP-geolocation data; account for that in future privacy explanations. The app does not save a location history. Current provider docs name the parameter `latitude`; the implementation currently sends `lat`, so verify endpoint compatibility and align it before relying on this label. See [location notes](location.md). |
 | Device operating-system location services via Expo Location | Coordinates from the device only after the user taps the location control and grants foreground permission. | Device-location flow in `src/features/location/LocationPicker.tsx`; `expo-location` requests coordinates, which are passed to the forecast service. | Accuracy and underlying positioning methods depend on the device and OS. Coordinates are not persisted by the first-version app. |
@@ -47,16 +47,19 @@ re-verified that day.
   location. The non-commercial Open-Meteo attribution and licensing limits
   stated above also apply here.
 
-### Current UV Outlook guidance (checked 2026-10-17)
+### UV Outlook hourly guidance (source checked 2026-10-17)
 
 - [Open-Meteo Forecast API](https://open-meteo.com/en/docs) says its `current`
   conditions are based on 15-minute weather-model data, not a personal UV
   measurement. `src/services/forecast/getHourlyForecast.ts` prefers current UV,
   temperature, and cloud cover for the Now chart bin, falling back to hourly
   model values when needed. `src/features/forecast/HourlyUvChart.tsx` uses that
-  same bin for the current advice, displays the provider's `current.time` in
-  the location's time zone when it is available, and refetches while open every
-  15 minutes.
+  bin for the default Now advice and shows the provider's `current.time` in
+  the location's time zone when available. Exact local time remains in the
+  shared location summary. An on-the-hour custom selection uses the hourly UV
+  value; a half-hour selection estimates UV between adjacent hourly values.
+  Its cloud reminder uses the containing hour's cloud-cover forecast.
+  Forecast requests repeat every 15 minutes while UV Outlook is open.
   Open-Meteo remains credited in the UI; its non-commercial licensing and
   grid-cell limitations are described in the provider row above. The refresh
   interval is a UV Scout product choice, not the model's guaranteed update rate.
@@ -65,12 +68,18 @@ re-verified that day.
   UVI 8+. WHO's [skin-cancer protection Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-protecting-against-skin-cancer)
   (16 July 2024) supports clothing, hat, UV-protective eyewear, shade, and
   broad-spectrum SPF 30+ on uncovered skin. These sources inform the editable
-  `src/domain/guidance/currentUvGuidance.json` actions, interpreted by
-  `getCurrentUvGuidance.ts`. UV Scout uses the same raw 3 and 8 thresholds as
+  `src/domain/guidance/hourlyUvGuidance.json` actions, interpreted by
+  `getHourlyUvGuidance.ts`. UV Scout uses the same raw 3 and 8 thresholds as
   outing guidance. The five display categories, decimal rounding, the 76%
-  cloud reminder trigger, and concise current-only wording are UV Scout
+  cloud reminder trigger, and concise single-hour wording are UV Scout
   choices. Cloud cover never numerically adjusts the forecast UV. This advice
   assumes no activity, duration, personal sensitivity, or measured exposure.
+- UV Scout's Now/Custom controls above the UV reading use the existing two-day
+  Open-Meteo response. The chart highlights the choice; earlier model hours
+  are shown only as context.
+  Custom half-hour slots appear in one continuous list with local-day labels at
+  date boundaries. This is a presentation choice, not a new provider field or a
+  personal exposure calculation.
 
 ## Interactive map providers
 
@@ -217,6 +226,30 @@ presentation choices in `src/domain/guidance/uvScoutRecommendationRules.json`,
 values, and protection actions did not change. See
 [the output review](outing-guidance-output-review.md) and
 [active rules](active-uv-guidance.md) for rationale and limitations.
+
+### UV Outlook time selector update, 2026-10-18
+
+The Now control is labeled simply “Now”; exact local time remains in the
+shared location summary, and the estimate still displays Open-Meteo's
+current-conditions timestamp when supplied. Custom time is one compact,
+scrollable list of available future half-hour choices, labeled Today and
+Tomorrow at local date boundaries. On-the-hour choices use the Open-Meteo
+hourly value; half-hour UV is interpolated between adjacent hourly values.
+The chart keeps the provider's hourly values and highlights the containing
+hour. The last half-hour choice is omitted when the next hourly value is
+unavailable. These are UV Scout presentation and calculation choices.
+The behavior is implemented in `src/features/forecast/OutlookTimeSelector.tsx`
+and `src/features/forecast/HourlyUvChart.tsx`, with the calculation in
+`src/domain/forecast/getUvForecastAtTime.ts`.
+
+Open-Meteo's [Forecast API documentation](https://open-meteo.com/en/docs)
+states that most hourly values represent the indicated hour. Its current
+conditions use 15-minute model data. Checked 2026-10-18. UV Scout linearly
+interpolates half-hour UV: the estimate is halfway between the two surrounding
+hourly `uv_index` values. It uses that unrounded estimate for the displayed
+category and single-hour protection guidance, while the chart shows the source
+hourly values. Interpolation does not add weather-model detail, account for
+changes between the hourly samples, or provide a personal UV measurement.
 
 ## Review checklist for future sources
 

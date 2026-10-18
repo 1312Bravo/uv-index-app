@@ -13,9 +13,10 @@
   },
   "include": [
     "src/domain/forecast/forecastTypes.ts",
+    "src/domain/forecast/getUvForecastAtTime.ts",
     "src/domain/uv/getUvCategory.ts",
     "src/domain/outing/calculateOutingForecast.ts",
-    "src/domain/guidance/getCurrentUvGuidance.ts",
+    "src/domain/guidance/getHourlyUvGuidance.ts",
     "src/domain/guidance/getWhoGuidance.ts",
     "src/domain/guidance/getUvScoutInsight.ts"
   ]

@@ -13,6 +13,8 @@ type Props = {
   scale: number;
   showDay: boolean;
   selectedRange?: SelectedRange;
+  selectedHourTime?: number;
+  useHourlyForecast?: boolean;
 };
 
 function formatHour(time: number, timezone: string): string {
@@ -41,14 +43,19 @@ function formatPrecipitationProbability(value: number | null | undefined): strin
   return value == null ? '-' : `${Math.round(value)}%`;
 }
 
-export function HourBin({ hour, timezone, scale, showDay, selectedRange }: Props) {
-  const height = Math.max(0, hour.uv / scale * MAX_BAR_HEIGHT);
+export function HourBin({
+  hour, timezone, scale, showDay, selectedRange, selectedHourTime, useHourlyForecast = false,
+}: Props) {
+  const uv = useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv;
+  const cloudCover = useHourlyForecast ? hour.hourlyCloudCover ?? hour.cloudCover : hour.cloudCover;
+  const height = Math.max(0, uv / scale * MAX_BAR_HEIGHT);
   const isSelected = selectedRange !== undefined &&
     hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start;
   const isContext = selectedRange !== undefined && !isSelected;
-  const cloudCoverDescription = hour.cloudCover === null
+  const isFocused = selectedHourTime === hour.time;
+  const cloudCoverDescription = cloudCover === null
     ? 'unavailable'
-    : `${Math.round(hour.cloudCover)} percent`;
+    : `${Math.round(cloudCover)} percent`;
   const precipitationProbabilityDescription = hour.precipitationProbability == null
     ? 'unavailable'
     : `${Math.round(hour.precipitationProbability)} percent`;
@@ -62,40 +69,42 @@ export function HourBin({ hour, timezone, scale, showDay, selectedRange }: Props
     ? isSelected ? ', during selected outing' : ', outside selected outing'
     : '';
 
-  return (
-    <View style={[
-      styles.bin,
-      selectedRange
-        ? isSelected && styles.selectedBin
+  const binStyle = [
+    styles.bin,
+    selectedRange
+      ? isSelected && styles.selectedBin
+      : selectedHourTime !== undefined
+        ? isFocused && styles.currentBin
         : hour.period === 'now' && styles.currentBin,
-    ]}
-      accessible
-      accessibilityLabel={`${formatHour(hour.time, timezone)}. UV Index ${hour.uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour. Wind speed ${windSpeedDescription}${outingDescription}.`}
-      accessibilityRole="text"
-    >
+  ];
+  const accessibilityLabel = `${formatChartDay(hour.time, timezone)}, ${formatHour(hour.time, timezone)}. UV Index ${uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour. Wind speed ${windSpeedDescription}${outingDescription}.`;
+  return (
+    <View accessible accessibilityLabel={accessibilityLabel} accessibilityRole="text" style={binStyle}>
       <Text numberOfLines={1} style={[styles.cloudCover, isContext && styles.contextText]}>
-        {hour.cloudCover === null ? '-' : `${Math.round(hour.cloudCover)}%`}
+        {cloudCover === null ? '-' : `${Math.round(cloudCover)}%`}
       </Text>
       <Text numberOfLines={1} style={[styles.temperature, isContext && styles.contextText]}>
         {Math.round(hour.temperature)}°
       </Text>
       <View style={styles.barArea}>
         <Text numberOfLines={1} style={[styles.uv, isContext && styles.contextText, { bottom: height + 2 }]}>
-          {hour.uv.toFixed(1)}
+          {uv.toFixed(1)}
         </Text>
         <View style={[
           styles.bar,
           { height },
           selectedRange
             ? isSelected ? styles.selectedBar : styles.contextBar
-            : hour.period === 'past' ? styles.pastBar : hour.period === 'now' ? styles.currentBar : null,
+            : selectedHourTime !== undefined
+              ? isFocused ? styles.currentBar : hour.period === 'past' ? styles.pastBar : null
+              : hour.period === 'past' ? styles.pastBar : hour.period === 'now' ? styles.currentBar : null,
         ]} />
       </View>
       <Text
         numberOfLines={1}
-        style={[styles.hour, !selectedRange && hour.period === 'now' && styles.currentText, isContext && styles.contextText]}
+        style={[styles.hour, !selectedRange && (selectedHourTime !== undefined ? isFocused : hour.period === 'now') && styles.currentText, isContext && styles.contextText]}
       >
-        {hour.period === 'now' ? 'Now' : formatHour(hour.time, timezone)}
+        {hour.period === 'now' && !useHourlyForecast ? 'Now' : formatHour(hour.time, timezone)}
       </Text>
       <Text numberOfLines={1} style={[styles.day, isContext && styles.contextText]}>
         {showDay ? formatChartDay(hour.time, timezone) : ' '}

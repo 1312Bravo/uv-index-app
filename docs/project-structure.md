@@ -8,6 +8,7 @@ src/
     TopTabs.tsx
   domain/                     Product knowledge and shared data types
     forecast/forecastTypes.ts
+    forecast/getUvForecastAtTime.ts Estimates UV between hourly values
     time/                      Local wall-time and time-zone conversion
     daylight/                  Civil dawn, sunrise, sunset, and civil dusk calculations
     location/locationTypes.ts
@@ -17,6 +18,8 @@ src/
     guidance/uvScoutInsight.json Editable UV Scout wording
     guidance/uvScoutRecommendationRules.json Active profile/factor policy
     guidance/getUvScoutInsight.ts Validates and interprets both guidance files
+    guidance/hourlyUvGuidance.json Editable single-hour guidance text
+    guidance/getHourlyUvGuidance.ts Interprets single-hour UV guidance
     uv/uvCategories.json      Editable UV categories and explanations
     uv/getUvCategory.ts       Validates and interprets the category table
     weather/cloudCoverBands.json Editable cloud-cover descriptions
@@ -27,6 +30,10 @@ src/
   features/                   UI components, formatting, React hooks
     forecast/                 Forecast loading and shared hourly chart
       HourlyUvBarChart.tsx    Scroll window and chart composition
+      HourlyUvChart.tsx       UV Outlook time selection and guidance
+      OutlookTimeSelector.tsx Future time list above the UV reading
+      getOutlookTimeSlots.ts  Available half-hour choices
+      HourlyUvGuidance.tsx    Current or selected-hour advice panel
       DaylightTrack.tsx       Dawn/dusk markers and sun/moon trace
       HourBin.tsx             UV bar and hourly weather values
       hourlyChartLayout.ts   Shared bin width and selection type
@@ -137,16 +144,19 @@ Scout's profile interpreter. Forecast overlap and coverage calculations stay
 in `src/domain/outing/calculateOutingForecast.ts`. Rule rationale and source
 provenance belong in the guidance research notes and `notes/data-sources.md`.
 
-UV Outlook's current advice is separate from the outing profile. Edit
-`src/domain/guidance/currentUvGuidance.json` for its short protection text;
-`src/domain/guidance/getCurrentUvGuidance.ts` interprets it using the raw bands
+UV Outlook's single-hour advice is separate from the outing profile. Edit
+`src/domain/guidance/hourlyUvGuidance.json` for its short protection text;
+`src/domain/guidance/getHourlyUvGuidance.ts` interprets it using the raw bands
 in `uvScoutRecommendationRules.json` and the existing display categories.
 Those bands are raw UVI below 3, 3 to below 8, and 8 or higher. A cloud
 reminder appears at 76% cover or more only when raw UVI is at least 3;
 cloud cover does not change the protection band. The displayed category
 still rounds the UV value to a whole number.
-`src/features/forecast/CurrentUvGuidance.tsx` renders the result above the
-hourly chart. The open outlook refreshes its forecast every 15 minutes.
+`src/features/forecast/HourlyUvGuidance.tsx` renders the result above the
+hourly chart. The Now bin uses the provider's current model estimate when
+available. Custom times on the hour use hourly forecast values; half-hour UV
+is estimated by `src/domain/forecast/getUvForecastAtTime.ts` between adjacent
+hourly values. The open outlook refreshes its forecast every 15 minutes.
 
 | Change | Home |
 | --- | --- |

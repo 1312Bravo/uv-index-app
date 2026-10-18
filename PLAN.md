@@ -37,17 +37,23 @@ helps people plan outdoor time around the current and forecast UV index.
   forecast times.
 - If the user switches from Now to a scheduled outing, offer only future times
   relative to the current time at the selected location.
-- With Now selected, show a horizontal UV trend with five earlier hourly bins,
-  the current hour, and eighteen later hourly bins, even before duration is chosen.
-  The window may cross into the next local day.
-- UV Outlook gives a compact current UV estimate and protection actions above
-  the chart. It uses the current-hour value, without assuming an outing duration
-  or describing later forecast hours as current conditions. Show the provider's
-  current-conditions time in the selected location's time zone. Refresh the open
-  outlook about every 15 minutes.
-- Keep the full two local forecast days available to Plan an Outing through
-  tomorrow's end; the UV Outlook chart remains the rolling five-past/Now/18-future
-  window. Explain the forecast boundary when a planned outing extends beyond it.
+- UV Outlook shows a horizontal UV trend from five earlier hourly bins through
+  the end of tomorrow. Its initial position keeps Now near the left. The chart
+  crosses local day boundaries. Now and Custom time controls above the UV reading
+  choose the forecast time; the chart reflects that choice.
+- UV Outlook defaults to a `Now` choice without a clock in its label; exact
+  local time remains in the shared location summary. Custom time is the
+  alternate choice above the UV reading and opens one compact list of future
+  half-hour slots through tomorrow, with day labels inside the list. The selected
+  time is centered and shows its full local date and time. Each custom
+  time on the hour uses the hourly forecast value; half-hour UV is estimated
+  between adjacent hourly values and labeled approximate. Earlier bins
+  remain context only. Single-hour guidance assumes no outing duration. Show
+  the provider's current-conditions timestamp for Now. Refresh the open outlook
+  about every 15 minutes.
+- Keep the full two local forecast days available to Plan an Outing and UV Outlook
+  through tomorrow's end. Explain the forecast boundary when a planned outing
+  extends beyond it.
 - The result combines a rounded display category, a forecast over the selected
   time, and practical guidance. Show WHO's general 0-2, 3-7, and 8+ reference
   table in Info. The outing result is UV Scout's own rule-based interpretation
@@ -181,8 +187,8 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Keep earlier/later comparisons in the future.
 - [x] Default the selected outing to Now for 4 hours, with controls to change
   duration or set an end time.
-- [x] Show the rolling 5-past / Now / 18-future hourly UV trend independently
-  of the outing timeframe.
+- [x] First show a rolling 5-past / Now / 18-future hourly UV trend independently
+  of the outing timeframe; later extend selection through tomorrow.
 - [x] Choose Open-Meteo for keyless UV and temperature forecasts in the prototype.
 - [x] Confirm and implement the first recommendation rules and safety wording.
 - [x] Scaffold the Expo project with Android and web support.
@@ -221,9 +227,8 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add hourly wind speed below the precipitation values in both forecast charts;
   keep it separate from UV Scout's protection guidance.
 - [x] Add an Info guide to grouped land-based wind-speed ranges.
-- [x] Retain both requested forecast days for outing planning while keeping the
-  UV Outlook chart at five past, Now, and eighteen future hours; explain when an
-  outing exceeds the returned forecast horizon.
+- [x] Retain both requested forecast days for outing planning and later UV
+  Outlook selection; explain when an outing exceeds the returned forecast horizon.
 - [x] Add an always-available final Info tab explaining UV categories, decimal
   category rounding, and cloud-cover percentages.
 - [x] Render the validated WHO general action table in the UV Info topic.
@@ -279,6 +284,9 @@ calculation, supported platform versions, and the final visual polish.
   sunscreen step under Protection steps.
 - [x] Add a compact current UV estimate and protection actions to UV Outlook,
   using the existing raw UV bands and relevant cloud context.
+- [x] Add Now/Custom time controls above UV Outlook's reading. Custom time
+  offers future half-hour choices across local days, updates the UV value and
+  guidance, and highlights the containing chart bin. Keep past bins as context only.
 
 ## Decisions
 
@@ -289,9 +297,9 @@ calculation, supported platform versions, and the final visual polish.
 - Support Android and web.
 - Use Open-Meteo as the initial UV and temperature source. This is an ease-of-
   implementation choice, not a claim of superior forecast accuracy.
-- Request two local forecast days from Open-Meteo for outing planning. This is a
-  near-term product horizon, not a provider maximum; keep the UV Outlook chart's
-  existing rolling window and explain when an outing exceeds available coverage.
+- Request two local forecast days from Open-Meteo for outing planning and UV
+  Outlook hour selection. This is a near-term product horizon, not a provider
+  maximum; explain when an outing exceeds available coverage.
 - Position UV Scout around current and near-term outings (today or tomorrow in
   the available local forecast). Keep UV protection central and other weather
   variables as supporting context; do not expand into long-range planning or a
@@ -322,13 +330,13 @@ calculation, supported platform versions, and the final visual polish.
   plus custom minutes. Allow the user to switch to an explicit end time instead.
 - Present planner choices as compact selector rows with vertically revealed
   options, rather than groups of boxed buttons. Keep only one option list open.
-- Show a minimal horizontal UV chart with five preceding hours, Now, and eighteen
-  following hours in the location's time zone. Allow the window to cross midnight
-  and label day changes. Show compact temperature and UV labels above each hourly
-  bar, plus the current local weekday, date, and time. Keep the initial viewport
-  slightly into the earlier-hours window so Now is left of center with more
-  upcoming hours visible; all five earlier hours remain available by scrolling
-  left. Keep it independent of the outing timeframe. Add daylight markers later.
+- Show a minimal horizontal UV chart from five preceding hours through the end
+  of tomorrow in the location's time zone. Label day changes and show compact
+  weather and UV values by hour. Keep the initial viewport near Now with earlier
+  hours available to the left. Custom times are listed continuously across
+  local days with Today/Tomorrow section labels. The time selector updates UV
+  guidance and chart focus. Keep the chart independent of the outing
+  timeframe.
 - Give concise general advice about seeking shade and explain its limits; do not
   infer route shade or use a shade multiplier. Do not include a shade selector.
 - Defer optional “Tailor this advice” questions (for example, shade, clothing
@@ -387,6 +395,10 @@ calculation, supported platform versions, and the final visual polish.
 
 ## Progress
 
+- UV Outlook now selects current and future hourly bins through tomorrow.
+  The current panel becomes a dated forecast panel for later hours; a compact
+  custom-time list spans Today and Tomorrow in half-hour increments. The
+  underlying single-hour guidance is shared by current and future readings.
 - Refined the Info tab as a quick reference for UV, clouds, precipitation, and
   wind. Removed internal rounding details and repeated explanatory notes while
   keeping the explanations needed to read forecast values. The outing guidance

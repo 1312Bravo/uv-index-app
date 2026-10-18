@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { CurrentUvGuidance as CurrentUvGuidanceResult } from '../../domain/guidance/getCurrentUvGuidance';
+import type { HourlyUvGuidance as HourlyUvGuidanceResult } from '../../domain/guidance/getHourlyUvGuidance';
 
 function formatEstimateTime(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
@@ -11,22 +11,45 @@ function formatEstimateTime(time: number, timezone: string): string {
   }).format(new Date(time * 1000));
 }
 
-export function CurrentUvGuidance({
+function formatForecastTime(time: number, timezone: string): string {
+  return new Intl.DateTimeFormat('en', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: timezone,
+  }).format(new Date(time * 1000));
+}
+
+export function HourlyUvGuidance({
   guidance,
   estimateTime,
+  forecastHourTime,
+  isCurrent,
+  isInterpolated,
   timezone,
 }: {
-  guidance: CurrentUvGuidanceResult;
+  guidance: HourlyUvGuidanceResult;
   estimateTime: number | null;
+  forecastHourTime: number;
+  isCurrent: boolean;
+  isInterpolated: boolean;
   timezone: string;
 }) {
   const guidancePoints = [guidance.meaning, ...guidance.actions];
 
   return (
     <View style={styles.section}>
-      <Text style={styles.heading}>Current UV</Text>
-      {estimateTime !== null && (
-        <Text style={styles.estimateTime}>Estimate for {formatEstimateTime(estimateTime, timezone)}</Text>
+      <Text style={styles.heading}>{isCurrent ? 'Current UV' : 'UV forecast'}</Text>
+      {isCurrent && estimateTime !== null && (
+        <Text style={styles.estimateTime}>Latest estimate: {formatEstimateTime(estimateTime, timezone)}</Text>
+      )}
+      {!isCurrent && (
+        <Text style={styles.estimateTime}>
+          {isInterpolated ? 'Approx. UV for ' : 'Forecast for '}{formatForecastTime(forecastHourTime, timezone)}
+        </Text>
       )}
       <View style={styles.reading}>
         <View style={styles.uvBlock}>
@@ -56,7 +79,7 @@ export function CurrentUvGuidance({
 }
 
 const styles = StyleSheet.create({
-  section: { borderBottomColor: '#E6E6E6', borderBottomWidth: 1, paddingBottom: 18 },
+  section: { paddingBottom: 18 },
   heading: { color: '#151515', fontSize: 16, fontWeight: '600', textAlign: 'center' },
   estimateTime: { color: '#777777', fontSize: 11, marginTop: 3, textAlign: 'center' },
   reading: { alignItems: 'stretch', flexDirection: 'row', marginTop: 14 },

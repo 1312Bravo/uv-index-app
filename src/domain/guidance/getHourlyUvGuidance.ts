@@ -1,10 +1,10 @@
-import definitions from './currentUvGuidance.json';
+import definitions from './hourlyUvGuidance.json';
 import rules from './uvScoutRecommendationRules.json';
 import { getUvCategory, getUvCategoryDefinitions } from '../uv/getUvCategory';
 
 type UvBandKey = 'below-3' | '3-to-8' | '8-plus';
 
-export type CurrentUvGuidance = {
+export type HourlyUvGuidance = {
   uv: number;
   category: string;
   meaning: string;
@@ -33,11 +33,11 @@ if (
   throw new Error('Current UV guidance definitions are incomplete or inconsistent.');
 }
 
-// A current reading has no duration, so only the raw UV protection band applies.
-export function getCurrentUvGuidance(uv: number, cloudCover: number | null): CurrentUvGuidance {
+// A single-hour reading has no outing duration, so only the raw UV protection band applies.
+export function getHourlyUvGuidance(uv: number, cloudCover: number | null): HourlyUvGuidance {
   if (!Number.isFinite(uv) || uv < 0 ||
     (cloudCover !== null && (!Number.isFinite(cloudCover) || cloudCover < 0 || cloudCover > 100))) {
-    throw new Error('Current UV or cloud cover is invalid.');
+    throw new Error('Hourly UV or cloud cover is invalid.');
   }
 
   const band = bands.find((entry) => uv >= entry.minimumUvInclusive &&
@@ -46,7 +46,7 @@ export function getCurrentUvGuidance(uv: number, cloudCover: number | null): Cur
 
   const category = getUvCategory(uv);
   const meaning = getUvCategoryDefinitions().find((entry) => entry.key === category.key)?.meaning;
-  if (!meaning) throw new Error('Current UV category has no description.');
+  if (!meaning) throw new Error('Hourly UV category has no description.');
 
   const categoryCrossesThreshold = (uv < 3 && category.key !== 'low') ||
     (uv < 8 && category.key === 'very-high');

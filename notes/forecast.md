@@ -7,16 +7,15 @@ attribution, and limitations.
   temperature forecast, alongside its existing place search.
 - The choice avoids client-side API-key handling; it does not establish that
   Open-Meteo is more accurate than WeatherAPI.
-- Show five earlier hourly model values, the current modeled value, and eighteen
-  future hourly values in one horizontally scrollable chart. Use narrow, closely
+- Show five earlier hourly model values, Now, and the available future hours
+  through tomorrow in one horizontally scrollable chart. Use narrow, closely
   spaced bins so more hours fit on screen. Initially show a couple of earlier bins
   before Now, leaving more future bins visible; all five earlier bins remain
-  available by scrolling left. The window can cross midnight; show the local date
-  at a day change.
+  available by scrolling left. The chart crosses local day boundaries and labels
+  day changes.
 - Request two local forecast days from Open-Meteo and retain all returned hourly
   data from five hours before the current hour through the end of tomorrow for
-  outing planning. The UV Outlook chart independently keeps its rolling
-  five-past/Now/18-future window. This is UV Scout's near-term product horizon,
+  outing planning and UV Outlook hour selection. This is UV Scout's near-term product horizon,
   not Open-Meteo's maximum forecast capability. If an outing extends beyond the
   returned hourly coverage, show the forecast end and ask the user to adjust the
   outing rather than silently changing their selection or treating missing hours
@@ -36,15 +35,28 @@ attribution, and limitations.
 - The shared location summary above the Location, UV Outlook, and Plan an Outing
   content also shows the current date and time in the selected location's zone.
   Forecast and outing times use that same provider-resolved zone.
-- Above the UV Outlook chart, show a compact "Current UV" section
-  based on its Now bin:
-  current UV estimate, rounded display category, category meaning, and short
-  protection actions. It uses no assumed outing duration and does not use
-  future bins to describe the current conditions. The service prefers Open-Meteo
-  `current` model values in that bin and falls back to the current hourly value
-  when a current field is unavailable. Show Open-Meteo's `current.time` beside
-  the estimate in the selected location's time zone when current conditions are
-  available. The open outlook refetches at each
+- Above the UV Outlook chart, show a compact single-hour UV section. It defaults
+  to Now and shows the UV estimate, rounded display category, category meaning,
+  and short protection actions. A Now/Custom time choice appears above the
+  reading, with Now selected by default and labeled simply “Now”; exact local
+  time remains in the shared location summary. Choosing Custom time reveals one
+  compact scrollable list of future half-hour slots, with Today and Tomorrow
+  labels inside the list. The selected custom time is centered above the list
+  and shows the full local weekday, date, and time. On the hour, a custom
+  reading uses Open-Meteo's hourly UV value. At the half hour, UV Scout
+  estimates UV halfway between adjacent hourly values. The last half-hour slot
+  is unavailable when no next
+  hourly value is returned. The cloud reminder uses cloud cover from the hour
+  containing the choice. The chart keeps the original hourly values, highlights
+  the containing hour, and moves the sun or moon icon to the selected time.
+  Earlier bins remain context only. Half-hour readings are labeled approximate.
+  The section assumes no outing duration. The service prefers Open-Meteo
+  `current` model values in the Now bin and falls back to the current hourly value
+  when a current field is unavailable. Label Open-Meteo's `current.time` as the
+  latest estimate beside the Now reading, in the selected location's time zone,
+  when available. This is the model value's time, not the live clock. Future
+  selections use hourly forecast values or the half-hour estimate described above.
+  The open outlook refetches at each
   15-minute clock slot; this is a refresh choice, not a claim that the forecast
   is an observation. Cloud cover can add a reminder at elevated UV but does not
   change the UV value or protection band.

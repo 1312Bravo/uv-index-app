@@ -77,8 +77,10 @@ export async function getHourlyForecast(
     hours.push({
       time,
       uv,
+      hourlyUv: isNumber(hourlyUv) ? hourlyUv : uv,
       temperature,
       cloudCover,
+      hourlyCloudCover: isNumber(hourlyCloudCover) ? hourlyCloudCover : null,
       precipitationProbability: isNumber(hourlyPrecipitationProbability)
         ? hourlyPrecipitationProbability
         : null,
