@@ -68,10 +68,15 @@ export function HourlyUvGuidance({
               </View>
             ))}
           </View>
+          {guidance.cloudNote && (
+            <View style={styles.noteRow}>
+              <Text style={styles.marker}>-</Text>
+              <Text style={styles.note}>{guidance.cloudNote}</Text>
+            </View>
+          )}
         </View>
       </View>
       <View style={styles.notes}>
-        {guidance.cloudNote && <Text style={styles.note}>{guidance.cloudNote}</Text>}
         {guidance.categoryNote && <Text style={styles.note}>{guidance.categoryNote}</Text>}
       </View>
     </View>
@@ -91,9 +96,10 @@ const styles = StyleSheet.create({
   category: { color: '#333333', fontSize: 15, fontWeight: '500' },
   protection: { flex: 1.4, paddingLeft: 12 },
   actions: { marginTop: 7, rowGap: 5 },
+  noteRow: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
   actionRow: { alignItems: 'flex-start', flexDirection: 'row' },
   marker: { color: '#555555', fontSize: 12, lineHeight: 16, marginRight: 5, width: 8 },
   actionText: { color: '#333333', flex: 1, fontSize: 11, lineHeight: 16 },
   notes: { marginTop: 8 },
-  note: { color: '#777777', fontSize: 10, lineHeight: 14, marginTop: 5 },
+  note: { color: '#777777', flex: 1, fontSize: 10, lineHeight: 14 },
 });

@@ -319,8 +319,12 @@ calculation, supported platform versions, and the final visual polish.
   and fall back to `Current location` if the lookup fails.
 - Show place suggestions while typing after three characters and a short pause;
   selecting a suggestion confirms the place without a separate Search button.
-- Request foreground device location only after the user taps the button; do not
-  persist coordinates in the first version.
+- On mobile, request foreground location permission once at app launch and
+  default to device location when granted and location services are enabled. If
+  denied, keep manual search available and let the location control request
+  access again. Keep web manual until the user chooses device location. Use a
+  recent cached phone position while requesting a fresh one. Do not persist
+  coordinates in the first version.
 - Use standard UV categories with colors and plain-language labels.
 - Let the user choose start time and duration or end time; do not ask for shade
   in the default planner.

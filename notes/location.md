@@ -19,7 +19,16 @@ licensing details.
   tile service is best-effort and capacity-limited; choose a hosted provider
   with suitable terms before commercial or high-volume use. The map requires
   internet access for its library assets and visible tiles.
-- Device location is requested only after the user taps the button, using foreground permission.
+- On mobile, request foreground location permission once at startup and use the
+  current device location by default when permission is granted and location
+  services are enabled. If permission is denied, manual search remains available
+  and the location control can request access again. Web remains manual until the
+  user chooses device location.
+- When available, show a cached phone position up to five minutes old and within
+  2 km accuracy while requesting a fresh position. Replace it with the fresh
+  coordinates when they arrive.
+- When device location is selected, label its control `Current location selected`.
+  When any location is selected, label the search field `Search a different location`.
 - The first version does not save location history or coordinates.
 - Manual place search uses Open-Meteo geocoding for this non-commercial prototype.
 - Place suggestions appear while typing after three characters and a short pause;

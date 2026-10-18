@@ -58,9 +58,7 @@ export function UvScoutApp() {
         >
           <LocationPicker
             onMapInteractionChange={setIsMapInteracting}
-            onSelect={(nextLocation) => {
-              setLocation(nextLocation);
-            }}
+            onSelect={setLocation}
           />
         </View>
 
