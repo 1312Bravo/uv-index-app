@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { getUvScoutInsight, type UvScoutInsightItem } from '../../domain/guidance/getUvScoutInsight';
 import { HourlyUvBarChart } from '../forecast/HourlyUvBarChart';
+import { ForecastError } from '../forecast/ForecastError';
 import { useHourlyForecast } from '../forecast/useHourlyForecast';
 import {
   summarizeOutingForecast,
@@ -133,7 +134,7 @@ function ContextNote({ item }: { item: UvScoutInsightItem }) {
 }
 
 export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: Props) {
-  const { forecast, error, loading } = useHourlyForecast(
+  const { forecast, error, loading, retry } = useHourlyForecast(
     latitude,
     longitude,
     'Could not load the forecast for this outing.',
@@ -155,7 +156,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
           : 'Loading selected hours'}
       </Text>
       {loading && <ActivityIndicator color="#151515" style={styles.loading} />}
-      {error && <Text style={styles.message}>{error}</Text>}
+      {error && <ForecastError message={error} onRetry={retry} />}
       {forecast && !summary && !loading && (
         <Text style={styles.message}>
           {forecastLimitMessage ?? 'The forecast does not cover these outing hours. Adjust the start time or duration and try again.'}
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
   section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 28, paddingTop: 20 },
   timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
-  message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
+  message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
   summaryGrid: { marginTop: 20 },
   summaryRow: { alignItems: 'stretch', flexDirection: 'row' },
   summaryItem: { alignItems: 'center', flex: 1, justifyContent: 'flex-start', paddingHorizontal: 4, paddingVertical: 7 },

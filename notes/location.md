@@ -27,6 +27,9 @@ licensing details.
 - When available, show a cached phone position up to five minutes old and within
   2 km accuracy while requesting a fresh position. Replace it with the fresh
   coordinates when they arrive.
+- Once coordinates are available, use them immediately for forecasts and stop
+  showing the location-loading indicator. Resolve the approximate place label
+  in the background so reverse geocoding does not delay the selected location.
 - When device location is selected, label its control `Current location selected`.
   When any location is selected, label the search field `Search a different location`.
 - The first version does not save location history or coordinates.

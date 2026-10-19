@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { getUvForecastAtTime } from '../../domain/forecast/getUvForecastAtTime';
 import { getHourlyUvGuidance } from '../../domain/guidance/getHourlyUvGuidance';
+import { ForecastError } from './ForecastError';
 import { HourlyUvGuidance } from './HourlyUvGuidance';
 import { OutlookTimeSelector } from './OutlookTimeSelector';
 import { getForecastHourForTime, getOutlookTimeSlots } from './getOutlookTimeSlots';
@@ -36,7 +37,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [scrollTarget, setScrollTarget] = useState<{ time: number } | undefined>();
   const refreshSlot = Math.floor(currentTime / (15 * 60_000));
-  const { forecast, error, loading } = useHourlyForecast(
+  const { forecast, error, loading, retry } = useHourlyForecast(
     latitude,
     longitude,
     'Could not load the UV forecast. Try another location or try again later.',
@@ -77,7 +78,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
   return (
     <View style={styles.section}>
       {loading && <ActivityIndicator color="#151515" style={styles.loading} />}
-      {error && <Text style={styles.message}>{error}</Text>}
+      {error && <ForecastError message={error} onRetry={retry} />}
       {forecast && (
         <>
           {selectedHour && (
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
   section: { marginTop: 24 },
   heading: { color: '#151515', fontSize: 18, fontWeight: '600', marginTop: 24, textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
-  message: { color: '#9C3D32', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
+  message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
   currentTime: { color: '#444444', fontSize: 13, fontWeight: '500', marginTop: 14, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 10, textAlign: 'center' },
 });

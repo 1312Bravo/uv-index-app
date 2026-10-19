@@ -72,6 +72,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
 
   const useDeviceLocation = useCallback(async (requestPermission = true) => {
     const requestId = ++locationRequest.current;
+    let hasCachedPosition = false;
     setIsLocating(true);
     setError(null);
     setSelected(null);
@@ -89,6 +90,12 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
         return;
       }
 
+      const servicesEnabled = await Location.hasServicesEnabledAsync();
+      if (!servicesEnabled) {
+        setError('Turn on your phone’s location services, or search for a place.');
+        return;
+      }
+
       try {
         const lastKnownPosition = await Location.getLastKnownPositionAsync({
           maxAge: 5 * 60_000,
@@ -102,6 +109,8 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
           };
           setSelected(recentLocation);
           onSelect(recentLocation);
+          hasCachedPosition = true;
+          setIsLocating(false);
         }
       } catch {
         // Continue to a fresh position if no cached position is available.
@@ -119,20 +128,22 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
       setSelected(location);
       onSelect(location);
 
-      try {
-        const placeName = await reverseGeocodePlace(location.latitude, location.longitude);
-        if (requestId === locationRequest.current && placeName) {
+      void reverseGeocodePlace(location.latitude, location.longitude)
+        .then((placeName) => {
+          if (requestId !== locationRequest.current || !placeName) return;
           const resolvedLocation: SelectedLocation = { ...location, placeName };
           setSelected(resolvedLocation);
           onSelect(resolvedLocation);
-        }
-      } catch {
-        // Keep the coordinates when the approximate place lookup is unavailable.
-      }
+        })
+        .catch(() => {
+          // Keep the coordinates when the approximate place lookup is unavailable.
+        });
       setResults([]);
       setHasSearched(false);
     } catch {
-      setError('Could not get your location. Search for a place or try again.');
+      if (!hasCachedPosition) {
+        setError('Could not get your location. Search for a place or try again.');
+      }
     } finally {
       setIsLocating(false);
     }
@@ -147,21 +158,8 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
 
     async function selectDeviceLocationOnStartup() {
       try {
-        const permission = await Location.requestForegroundPermissionsAsync();
         if (!isActive || locationRequest.current !== initialRequest) return;
-        if (!permission.granted) {
-          setError('Location access is off. Search for a place, or enable access and try again.');
-          return;
-        }
-
-        const servicesEnabled = await Location.hasServicesEnabledAsync();
-        if (!isActive || locationRequest.current !== initialRequest) return;
-        if (!servicesEnabled) {
-          setError('Turn on your phone’s location services, or search for a place.');
-          return;
-        }
-
-        await useDeviceLocation(false);
+        await useDeviceLocation();
       } catch {
         // Keep location manual when the device cannot provide a permission or service status.
       }
@@ -396,10 +394,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   error: {
-    color: '#9C3D32',
-    fontSize: 14,
+    alignSelf: 'center',
+    color: '#A6A6A6',
+    fontSize: 13,
     lineHeight: 20,
-    marginTop: 12,
+    marginBottom: 8,
+    marginTop: 18,
+    maxWidth: 260,
     textAlign: 'center',
   },
 });
