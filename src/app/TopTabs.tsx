@@ -61,7 +61,8 @@ const styles = StyleSheet.create({
   },
   label: {
     color: '#777777',
-    fontSize: 11.5,
+    fontSize: 12,
+    lineHeight: 16,
     paddingBottom: 6,
   },
   disabledLabel: {

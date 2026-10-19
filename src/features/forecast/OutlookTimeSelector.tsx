@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   selectedModeChoice: { borderBottomColor: '#151515' },
   modeText: { color: '#777777', fontSize: 14 },
   selectedModeText: { color: '#151515' },
-  dayLabel: { color: '#777777', fontSize: 11, paddingBottom: 4, paddingTop: 8 },
+  dayLabel: { color: '#777777', fontSize: 12, paddingBottom: 4, paddingTop: 8 },
   selectorRow: {
     alignItems: 'center', borderBottomColor: '#D6D6D6', borderBottomWidth: 1,
     flexDirection: 'row', minHeight: 46, paddingVertical: 7,

@@ -121,7 +121,7 @@ export function HourlyUvBarChart({
 const styles = StyleSheet.create({
   chartFrame: { position: 'relative' },
   topLegend: {
-    backgroundColor: '#FFFFFF', color: '#777777', fontSize: 10, left: 0,
+    backgroundColor: '#FFFFFF', color: '#777777', fontSize: 11, left: 0,
     lineHeight: 14, position: 'absolute', right: 0, textAlign: 'center',
     top: DAYLIGHT_TRACK_HEIGHT + 12, zIndex: 1,
   },
@@ -129,5 +129,5 @@ const styles = StyleSheet.create({
   chartContent: { flexGrow: 1, justifyContent: 'center', paddingBottom: 14 },
   legendSpace: { height: 22 },
   bins: { alignItems: 'flex-end', flexDirection: 'row', gap: BIN_GAP },
-  bottomLegend: { color: '#777777', fontSize: 10, marginTop: 6, textAlign: 'center' },
+  bottomLegend: { color: '#777777', fontSize: 11, marginTop: 6, textAlign: 'center' },
 });

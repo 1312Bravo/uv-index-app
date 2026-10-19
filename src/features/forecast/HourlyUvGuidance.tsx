@@ -86,11 +86,11 @@ export function HourlyUvGuidance({
 const styles = StyleSheet.create({
   section: { paddingBottom: 18 },
   heading: { color: '#151515', fontSize: 16, fontWeight: '600', textAlign: 'center' },
-  estimateTime: { color: '#777777', fontSize: 11, marginTop: 3, textAlign: 'center' },
+  estimateTime: { color: '#777777', fontSize: 12, marginTop: 4, textAlign: 'center' },
   reading: { alignItems: 'stretch', flexDirection: 'row', marginTop: 14 },
   uvBlock: { alignItems: 'center', flex: 0.85, justifyContent: 'flex-start', paddingHorizontal: 8 },
   uvValue: { color: '#151515', fontSize: 30, lineHeight: 36, textAlign: 'center' },
-  readingLabel: { color: '#777777', fontSize: 9, letterSpacing: 0.6 },
+  readingLabel: { color: '#777777', fontSize: 10, letterSpacing: 0.6 },
   guidanceLabel: { textAlign: 'center' },
   divider: { alignSelf: 'stretch', backgroundColor: '#E1E1E1', marginVertical: 4, width: 1 },
   category: { color: '#333333', fontSize: 15, fontWeight: '500' },
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   noteRow: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
   actionRow: { alignItems: 'flex-start', flexDirection: 'row' },
   marker: { color: '#555555', fontSize: 12, lineHeight: 16, marginRight: 5, width: 8 },
-  actionText: { color: '#333333', flex: 1, fontSize: 11, lineHeight: 16 },
+  actionText: { color: '#333333', flex: 1, fontSize: 12, lineHeight: 18 },
   notes: { marginTop: 8 },
-  note: { color: '#777777', flex: 1, fontSize: 10, lineHeight: 14 },
+  note: { color: '#777777', flex: 1, fontSize: 11, lineHeight: 16 },
 });

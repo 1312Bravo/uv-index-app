@@ -385,5 +385,5 @@ const styles = StyleSheet.create({
   input: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, color: '#151515', flex: 1, fontSize: 14, minHeight: 46, paddingHorizontal: 12, textAlign: 'center' },
   durationSeparator: { color: '#696969', fontSize: 18 },
   error: { color: '#A6A6A6', fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
-  hint: { color: '#999999', fontSize: 11, lineHeight: 16, marginTop: 18, textAlign: 'center' },
+  hint: { color: '#999999', fontSize: 12, lineHeight: 17, marginTop: 18, textAlign: 'center' },
 });

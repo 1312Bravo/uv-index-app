@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomColor: '#EEEEEE',
     borderBottomWidth: 1,
-    marginTop: 24,
-    paddingBottom: 12,
+    marginTop: 20,
+    paddingBottom: 14,
   },
   name: {
     color: '#151515',
@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
   divider: {
     backgroundColor: '#E5E5E5',
     height: 1,
-    marginBottom: 8,
-    marginTop: 9,
-    width: 64,
+    marginBottom: 7,
+    marginTop: 8,
+    width: 48,
   },
 });
