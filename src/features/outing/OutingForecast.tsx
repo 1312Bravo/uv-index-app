@@ -11,6 +11,7 @@ import {
 } from '../../domain/outing/calculateOutingForecast';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
+import { OutingUvTimeline } from './OutingUvTimeline';
 
 type Props = {
   latitude: number;
@@ -164,6 +165,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
       )}
       {forecast && summary && (
         <>
+          <OutingUvTimeline hours={summary.hours} timezone={forecast.timezone} />
           {guidance && (
             <View style={styles.guidance}>
               <Text style={styles.guidanceTitle}>UV guidance</Text>
@@ -277,7 +279,7 @@ const styles = StyleSheet.create({
   summaryValue: { color: '#151515', fontSize: 18, marginTop: 4, textAlign: 'center' },
   summaryDetail: { color: '#696969', fontSize: 12, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: '#696969', fontSize: 13, marginTop: 4, textAlign: 'center' },
-  guidance: { marginTop: 24 },
+  guidance: { marginTop: 20 },
   guidanceTitle: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, textAlign: 'center' },
   guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14, textAlign: 'center' },
   guidanceCoverage: { color: '#666666', fontSize: 13, lineHeight: 19, marginTop: 10 },

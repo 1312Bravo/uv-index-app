@@ -27,6 +27,10 @@ helps people plan outdoor time around the current and forecast UV index.
 - Plan an Outing defaults to a selected timeframe from Now for 4 hours.
   Forecast metrics, UV breakdown, protection guidance, and the hourly chart all
   use this same selected timeframe.
+- Before the outing guidance, show a compact UV-only chart of every hourly
+  forecast bin that overlaps the selected outing. Display each full hour: an
+  outing from 9:23 to 10:13 shows the 9:00-11:00 forecast hours. Use the same
+  hourly UV values as the outing guidance.
 - Scheduled start and end fields use the selected location's local time zone,
   not the device's time zone. When the selected location changes, preserve the
   chosen local calendar date and clock time, then resolve them in the new

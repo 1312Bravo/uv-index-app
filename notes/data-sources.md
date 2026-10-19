@@ -1,6 +1,6 @@
 # Data and evidence sources
 
-Updated 2026-10-18. This is the source register for UV Scout. It records the
+Updated 2026-10-19. This is the source register for UV Scout. It records the
 origin of external forecast/location data and evidence used to shape app
 behavior, plus where each source enters the project and how it is interpreted.
 Topic-specific research notes contain the fuller evidence review and rationale.
@@ -250,6 +250,18 @@ hourly `uv_index` values. It uses that unrounded estimate for the displayed
 category and single-hour protection guidance, while the chart shows the source
 hourly values. Interpolation does not add weather-model detail, account for
 changes between the hourly samples, or provide a personal UV measurement.
+
+### Outing UV preview, 2026-10-19
+
+Plan an Outing uses the Open-Meteo hourly `uv_index` values in a compact UV-only
+preview before the guidance. `src/domain/outing/calculateOutingForecast.ts`
+selects the hours that overlap the chosen outing; `summary.hours` supplies
+those values to `src/features/outing/OutingUvTimeline.tsx`. Each displayed bin
+covers a full forecast hour, so an outing from 9:23 to 10:13 displays the
+9:00-11:00 hours. Showing whole overlapping hours and placing this chart before
+the guidance are UV Scout presentation choices. The chart does not add forecast
+detail or change the outing guidance's overlap-weighted calculations. The
+forecast provider, attribution, and limitations remain as recorded above.
 
 ## Review checklist for future sources
 

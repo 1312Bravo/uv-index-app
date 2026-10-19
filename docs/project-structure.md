@@ -44,6 +44,7 @@ src/
       LocationPicker.tsx      Search, device location, and shared selection state
     planning/                 Time inputs and platform date/time picker
     outing/                   Outing forecast result
+      OutingUvTimeline.tsx    Compact hourly UV preview before guidance
     info/                     UV and cloud-cover explanation screen
 notes/                        Durable decisions and requirements
   protection-guidance-research.md Sources and proposed guidance rules

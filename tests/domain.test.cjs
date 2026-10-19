@@ -47,6 +47,15 @@ function summarize(hours, start, end) {
   return summarizeOutingForecast(forecast(hours), new Date(start * 1000), new Date(end * 1000));
 }
 
+test('outing preview uses the full hourly bins overlapping the selected time', () => {
+  const hours = [hour(8 * 3600, 2), hour(9 * 3600, 4), hour(10 * 3600, 6), hour(11 * 3600, 8)];
+  const selected = summarize(hours, 9 * 3600 + 23 * 60, 10 * 3600 + 13 * 60);
+  const endingAtBoundary = summarize(hours, 9 * 3600 + 23 * 60, 10 * 3600);
+
+  assert.deepEqual(selected.hours.map(({ time, uv }) => [time, uv]), [[9 * 3600, 4], [10 * 3600, 6]]);
+  assert.deepEqual(endingAtBoundary.hours.map(({ time }) => time), [9 * 3600]);
+});
+
 function trendLines(insight) {
   return insight.breakdown;
 }

@@ -35,6 +35,12 @@ attribution, and limitations.
 - The shared location summary above the Location, UV Outlook, and Plan an Outing
   content also shows the current date and time in the selected location's zone.
   Forecast and outing times use that same provider-resolved zone.
+- Plan an Outing also shows a UV-only chart before guidance. It displays each
+  hourly forecast bin that overlaps the selected outing, including the full
+  first and last hour when the selected times fall between hour boundaries.
+  For example, 9:23-10:13 displays the 9:00-11:00 forecast hours. The bars use
+  the same hourly UV values as the outing guidance; the chart's expanded visual
+  range does not change overlap-weighted outing calculations.
 - Above the UV Outlook chart, show a compact single-hour UV section. It defaults
   to Now and shows the UV estimate, rounded display category, category meaning,
   and short protection actions. A Now/Custom time choice appears above the
