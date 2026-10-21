@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { HourlyUvGuidance as HourlyUvGuidanceResult } from '../../domain/guidance/getHourlyUvGuidance';
+import { uiColors } from '../../ui/visualStyle';
 
 function formatEstimateTime(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
@@ -84,22 +85,22 @@ export function HourlyUvGuidance({
 }
 
 const styles = StyleSheet.create({
-  section: { paddingBottom: 18 },
-  heading: { color: '#151515', fontSize: 16, fontWeight: '600', textAlign: 'center' },
-  estimateTime: { color: '#777777', fontSize: 12, marginTop: 4, textAlign: 'center' },
-  reading: { alignItems: 'stretch', flexDirection: 'row', marginTop: 14 },
+  section: { borderBottomColor: uiColors.line, borderBottomWidth: 1, paddingBottom: 20 },
+  heading: { color: uiColors.ink, fontSize: 16, fontWeight: '600', textAlign: 'center' },
+  estimateTime: { color: uiColors.muted, fontSize: 12, marginTop: 5, textAlign: 'center' },
+  reading: { alignItems: 'stretch', flexDirection: 'row', marginTop: 16 },
   uvBlock: { alignItems: 'center', flex: 0.85, justifyContent: 'flex-start', paddingHorizontal: 8 },
-  uvValue: { color: '#151515', fontSize: 30, lineHeight: 36, textAlign: 'center' },
-  readingLabel: { color: '#777777', fontSize: 10, letterSpacing: 0.6 },
+  uvValue: { color: uiColors.ink, fontSize: 32, lineHeight: 38, textAlign: 'center' },
+  readingLabel: { color: uiColors.muted, fontSize: 10, letterSpacing: 0.6 },
   guidanceLabel: { textAlign: 'center' },
-  divider: { alignSelf: 'stretch', backgroundColor: '#E1E1E1', marginVertical: 4, width: 1 },
-  category: { color: '#333333', fontSize: 15, fontWeight: '500' },
+  divider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginVertical: 4, width: 1 },
+  category: { color: uiColors.body, fontSize: 15, fontWeight: '500' },
   protection: { flex: 1.4, paddingLeft: 12 },
   actions: { marginTop: 7, rowGap: 5 },
   noteRow: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
   actionRow: { alignItems: 'flex-start', flexDirection: 'row' },
   marker: { color: '#555555', fontSize: 12, lineHeight: 16, marginRight: 5, width: 8 },
-  actionText: { color: '#333333', flex: 1, fontSize: 12, lineHeight: 18 },
+  actionText: { color: uiColors.body, flex: 1, fontSize: 13, lineHeight: 19 },
   notes: { marginTop: 8 },
-  note: { color: '#777777', flex: 1, fontSize: 11, lineHeight: 16 },
+  note: { color: uiColors.muted, flex: 1, fontSize: 12, lineHeight: 17 },
 });

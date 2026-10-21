@@ -11,6 +11,7 @@ import {
 } from '../../domain/outing/calculateOutingForecast';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
+import { uiColors, uiType } from '../../ui/visualStyle';
 import { OutingUvTimeline } from './OutingUvTimeline';
 
 type Props = {
@@ -266,7 +267,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
 }
 
 const styles = StyleSheet.create({
-  section: { borderTopColor: '#EEEEEE', borderTopWidth: 1, marginTop: 28, paddingTop: 20 },
+  section: { borderTopColor: uiColors.line, borderTopWidth: 1, marginTop: 28, paddingTop: 20 },
   timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
@@ -301,6 +302,6 @@ const styles = StyleSheet.create({
   guidanceBulletText: { color: '#333333', fontSize: 13, lineHeight: 19 },
   guidanceTextFlex: { flex: 1 },
   guidanceBulletTitle: { color: '#333333', fontWeight: '600' },
-  subheading: { color: '#151515', fontSize: 17, fontWeight: '600', marginTop: 28, textAlign: 'center' },
+  subheading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 28, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });

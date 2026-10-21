@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { SelectedLocation } from '../../domain/location/locationTypes';
+import { uiColors } from '../../ui/visualStyle';
 import { formatLocationCoordinates, getLocationName } from './formatLocation';
 
 type Props = {
@@ -49,37 +50,39 @@ export function LocationSummary({ location, timeZone, timeZoneUnavailable }: Pro
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: uiColors.line,
     borderBottomWidth: 1,
-    marginTop: 20,
-    paddingBottom: 14,
+    marginTop: 18,
+    paddingBottom: 18,
   },
   name: {
-    color: '#151515',
+    color: uiColors.ink,
     fontSize: 15,
+    fontWeight: '500',
     textAlign: 'center',
   },
   coordinates: {
-    color: '#777777',
+    color: uiColors.muted,
     fontSize: 12,
     marginTop: 3,
     textAlign: 'center',
   },
   dateTime: {
-    color: '#151515',
+    color: uiColors.ink,
     fontSize: 15,
+    fontWeight: '500',
     textAlign: 'center',
   },
   timeStatus: {
-    color: '#777777',
+    color: uiColors.muted,
     fontSize: 12,
     textAlign: 'center',
   },
   divider: {
-    backgroundColor: '#E5E5E5',
+    backgroundColor: uiColors.line,
     height: 1,
-    marginBottom: 7,
-    marginTop: 8,
+    marginBottom: 8,
+    marginTop: 10,
     width: 48,
   },
 });

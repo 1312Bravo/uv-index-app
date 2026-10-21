@@ -2,6 +2,7 @@ import DateTimePicker, { type DateTimePickerEvent } from '@react-native-communit
 import { createElement, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text } from 'react-native';
 import { createDateInTimeZone, getZonedDateTimeParts } from '../../domain/time/zonedDateTime';
+import { uiColors } from '../../ui/visualStyle';
 
 type Props = {
   accessibilityLabel: string;
@@ -105,8 +106,8 @@ export function DateTimeField(props: Props) {
 }
 
 const styles = StyleSheet.create({
-  nativeField: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, justifyContent: 'center', marginTop: 10, minHeight: 46, paddingHorizontal: 12 },
-  nativeValue: { color: '#151515', fontSize: 14 },
+  nativeField: { borderColor: uiColors.line, borderRadius: 10, borderWidth: 1, justifyContent: 'center', marginTop: 10, minHeight: 48, paddingHorizontal: 12 },
+  nativeValue: { color: uiColors.ink, fontSize: 14 },
   nativePlaceholder: { color: '#909090', fontSize: 14 },
-  webInput: { backgroundColor: '#FFFFFF', borderColor: '#D6D6D6', borderRadius: 9, borderStyle: 'solid', borderWidth: 1, boxSizing: 'border-box', color: '#151515', fontFamily: 'inherit', fontSize: 14, marginTop: 10, paddingLeft: 12, paddingRight: 12, width: '100%' },
+  webInput: { backgroundColor: uiColors.white, borderColor: uiColors.line, borderRadius: 10, borderStyle: 'solid', borderWidth: 1, boxSizing: 'border-box', color: uiColors.ink, fontFamily: 'inherit', fontSize: 14, marginTop: 10, minHeight: 48, paddingLeft: 12, paddingRight: 12, width: '100%' },
 });

@@ -12,7 +12,7 @@ const BIN_WIDTH = 58;
 const BAR_WIDTH = 18;
 const BAR_HEIGHT = 48;
 const VALUE_GROUP_HEIGHT = 30;
-const VALUE_BAR_GAP = 4;
+const VALUE_BAR_GAP = 16;
 const TOP_GAP = 12;
 
 function formatReadingTime(time: number, timezone: string) {

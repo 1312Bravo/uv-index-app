@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { uiColors } from '../../ui/visualStyle';
+
 type Props = {
   title: string;
   expanded: boolean;
@@ -26,16 +28,16 @@ export function InfoAccordion({ title, expanded, onPress, children }: Props) {
 }
 
 const styles = StyleSheet.create({
-  section: { borderBottomColor: '#EEEEEE', borderBottomWidth: 1 },
+  section: { borderBottomColor: uiColors.line, borderBottomWidth: 1 },
   header: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: 52,
-    paddingVertical: 12,
+    minHeight: 50,
+    paddingVertical: 9,
   },
-  title: { color: '#555555', flex: 1, fontSize: 14 },
-  activeTitle: { color: '#151515', fontWeight: '600' },
-  indicator: { color: '#777777', fontSize: 18, marginLeft: 12 },
-  content: { paddingBottom: 18 },
+  title: { color: uiColors.body, flex: 1, fontSize: 15 },
+  activeTitle: { color: uiColors.ink, fontWeight: '600' },
+  indicator: { color: uiColors.muted, fontSize: 18, marginLeft: 12 },
+  content: { paddingBottom: 14, paddingHorizontal: 4 },
 });

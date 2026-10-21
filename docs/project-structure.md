@@ -6,6 +6,9 @@ src/
   app/                        App layout, navigation, shared screen state
     UvScoutApp.tsx
     TopTabs.tsx
+  ui/                         Shared visual styles and selection options
+    visualStyle.ts
+    ChoiceOption.tsx           Narrow option rows used by both time selectors
   domain/                     Product knowledge and shared data types
     forecast/forecastTypes.ts
     forecast/getUvForecastAtTime.ts Estimates UV between hourly values

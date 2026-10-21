@@ -13,6 +13,7 @@ import {
 import type { Place, SelectedLocation } from '../../domain/location/locationTypes';
 import { reverseGeocodePlace } from '../../services/location/reverseGeocode';
 import { searchPlaces } from '../../services/location/searchPlaces';
+import { uiColors, uiType } from '../../ui/visualStyle';
 import { formatPlaceName } from './formatLocation';
 import { LocationMap } from './LocationMap';
 
@@ -299,23 +300,23 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
 
 const styles = StyleSheet.create({
   heading: {
-    color: '#151515',
-    fontSize: 18,
+    color: uiColors.ink,
+    fontSize: uiType.sectionHeading,
     fontWeight: '600',
     marginBottom: 16,
     textAlign: 'center',
   },
   mapHint: {
-    color: '#777777',
-    fontSize: 13,
+    color: uiColors.muted,
+    fontSize: uiType.caption,
     marginBottom: 8,
     marginTop: 18,
     textAlign: 'center',
   },
   input: {
     alignSelf: 'stretch',
-    backgroundColor: '#FFFFFF',
-    color: '#151515',
+    backgroundColor: 'transparent',
+    color: uiColors.ink,
     fontSize: 15,
     minHeight: 48,
     paddingHorizontal: 14,
@@ -337,15 +338,16 @@ const styles = StyleSheet.create({
   },
   locationButtonPressed: { opacity: 0.6 },
   locationButtonText: {
-    color: '#151515',
+    color: uiColors.ink,
     fontSize: 15,
     fontWeight: '500',
     textDecorationLine: 'underline',
   },
   locationMethods: {
     alignSelf: 'stretch',
-    borderColor: '#D6D6D6',
-    borderRadius: 12,
+    backgroundColor: uiColors.white,
+    borderColor: uiColors.line,
+    borderRadius: 14,
     borderWidth: 1,
     overflow: 'hidden',
   },
@@ -355,12 +357,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 14,
   },
   dividerLine: {
-    backgroundColor: '#E8E8E8',
+    backgroundColor: uiColors.line,
     flex: 1,
     height: 1,
   },
   buttonPressed: {
-    backgroundColor: '#F3F3F3',
+    opacity: 0.65,
   },
   buttonDisabled: {
     opacity: 0.45,

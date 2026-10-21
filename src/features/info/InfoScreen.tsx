@@ -6,6 +6,7 @@ import { getPrecipitationRateGuide } from '../../domain/weather/getPrecipitation
 import { getWindSpeedBands } from '../../domain/weather/getWindSpeedBands';
 import { getWhoGuidanceTable } from '../../domain/guidance/getWhoGuidance';
 import { getUvCategoryDefinitions } from '../../domain/uv/getUvCategory';
+import { uiColors, uiType } from '../../ui/visualStyle';
 import { InfoAccordion } from './InfoAccordion';
 
 const uvCategories = getUvCategoryDefinitions();
@@ -240,9 +241,9 @@ export function InfoScreen() {
 
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
-  heading: { color: '#151515', fontSize: 18, fontWeight: '600', textAlign: 'center' },
-  topics: { marginTop: 18 },
-  description: { color: '#555555', fontSize: 13, lineHeight: 20, marginTop: 8 },
+  heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', textAlign: 'center' },
+  topics: { alignSelf: 'center', marginTop: 16, maxWidth: 360, width: '90%' },
+  description: { color: uiColors.body, fontSize: uiType.body, lineHeight: 21, marginTop: 8 },
   metricHeading: { color: '#333333', fontSize: 13, fontWeight: '600', marginTop: 14 },
   whoBands: { marginTop: 8 },
   whoBand: { borderTopColor: '#E8E8E8', borderTopWidth: 1, paddingVertical: 10 },
@@ -259,7 +260,7 @@ const styles = StyleSheet.create({
   rangeColumn: { alignItems: 'baseline', flexDirection: 'row', gap: 8 },
   range: { color: '#151515', fontSize: 14, fontWeight: '600' },
   category: { color: '#333333', fontSize: 13, fontWeight: '600' },
-  categoryDescription: { color: '#696969', fontSize: 13, lineHeight: 19, marginTop: 6, minWidth: 0 },
+  categoryDescription: { color: uiColors.secondary, fontSize: uiType.body, lineHeight: 20, marginTop: 6, minWidth: 0 },
   note: { color: '#777777', fontSize: 12, lineHeight: 18, marginTop: 12 },
   cloudRow: {
     alignItems: 'flex-start',

@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { uiColors } from '../ui/visualStyle';
+
 export type AppPage = 'location' | 'outlook' | 'plan' | 'info';
 
 type Props = {
@@ -47,31 +49,31 @@ export function TopTabs({ activePage, hasLocation, onSelect }: Props) {
 const styles = StyleSheet.create({
   tabs: {
     alignSelf: 'stretch',
+    borderBottomColor: uiColors.line,
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 24,
   },
   tab: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    minHeight: 44,
+    minHeight: 48,
     paddingHorizontal: 2,
     paddingVertical: 8,
   },
   label: {
-    color: '#777777',
+    color: uiColors.ink,
     fontSize: 12,
     lineHeight: 16,
-    paddingBottom: 6,
+    paddingBottom: 8,
   },
   disabledLabel: {
-    color: '#C7C7C7',
+    color: '#BBBBBB',
   },
   activeLabel: {
-    borderBottomColor: '#151515',
+    borderBottomColor: uiColors.ink,
     borderBottomWidth: 2,
-    color: '#151515',
-    fontWeight: '600',
   },
 });

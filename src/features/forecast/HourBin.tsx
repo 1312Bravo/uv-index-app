@@ -4,8 +4,11 @@ import type { ForecastHour } from '../../domain/forecast/forecastTypes';
 import { BIN_WIDTH, type SelectedRange } from './hourlyChartLayout';
 
 const BAR_WIDTH = 16;
-const BAR_AREA_HEIGHT = 78;
 const MAX_BAR_HEIGHT = 58;
+const VALUE_GROUP_HEIGHT = 40;
+const VALUE_BAR_GAP = 16;
+const TOP_PADDING = 5;
+const BAR_AREA_HEIGHT = MAX_BAR_HEIGHT + VALUE_GROUP_HEIGHT + VALUE_BAR_GAP + TOP_PADDING;
 
 type Props = {
   hour: ForecastHour;
@@ -69,27 +72,21 @@ export function HourBin({
     ? isSelected ? ', during selected outing' : ', outside selected outing'
     : '';
 
-  const binStyle = [
-    styles.bin,
-    selectedRange
-      ? isSelected && styles.selectedBin
-      : selectedHourTime !== undefined
-        ? isFocused && styles.currentBin
-        : hour.period === 'now' && styles.currentBin,
-  ];
   const accessibilityLabel = `${formatChartDay(hour.time, timezone)}, ${formatHour(hour.time, timezone)}. UV Index ${uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour. Wind speed ${windSpeedDescription}${outingDescription}.`;
   return (
-    <View accessible accessibilityLabel={accessibilityLabel} accessibilityRole="text" style={binStyle}>
-      <Text numberOfLines={1} style={[styles.cloudCover, isContext && styles.contextText]}>
-        {cloudCover === null ? '-' : `${Math.round(cloudCover)}%`}
-      </Text>
-      <Text numberOfLines={1} style={[styles.temperature, isContext && styles.contextText]}>
-        {Math.round(hour.temperature)}°
-      </Text>
+    <View accessible accessibilityLabel={accessibilityLabel} accessibilityRole="text" style={styles.bin}>
       <View style={styles.barArea}>
-        <Text numberOfLines={1} style={[styles.uv, isContext && styles.contextText, { bottom: height + 2 }]}>
-          {uv.toFixed(1)}
-        </Text>
+        <View style={[styles.valueGroup, { bottom: height + VALUE_BAR_GAP }]}>
+          <Text numberOfLines={1} style={[styles.cloudCover, isContext && styles.contextText]}>
+            {cloudCover === null ? '-' : `${Math.round(cloudCover)}%`}
+          </Text>
+          <Text numberOfLines={1} style={[styles.temperature, isContext && styles.contextText]}>
+            {Math.round(hour.temperature)}°
+          </Text>
+          <Text numberOfLines={1} style={[styles.uv, isContext && styles.contextText]}>
+            {uv.toFixed(1)}
+          </Text>
+        </View>
         <View style={[
           styles.bar,
           { height },
@@ -124,14 +121,13 @@ export function HourBin({
 
 const styles = StyleSheet.create({
   bin: { alignItems: 'center', paddingHorizontal: 1, width: BIN_WIDTH },
-  currentBin: { backgroundColor: '#F5F5F5', borderRadius: 5 },
-  selectedBin: { backgroundColor: '#F5F5F5', borderRadius: 5 },
-  cloudCover: { color: '#767676', fontSize: 10, marginBottom: 1 },
-  temperature: { color: '#5F5F5F', fontSize: 11, marginBottom: 2 },
-  uv: {
-    color: '#151515', fontSize: 12, fontWeight: '500', left: (BAR_WIDTH - BIN_WIDTH) / 2,
-    position: 'absolute', textAlign: 'center', width: BIN_WIDTH,
+  valueGroup: {
+    alignItems: 'center', height: VALUE_GROUP_HEIGHT, left: (BAR_WIDTH - BIN_WIDTH) / 2,
+    position: 'absolute', width: BIN_WIDTH,
   },
+  cloudCover: { color: '#767676', fontSize: 10, includeFontPadding: false, lineHeight: 12, textAlign: 'center', width: BIN_WIDTH },
+  temperature: { color: '#5F5F5F', fontSize: 11, includeFontPadding: false, lineHeight: 13, textAlign: 'center', width: BIN_WIDTH },
+  uv: { color: '#151515', fontSize: 12, fontWeight: '500', includeFontPadding: false, lineHeight: 15, textAlign: 'center', width: BIN_WIDTH },
   barArea: {
     borderBottomColor: '#D6D6D6', borderBottomWidth: 1, height: BAR_AREA_HEIGHT,
     justifyContent: 'flex-end', width: BAR_WIDTH,
@@ -141,7 +137,7 @@ const styles = StyleSheet.create({
   currentBar: { backgroundColor: '#222222' },
   selectedBar: { backgroundColor: '#222222' },
   contextBar: { backgroundColor: '#C8C8C8' },
-  contextText: { color: '#767676' },
+  contextText: { color: '#A0A0A0' },
   hour: { color: '#5F5F5F', fontSize: 11, marginTop: 4, textAlign: 'center', width: BIN_WIDTH },
   currentText: { color: '#151515', fontWeight: '600' },
   day: { color: '#767676', fontSize: 10, marginTop: 2, minHeight: 15, textAlign: 'center' },

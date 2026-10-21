@@ -12,6 +12,7 @@ import { LocationSummary } from '../features/location/LocationSummary';
 import { useLocationTimeZone } from '../features/location/useLocationTimeZone';
 import { OutingForecast } from '../features/outing/OutingForecast';
 import { TimePlanner } from '../features/planning/TimePlanner';
+import { uiColors } from '../ui/visualStyle';
 import { TopTabs, type AppPage } from './TopTabs';
 
 export function UvScoutApp() {
@@ -91,15 +92,15 @@ export function UvScoutApp() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: uiColors.white,
   },
   content: {
     width: '100%',
-    maxWidth: 520,
+    maxWidth: 500,
     alignSelf: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 32,
-    paddingBottom: 36,
+    paddingHorizontal: 22,
+    paddingTop: 36,
+    paddingBottom: 44,
   },
   header: {
     alignItems: 'center',
@@ -112,17 +113,17 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   title: {
-    color: '#151515',
-    fontSize: 36,
-    fontWeight: '600',
-    letterSpacing: -0.5,
+    color: uiColors.ink,
+    fontSize: 34,
+    fontWeight: '700',
+    letterSpacing: -0.8,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    color: '#696969',
-    fontSize: 15,
-    lineHeight: 22,
+    color: uiColors.secondary,
+    fontSize: 14,
+    lineHeight: 21,
     textAlign: 'center',
   },
 });

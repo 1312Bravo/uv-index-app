@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { getUvForecastAtTime } from '../../domain/forecast/getUvForecastAtTime';
 import { getHourlyUvGuidance } from '../../domain/guidance/getHourlyUvGuidance';
+import { uiColors, uiType } from '../../ui/visualStyle';
 import { ForecastError } from './ForecastError';
 import { HourlyUvGuidance } from './HourlyUvGuidance';
 import { OutlookTimeSelector } from './OutlookTimeSelector';
@@ -141,9 +142,9 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
 
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
-  heading: { color: '#151515', fontSize: 18, fontWeight: '600', marginTop: 24, textAlign: 'center' },
+  heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 26, textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
-  currentTime: { color: '#444444', fontSize: 13, fontWeight: '500', marginTop: 14, textAlign: 'center' },
-  source: { color: '#767676', fontSize: 11, marginTop: 10, textAlign: 'center' },
+  currentTime: { color: uiColors.body, fontSize: 13, fontWeight: '500', marginTop: 14, textAlign: 'center' },
+  source: { color: uiColors.muted, fontSize: 11, marginTop: 10, textAlign: 'center' },
 });

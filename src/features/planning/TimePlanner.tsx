@@ -4,6 +4,8 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { DateTimeField } from './DateTimeField';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import { convertInstantPreservingLocalTime, getNextHourInTimeZone } from '../../domain/time/zonedDateTime';
+import { ChoiceOption, choiceFieldLayout, choiceListLayout } from '../../ui/ChoiceOption';
+import { uiColors, uiType } from '../../ui/visualStyle';
 
 type Props = {
   onChange: (plan: TimePlan | null) => void;
@@ -61,20 +63,6 @@ function SelectorRow({
         <Text style={styles.selectorValue}>{value}</Text>
         <Text style={styles.selectorChevron}>{expanded ? '⌃' : '⌄'}</Text>
       </View>
-    </Pressable>
-  );
-}
-
-function SelectorOption({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) {
-  return (
-    <Pressable
-      accessibilityRole="radio"
-      accessibilityState={{ checked: active }}
-      onPress={onPress}
-      style={({ pressed }) => [styles.selectorOption, pressed && styles.buttonPressed]}
-    >
-      <Text style={[styles.selectorOptionText, active && styles.selectorOptionTextActive]}>{label}</Text>
-      {active && <Text style={styles.checkmark}>✓</Text>}
     </Pressable>
   );
 }
@@ -184,7 +172,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
 
   const selectedDuration = duration !== null
     ? duration
-      : isCustomDuration
+    : isCustomDuration
       ? getCustomDurationMinutes(customHours, customMinutes)
       : null;
 
@@ -202,7 +190,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
   }
 
   return (
-    <View style={styles.section}>
+    <View style={[styles.section, choiceFieldLayout]}>
       <View style={styles.headingRow}>
         <Text style={styles.heading}>Plan an outing</Text>
         <Pressable
@@ -222,8 +210,8 @@ export function TimePlanner({ onChange, timeZone }: Props) {
         value={startMode === 'now' ? 'Now' : 'Choose a time'}
       />
       {openSection === 'start' && (
-        <View style={styles.selectorOptions}>
-          <SelectorOption
+        <View style={choiceListLayout}>
+          <ChoiceOption
             active={startMode === 'now'}
             label="Now"
             onPress={() => {
@@ -231,7 +219,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
               setOpenSection(null);
             }}
           />
-          <SelectorOption
+          <ChoiceOption
             active={startMode === 'scheduled'}
             label="Choose a start time"
             onPress={() => {
@@ -262,8 +250,8 @@ export function TimePlanner({ onChange, timeZone }: Props) {
         value={endMode === 'duration' ? 'Duration' : 'End time'}
       />
       {openSection === 'end' && (
-        <View style={styles.selectorOptions}>
-          <SelectorOption
+        <View style={choiceListLayout}>
+          <ChoiceOption
             active={endMode === 'duration'}
             label="Choose a duration"
             onPress={() => {
@@ -271,7 +259,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
               setOpenSection(null);
             }}
           />
-          <SelectorOption
+          <ChoiceOption
             active={endMode === 'end-time'}
             label="Set an end time"
             onPress={() => {
@@ -291,9 +279,9 @@ export function TimePlanner({ onChange, timeZone }: Props) {
             value={selectedDuration ? formatDuration(selectedDuration) : isCustomDuration ? 'Custom' : 'Choose a duration'}
           />
           {openSection === 'duration' && (
-            <View style={styles.selectorOptions}>
+            <View style={choiceListLayout}>
               {DURATION_OPTIONS.map((minutes) => (
-                <SelectorOption
+                <ChoiceOption
                   key={minutes}
                   active={duration === minutes}
                   label={formatDuration(minutes)}
@@ -306,7 +294,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
                   }}
                 />
               ))}
-              <SelectorOption
+              <ChoiceOption
                 active={isCustomDuration}
                 label="Custom"
                 onPress={() => {
@@ -366,23 +354,18 @@ export function TimePlanner({ onChange, timeZone }: Props) {
 
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
-  headingRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginBottom: 12, minHeight: 28, position: 'relative' },
-  heading: { color: '#151515', flex: 1, fontSize: 18, fontWeight: '600', textAlign: 'center' },
+  headingRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginBottom: 8, minHeight: 28, position: 'relative' },
+  heading: { color: uiColors.ink, flex: 1, fontSize: uiType.sectionHeading, fontWeight: '600', textAlign: 'center' },
   resetButton: { paddingHorizontal: 4, paddingVertical: 8, position: 'absolute', right: 0 },
   resetText: { color: '#696969', fontSize: 12, textDecorationLine: 'underline' },
-  selectorRow: { alignItems: 'center', borderBottomColor: '#D6D6D6', borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', minHeight: 50, paddingVertical: 12 },
-  selectorLabel: { color: '#151515', fontSize: 14 },
-  selectorValueWrap: { alignItems: 'center', flexDirection: 'row', gap: 10 },
-  selectorValue: { color: '#696969', fontSize: 14 },
-  selectorChevron: { color: '#696969', fontSize: 17, lineHeight: 17 },
-  selectorOptions: { borderBottomColor: '#D6D6D6', borderBottomWidth: 1, paddingLeft: 16 },
-  selectorOption: { alignItems: 'center', borderBottomColor: '#EEEEEE', borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', minHeight: 44, paddingRight: 4 },
-  selectorOptionText: { color: '#696969', fontSize: 14 },
-  selectorOptionTextActive: { color: '#151515', fontWeight: '600' },
-  checkmark: { color: '#151515', fontSize: 15, marginRight: 2 },
+  selectorRow: { alignItems: 'center', borderBottomColor: uiColors.line, borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', minHeight: 46, paddingVertical: 8 },
+  selectorLabel: { color: uiColors.ink, fontSize: 14, flexShrink: 1 },
+  selectorValueWrap: { alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'flex-end', maxWidth: '65%' },
+  selectorValue: { color: uiColors.secondary, fontSize: 14, flexShrink: 1, textAlign: 'right' },
+  selectorChevron: { color: uiColors.secondary, fontSize: 17, lineHeight: 17, minWidth: 16, textAlign: 'center' },
   buttonPressed: { opacity: 0.65 },
   customDurationInputs: { alignItems: 'center', flexDirection: 'row', gap: 10, marginTop: 10 },
-  input: { borderColor: '#D6D6D6', borderRadius: 9, borderWidth: 1, color: '#151515', flex: 1, fontSize: 14, minHeight: 46, paddingHorizontal: 12, textAlign: 'center' },
+  input: { borderColor: uiColors.line, borderRadius: 10, borderWidth: 1, color: uiColors.ink, flex: 1, fontSize: 14, minHeight: 48, paddingHorizontal: 12, textAlign: 'center' },
   durationSeparator: { color: '#696969', fontSize: 18 },
   error: { color: '#A6A6A6', fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
   hint: { color: '#999999', fontSize: 12, lineHeight: 17, marginTop: 18, textAlign: 'center' },
