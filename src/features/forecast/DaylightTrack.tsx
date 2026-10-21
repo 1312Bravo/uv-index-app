@@ -7,7 +7,7 @@ import { BIN_WIDTH } from './hourlyChartLayout';
 export const DAYLIGHT_TRACK_HEIGHT = 112;
 
 const HORIZON_Y = 68;
-const ARC_HEIGHT = 26;
+const ARC_HEIGHT = 40;
 const ARC_STEPS = 48;
 
 type Props = {

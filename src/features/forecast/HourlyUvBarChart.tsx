@@ -27,7 +27,7 @@ const OUTLOOK_FUTURE_HOURS = 18;
 const CHART_TOP_MARGIN = 10;
 const TOP_LEGEND_LINE_HEIGHT = 12;
 const TOP_LEGEND_VALUE_GAP = 10;
-const LEGEND_SPACE_HEIGHT = 18;
+const LEGEND_SPACE_HEIGHT = 13;
 
 function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange, showFullOutlook = false): ForecastHour[] {
   if (!selectedRange) {
