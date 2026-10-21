@@ -7,7 +7,46 @@ const { getHourlyUvGuidance } = require(`${domainBuild}/guidance/getHourlyUvGuid
 const { getUvScoutInsight } = require(`${domainBuild}/guidance/getUvScoutInsight.js`);
 const { getWhoGuidanceTable } = require(`${domainBuild}/guidance/getWhoGuidance.js`);
 const { summarizeOutingForecast } = require(`${domainBuild}/outing/calculateOutingForecast.js`);
+const { getEndTimeSlots } = require(`${domainBuild}/outing/getEndTimeSlots.js`);
 const { getUvCategory } = require(`${domainBuild}/uv/getUvCategory.js`);
+
+test('end-time choices begin after the outing start and stop at tomorrow in the selected zone', () => {
+  const now = new Date('2026-10-21T10:17:00Z');
+  const start = new Date('2026-10-21T13:23:00Z');
+  const slots = getEndTimeSlots(now, start, 'UTC');
+
+  assert.equal(slots[0].toISOString(), '2026-10-21T13:30:00.000Z');
+  assert.equal(slots.at(-1).toISOString(), '2026-10-22T23:30:00.000Z');
+  assert.ok(slots.every((slot) => slot > start));
+});
+
+test('end-time choices follow local half-hours in a quarter-hour-offset zone', () => {
+  const now = new Date('2026-10-21T06:17:00Z');
+  const slots = getEndTimeSlots(now, now, 'Asia/Kathmandu');
+
+  assert.equal(slots[0].toISOString(), '2026-10-21T06:45:00.000Z');
+});
+
+test('end-time choices retain both repeated half-hours when clocks move back', () => {
+  const now = new Date('2026-10-25T00:10:00Z');
+  const slots = getEndTimeSlots(now, now, 'Europe/Ljubljana');
+
+  assert.deepEqual(slots.slice(0, 3).map((slot) => slot.toISOString()), [
+    '2026-10-25T00:30:00.000Z',
+    '2026-10-25T01:00:00.000Z',
+    '2026-10-25T01:30:00.000Z',
+  ]);
+});
+
+test('end-time choices skip nonexistent local times when clocks move forward', () => {
+  const now = new Date('2026-03-29T00:10:00Z');
+  const slots = getEndTimeSlots(now, now, 'Europe/Ljubljana');
+
+  assert.deepEqual(slots.slice(0, 2).map((slot) => slot.toISOString()), [
+    '2026-03-29T00:30:00.000Z',
+    '2026-03-29T01:00:00.000Z',
+  ]);
+});
 
 function hour(time, uv, overrides = {}) {
   return {
@@ -48,11 +87,13 @@ function summarize(hours, start, end) {
 }
 
 test('outing preview uses the full hourly bins overlapping the selected time', () => {
-  const hours = [hour(8 * 3600, 2), hour(9 * 3600, 4), hour(10 * 3600, 6), hour(11 * 3600, 8)];
+  const hours = [hour(8 * 3600, 2), hour(9 * 3600, 4), hour(10 * 3600, 6), hour(11 * 3600, 8), hour(12 * 3600, 10)];
   const selected = summarize(hours, 9 * 3600 + 23 * 60, 10 * 3600 + 13 * 60);
+  const endingAtHalfHour = summarize(hours, 9 * 3600 + 23 * 60, 11 * 3600 + 30 * 60);
   const endingAtBoundary = summarize(hours, 9 * 3600 + 23 * 60, 10 * 3600);
 
   assert.deepEqual(selected.hours.map(({ time, uv }) => [time, uv]), [[9 * 3600, 4], [10 * 3600, 6]]);
+  assert.deepEqual(endingAtHalfHour.hours.map(({ time }) => time), [9 * 3600, 10 * 3600, 11 * 3600]);
   assert.deepEqual(endingAtBoundary.hours.map(({ time }) => time), [9 * 3600]);
 });
 

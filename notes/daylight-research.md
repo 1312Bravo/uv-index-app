@@ -33,6 +33,9 @@ timestamp: the sun while that time is between sunrise and sunset, or the crescen
 moon from sunset until the following sunrise. The vertical time marker continues
 to show the selected time. The crescent is only a nighttime symbol: UV Scout
 does not calculate lunar position or phase and does not use a lunar data source.
+The forecast service calculates the following local date after the last
+displayed forecast date so the nighttime arc can continue to the chart's right
+edge.
 
 Sources:
 

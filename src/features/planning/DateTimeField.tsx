@@ -58,7 +58,7 @@ export function DateTimeField(props: Props) {
   if (Platform.OS === 'web') return <WebDateTimeField {...props} />;
 
   function openPicker() {
-    setDraftDate(value ?? new Date());
+    setDraftDate(value ?? minimumDate ?? new Date());
     setPickerMode('date');
   }
 

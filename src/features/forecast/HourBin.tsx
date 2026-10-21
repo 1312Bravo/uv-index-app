@@ -10,11 +10,19 @@ const VALUE_BAR_GAP = 16;
 const TOP_PADDING = 5;
 const BAR_AREA_HEIGHT = MAX_BAR_HEIGHT + VALUE_GROUP_HEIGHT + VALUE_BAR_GAP + TOP_PADDING;
 
+export function getValueGroupTop(uv: number, scale: number): number {
+  const height = Math.max(0, uv / scale * MAX_BAR_HEIGHT);
+  return BAR_AREA_HEIGHT - height - VALUE_BAR_GAP - VALUE_GROUP_HEIGHT;
+}
+
 type Props = {
   hour: ForecastHour;
   timezone: string;
   scale: number;
   showDay: boolean;
+  isEndBoundary?: boolean;
+  isFirstSelected?: boolean;
+  isLastSelected?: boolean;
   selectedRange?: SelectedRange;
   selectedHourTime?: number;
   useHourlyForecast?: boolean;
@@ -47,11 +55,16 @@ function formatPrecipitationProbability(value: number | null | undefined): strin
 }
 
 export function HourBin({
-  hour, timezone, scale, showDay, selectedRange, selectedHourTime, useHourlyForecast = false,
+  hour, timezone, scale, showDay, isEndBoundary = false, isFirstSelected = false,
+  isLastSelected = false, selectedRange, selectedHourTime, useHourlyForecast = false,
 }: Props) {
   const uv = useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv;
   const cloudCover = useHourlyForecast ? hour.hourlyCloudCover ?? hour.cloudCover : hour.cloudCover;
   const height = Math.max(0, uv / scale * MAX_BAR_HEIGHT);
+  const selectedBackgroundTop = Math.max(
+    0,
+    BAR_AREA_HEIGHT - height - VALUE_BAR_GAP - VALUE_GROUP_HEIGHT - 5,
+  );
   const isSelected = selectedRange !== undefined &&
     hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start;
   const isContext = selectedRange !== undefined && !isSelected;
@@ -74,7 +87,23 @@ export function HourBin({
 
   const accessibilityLabel = `${formatChartDay(hour.time, timezone)}, ${formatHour(hour.time, timezone)}. UV Index ${uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour. Wind speed ${windSpeedDescription}${outingDescription}.`;
   return (
-    <View accessible accessibilityLabel={accessibilityLabel} accessibilityRole="text" style={styles.bin}>
+    <View
+      accessible
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole="text"
+      style={styles.bin}
+    >
+      {isSelected && (
+        <View
+          pointerEvents="none"
+          style={[
+            styles.selectedRangeBackground,
+            { top: selectedBackgroundTop },
+            isFirstSelected && styles.selectedRangeStart,
+            isLastSelected && styles.selectedRangeEnd,
+          ]}
+        />
+      )}
       <View style={styles.barArea}>
         <View style={[styles.valueGroup, { bottom: height + VALUE_BAR_GAP }]}>
           <Text numberOfLines={1} style={[styles.cloudCover, isContext && styles.contextText]}>
@@ -99,7 +128,7 @@ export function HourBin({
       </View>
       <Text
         numberOfLines={1}
-        style={[styles.hour, !selectedRange && (selectedHourTime !== undefined ? isFocused : hour.period === 'now') && styles.currentText, isContext && styles.contextText]}
+        style={[styles.hour, !selectedRange && (selectedHourTime !== undefined ? isFocused : hour.period === 'now') && styles.currentText, isContext && !isEndBoundary && styles.contextText]}
       >
         {hour.period === 'now' && !useHourlyForecast ? 'Now' : formatHour(hour.time, timezone)}
       </Text>
@@ -120,7 +149,12 @@ export function HourBin({
 }
 
 const styles = StyleSheet.create({
-  bin: { alignItems: 'center', paddingHorizontal: 1, width: BIN_WIDTH },
+  bin: { alignItems: 'center', paddingHorizontal: 1, position: 'relative', width: BIN_WIDTH },
+  selectedRangeBackground: {
+    backgroundColor: '#F4F4F4', bottom: -8, left: 0, position: 'absolute', right: 0,
+  },
+  selectedRangeStart: { borderBottomLeftRadius: 8, borderTopLeftRadius: 8 },
+  selectedRangeEnd: { borderBottomRightRadius: 8, borderTopRightRadius: 8 },
   valueGroup: {
     alignItems: 'center', height: VALUE_GROUP_HEIGHT, left: (BAR_WIDTH - BIN_WIDTH) / 2,
     position: 'absolute', width: BIN_WIDTH,

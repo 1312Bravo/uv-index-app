@@ -4,6 +4,7 @@ import type { ForecastHour } from '../../domain/forecast/forecastTypes';
 import { getUvCategory } from '../../domain/uv/getUvCategory';
 
 type Props = {
+  endBoundaryHour?: ForecastHour;
   hours: ForecastHour[];
   timezone: string;
 };
@@ -34,10 +35,11 @@ function formatWeekday(time: number, timezone: string): string {
     .format(new Date(time * 1000));
 }
 
-export function OutingUvTimeline({ hours, timezone }: Props) {
+export function OutingUvTimeline({ endBoundaryHour, hours, timezone }: Props) {
   if (hours.length === 0) return null;
 
-  const highestUv = Math.max(...hours.map(({ uv }) => uv));
+  const displayHours = endBoundaryHour ? [...hours, endBoundaryHour] : hours;
+  const highestUv = Math.max(...displayHours.map(({ uv }) => uv));
   const scale = Math.max(8, highestUv);
   const tallestBar = Math.max(2, highestUv / scale * BAR_HEIGHT);
   // Keep the gap above the tallest value steady without moving the shared bar baseline.
@@ -49,10 +51,10 @@ export function OutingUvTimeline({ hours, timezone }: Props) {
         contentContainerStyle={styles.hours}
         showsHorizontalScrollIndicator
       >
-        {hours.map((hour, index) => {
+        {displayHours.map((hour, index) => {
           const { clock, period } = formatReadingTime(hour.time, timezone);
           const day = formatReadingDay(hour.time, timezone);
-          const previousDay = index > 0 ? formatReadingDay(hours[index - 1].time, timezone) : null;
+          const previousDay = index > 0 ? formatReadingDay(displayHours[index - 1].time, timezone) : null;
           const height = Math.max(2, hour.uv / scale * BAR_HEIGHT);
           const endTime = formatReadingTime(hour.time + 3600, timezone);
           const category = getUvCategory(hour.uv).label;

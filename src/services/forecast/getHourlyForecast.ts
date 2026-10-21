@@ -91,9 +91,16 @@ export async function getHourlyForecast(
   }
 
   const previousDate = getLocalDateKey(hours[0].time - 86_400, data.timezone);
+  const lastDate = getLocalDateKey(hours[hours.length - 1].time, data.timezone);
+  const [lastYear, lastMonth, lastDay] = lastDate.split('-').map(Number);
+  // The following sunrise lets the nighttime arc reach the final chart bin.
+  const followingDate = new Date(Date.UTC(lastYear, lastMonth - 1, lastDay + 1))
+    .toISOString()
+    .slice(0, 10);
   const dates = [...new Set([
     previousDate,
     ...hours.map(({ time }) => getLocalDateKey(time, data.timezone)),
+    followingDate,
   ])];
   const daylight = dates.map((date) => getDaylightEvents(date, latitude, longitude));
 

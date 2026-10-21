@@ -7,11 +7,10 @@ attribution, and limitations.
   temperature forecast, alongside its existing place search.
 - The choice avoids client-side API-key handling; it does not establish that
   Open-Meteo is more accurate than WeatherAPI.
-- Show five earlier hourly model values, Now, and the available future hours
+- Show the previous hourly model value, Now, and the available future hours
   through tomorrow in one horizontally scrollable chart. Use narrow, closely
-  spaced bins so more hours fit on screen. Initially show a couple of earlier bins
-  before Now, leaving more future bins visible; all five earlier bins remain
-  available by scrolling left. The chart crosses local day boundaries and labels
+  spaced bins so more hours fit on screen. Start with one hour before Now and
+  show all available future hours. The chart crosses local day boundaries and labels
   day changes.
 - Request two local forecast days from Open-Meteo and retain all returned hourly
   data from five hours before the current hour through the end of tomorrow for
@@ -36,11 +35,12 @@ attribution, and limitations.
   content also shows the current date and time in the selected location's zone.
   Forecast and outing times use that same provider-resolved zone.
 - Plan an Outing also shows a UV-only chart before guidance. It displays each
-  hourly forecast bin that overlaps the selected outing, including the full
-  first and last hour when the selected times fall between hour boundaries.
-  For example, 9:23-10:13 displays the 9:00-11:00 forecast hours. The bars use
-  the same hourly UV values as the outing guidance; the chart's expanded visual
-  range does not change overlap-weighted outing calculations.
+  hourly forecast bin that overlaps the selected outing, plus the complete bin
+  at the next hour boundary when available. Each bin shows its UV value,
+  category, bar, and time. This expanded visual range does not change
+  overlap-weighted outing calculations. The full weather chart starts one hour
+  before the selected outing, continues through the available forecast, and
+  marks selected outing hours with a very light grey background.
 - Above the UV Outlook chart, show a compact single-hour UV section. It defaults
   to Now and shows the UV estimate, rounded display category, category meaning,
   and short protection actions. A Now/Custom time choice appears above the

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { DateTimeField } from './DateTimeField';
+import { EndTimeSelector } from './EndTimeSelector';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import { convertInstantPreservingLocalTime, getNextHourInTimeZone } from '../../domain/time/zonedDateTime';
 import { ChoiceOption, choiceFieldLayout, choiceListLayout } from '../../ui/ChoiceOption';
@@ -14,7 +15,7 @@ type Props = {
 
 type StartMode = 'now' | 'scheduled';
 type EndMode = 'duration' | 'end-time';
-type OpenSection = 'start' | 'end' | 'duration' | null;
+type OpenSection = 'start' | 'end' | 'duration' | 'end-time' | null;
 
 const DURATION_OPTIONS = [30, 60, 120, 180, 240];
 
@@ -26,6 +27,12 @@ function formatDuration(minutes: number): string {
   if (remainingMinutes === 0) return `${hours}h`;
 
   return `${hours}:${String(remainingMinutes).padStart(2, '0')}`;
+}
+
+function formatEndTime(value: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('en', {
+    weekday: 'short', hour: 'numeric', minute: '2-digit', timeZone,
+  }).format(value);
 }
 
 function getCustomDurationMinutes(hoursText: string, minutesText: string): number | null {
@@ -256,7 +263,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
             label="Choose a duration"
             onPress={() => {
               setEndMode('duration');
-              setOpenSection(null);
+              setOpenSection('end');
             }}
           />
           <ChoiceOption
@@ -264,7 +271,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
             label="Set an end time"
             onPress={() => {
               setEndMode('end-time');
-              setOpenSection(null);
+              setOpenSection('end');
             }}
           />
         </View>
@@ -290,7 +297,6 @@ export function TimePlanner({ onChange, timeZone }: Props) {
                     setIsCustomDuration(false);
                     setCustomHours('');
                     setCustomMinutes('');
-                    setOpenSection(null);
                   }}
                 />
               ))}
@@ -300,7 +306,6 @@ export function TimePlanner({ onChange, timeZone }: Props) {
                 onPress={() => {
                   setDuration(null);
                   setIsCustomDuration(true);
-                  setOpenSection(null);
                 }}
               />
             </View>
@@ -331,17 +336,29 @@ export function TimePlanner({ onChange, timeZone }: Props) {
             </View>
           )}
         </>
-      ) : timeZone ? (
-        <DateTimeField
-          accessibilityLabel="End date and time"
-          minimumDate={startMode === 'scheduled' ? scheduledStart ?? new Date() : new Date()}
-          onChange={setEndTime}
-          placeholder="Choose end date and time"
-          timeZone={timeZone}
-          value={endTime}
-        />
       ) : (
-        <Text style={styles.hint}>Loading the selected location's time zone...</Text>
+        <>
+          <SelectorRow
+            expanded={openSection === 'end-time'}
+            label="End time"
+            onPress={() => setOpenSection(openSection === 'end-time' ? null : 'end-time')}
+            value={endTime && timeZone ? formatEndTime(endTime, timeZone) : 'Choose a time'}
+          />
+          {openSection === 'end-time' && timeZone && (
+            <EndTimeSelector
+              now={currentTime}
+              onChange={(value) => {
+                setEndTime(value);
+              }}
+              start={startMode === 'scheduled' ? scheduledStart ?? currentTime : currentTime}
+              timeZone={timeZone}
+              value={endTime}
+            />
+          )}
+          {openSection === 'end-time' && !timeZone && (
+            <Text style={styles.hint}>Loading the selected location's time zone...</Text>
+          )}
+        </>
       )}
 
       {error && <Text style={styles.error}>{error}</Text>}

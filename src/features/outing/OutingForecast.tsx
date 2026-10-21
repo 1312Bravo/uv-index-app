@@ -149,6 +149,10 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
   const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;
   const forecastLimitMessage = forecast ? getForecastLimitMessage(forecast, plan.end) : null;
+  const lastOutingHour = summary?.hours.at(-1);
+  const endBoundaryHour = lastOutingHour
+    ? forecast?.hours.find((hour) => hour.time === lastOutingHour.time + 3600)
+    : undefined;
 
   return (
     <View style={styles.section}>
@@ -166,7 +170,11 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
       )}
       {forecast && summary && (
         <>
-          <OutingUvTimeline hours={summary.hours} timezone={forecast.timezone} />
+          <OutingUvTimeline
+            endBoundaryHour={endBoundaryHour}
+            hours={summary.hours}
+            timezone={forecast.timezone}
+          />
           {guidance && (
             <View style={styles.guidance}>
               <Text style={styles.guidanceTitle}>UV guidance</Text>

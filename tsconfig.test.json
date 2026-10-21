@@ -16,6 +16,7 @@
     "src/domain/forecast/getUvForecastAtTime.ts",
     "src/domain/uv/getUvCategory.ts",
     "src/domain/outing/calculateOutingForecast.ts",
+    "src/domain/outing/getEndTimeSlots.ts",
     "src/domain/guidance/getHourlyUvGuidance.ts",
     "src/domain/guidance/getWhoGuidance.ts",
     "src/domain/guidance/getUvScoutInsight.ts"

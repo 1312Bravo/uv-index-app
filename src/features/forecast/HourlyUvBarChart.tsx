@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { DaylightEvents } from '../../domain/daylight/daylightTypes';
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
 import { DaylightTrack, DAYLIGHT_TRACK_HEIGHT } from './DaylightTrack';
-import { HourBin, formatChartDay } from './HourBin';
+import { getValueGroupTop, HourBin, formatChartDay } from './HourBin';
 import { BIN_WIDTH, type SelectedRange } from './hourlyChartLayout';
 
 type Props = {
@@ -21,15 +21,19 @@ type Props = {
 };
 
 const BIN_GAP = 0;
-const OUTING_CONTEXT_HOURS = 3;
-const OUTLOOK_PAST_HOURS = 5;
+const OUTING_CONTEXT_HOURS = 1;
+const OUTLOOK_PAST_HOURS = 1;
 const OUTLOOK_FUTURE_HOURS = 18;
+const CHART_TOP_MARGIN = 10;
+const TOP_LEGEND_LINE_HEIGHT = 12;
+const TOP_LEGEND_VALUE_GAP = 10;
+const LEGEND_SPACE_HEIGHT = 18;
 
 function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange, showFullOutlook = false): ForecastHour[] {
   if (!selectedRange) {
-    if (showFullOutlook) return hours;
     const currentIndex = hours.findIndex((hour) => hour.period === 'now');
     if (currentIndex < 0) return hours;
+    if (showFullOutlook) return hours.slice(Math.max(0, currentIndex - 1));
     return hours.slice(
       Math.max(0, currentIndex - OUTLOOK_PAST_HOURS),
       Math.min(hours.length, currentIndex + OUTLOOK_FUTURE_HOURS + 1),
@@ -42,13 +46,7 @@ function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange, sho
   if (selectedIndices.length === 0) return hours;
 
   const firstSelected = selectedIndices[0];
-  const lastSelected = selectedIndices[selectedIndices.length - 1];
-  const contextHours = Math.min(
-    OUTING_CONTEXT_HOURS,
-    firstSelected,
-    hours.length - lastSelected - 1,
-  );
-  return hours.slice(firstSelected - contextHours, lastSelected + contextHours + 1);
+  return hours.slice(Math.max(0, firstSelected - OUTING_CONTEXT_HOURS));
 }
 
 export function HourlyUvBarChart({
@@ -63,6 +61,17 @@ export function HourlyUvBarChart({
   const scale = Math.max(8, ...chartHours.map((hour) =>
     useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv,
   ));
+  const highestValueGroupTop = chartHours.length === 0 ? 0 : Math.min(...chartHours.map((hour) =>
+    getValueGroupTop(useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv, scale),
+  ));
+  const topLegendTop = CHART_TOP_MARGIN + DAYLIGHT_TRACK_HEIGHT + LEGEND_SPACE_HEIGHT +
+    highestValueGroupTop - TOP_LEGEND_LINE_HEIGHT - TOP_LEGEND_VALUE_GAP;
+  const selectedHours = selectedRange
+    ? chartHours.filter((hour) => hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start)
+    : [];
+  const firstSelectedTime = selectedHours[0]?.time;
+  const lastSelectedHour = selectedHours.at(-1);
+  const endBoundaryTime = lastSelectedHour ? lastSelectedHour.time + 3600 : null;
 
   useEffect(() => {
     if (scrollTarget === undefined) return;
@@ -103,6 +112,9 @@ export function HourlyUvBarChart({
                   timezone={timezone}
                   scale={scale}
                   showDay={index === 0 || day !== previousDay}
+                  isEndBoundary={selectedRange !== undefined && hour.time === endBoundaryTime}
+                  isFirstSelected={hour.time === firstSelectedTime}
+                  isLastSelected={hour.time === lastSelectedHour?.time}
                   selectedRange={selectedRange}
                   selectedHourTime={selectedHourTime}
                   useHourlyForecast={useHourlyForecast}
@@ -112,7 +124,7 @@ export function HourlyUvBarChart({
           </View>
         </View>
       </ScrollView>
-      <Text pointerEvents="none" style={styles.topLegend}>Cloud cover (%), temperature (°C)</Text>
+      <Text pointerEvents="none" style={[styles.topLegend, { top: topLegendTop }]}>Cloud cover (%), temperature (°C)</Text>
       <Text style={styles.bottomLegend}>Rain chance (%), precipitation (mm), wind (km/h)</Text>
     </View>
   );
@@ -122,12 +134,12 @@ const styles = StyleSheet.create({
   chartFrame: { position: 'relative' },
   topLegend: {
     backgroundColor: '#FFFFFF', color: '#777777', fontSize: 11, left: 0,
-    lineHeight: 14, position: 'absolute', right: 0, textAlign: 'center',
-    top: DAYLIGHT_TRACK_HEIGHT + 12, zIndex: 1,
+    lineHeight: TOP_LEGEND_LINE_HEIGHT, position: 'absolute', right: 0, textAlign: 'center',
+    zIndex: 1,
   },
-  chart: { marginTop: 10 },
-  chartContent: { flexGrow: 1, justifyContent: 'center', paddingBottom: 14 },
-  legendSpace: { height: 22 },
+  chart: { marginTop: CHART_TOP_MARGIN },
+  chartContent: { flexGrow: 1, justifyContent: 'center', paddingBottom: 4 },
+  legendSpace: { height: LEGEND_SPACE_HEIGHT },
   bins: { alignItems: 'flex-end', flexDirection: 'row', gap: BIN_GAP },
   bottomLegend: { color: '#777777', fontSize: 11, marginTop: 6, textAlign: 'center' },
 });

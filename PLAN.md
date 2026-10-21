@@ -25,23 +25,28 @@ helps people plan outdoor time around the current and forecast UV index.
   planner does not ask the user to classify shade; guidance recommends general
   shade use without treating it as a numeric UV adjustment.
 - Plan an Outing defaults to a selected timeframe from Now for 4 hours.
-  Forecast metrics, UV breakdown, protection guidance, and the hourly chart all
-  use this same selected timeframe.
-- Before the outing guidance, show a compact UV-only chart of every hourly
-  forecast bin that overlaps the selected outing. Display each full hour: an
-  outing from 9:23 to 10:13 shows the 9:00-11:00 forecast hours. Use the same
-  hourly UV values as the outing guidance.
+  Forecast metrics, UV breakdown, and protection guidance use this timeframe.
+  The charts include hourly context around it without changing those calculations.
+- Before the outing guidance, show a compact UV chart of the hourly bins that
+  overlap the selected outing, plus the full forecast bin at the next hourly
+  boundary when available. Show all values and the bar for that final bin too.
+  Guidance and averages still use only the selected outing period.
+- In the outing weather chart, show one hour before the outing and then continue
+  through the available forecast. Shade selected outing hours with a very light
+  grey background; extend the sun/moon trace to the chart's final bin.
 - Scheduled start and end fields use the selected location's local time zone,
   not the device's time zone. When the selected location changes, preserve the
   chosen local calendar date and clock time, then resolve them in the new
   location's time zone before recalculating the forecast.
+- End-time mode offers a compact list of future local half-hour times through
+  tomorrow. Selecting a time keeps the list open; tap its row to close it.
 - Show the selected location's current local date and time beside its name and
   coordinates in the shared header on the first three tabs. Resolve the zone as
   soon as a location is selected, and use it consistently for planner and
   forecast times.
 - If the user switches from Now to a scheduled outing, offer only future times
   relative to the current time at the selected location.
-- UV Outlook shows a horizontal UV trend from five earlier hourly bins through
+- UV Outlook shows a horizontal UV trend from one earlier hourly bin through
   the end of tomorrow. Its initial position keeps Now near the left. The chart
   crosses local day boundaries. Now and Custom time controls above the UV reading
   choose the forecast time; the chart reflects that choice.
@@ -191,7 +196,7 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Keep earlier/later comparisons in the future.
 - [x] Default the selected outing to Now for 4 hours, with controls to change
   duration or set an end time.
-- [x] First show a rolling 5-past / Now / 18-future hourly UV trend independently
+- [x] First show a rolling 1-past / Now / subsequent hourly UV trend independently
   of the outing timeframe; later extend selection through tomorrow.
 - [x] Choose Open-Meteo for keyless UV and temperature forecasts in the prototype.
 - [x] Confirm and implement the first recommendation rules and safety wording.
@@ -337,8 +342,9 @@ calculation, supported platform versions, and the final visual polish.
 - Provide duration presets of 30 minutes, 1 hour, 2 hours, 3 hours, and 4 hours,
   plus custom minutes. Allow the user to switch to an explicit end time instead.
 - Present planner choices as compact selector rows with vertically revealed
-  options, rather than groups of boxed buttons. Keep only one option list open.
-- Show a minimal horizontal UV chart from five preceding hours through the end
+  options, rather than groups of boxed buttons. Keep the selected duration or
+  end-time list open until its row is tapped again.
+- Show a minimal horizontal UV chart from one preceding hour through the end
   of tomorrow in the location's time zone. Label day changes and show compact
   weather and UV values by hour. Keep the initial viewport near Now with earlier
   hours available to the left. Custom times are listed continuously across
@@ -367,7 +373,8 @@ calculation, supported platform versions, and the final visual polish.
 - Use a minimal, neutral visual style with clear typography and little decoration.
 - Calculate daylight events for the forecast location and local date; align the
   event markers, paired day/night arcs, and time-dependent sun/moon icon with
-  hourly chart bins.
+  hourly chart bins. Calculate the following local date too, so the final night
+  arc reaches the end of the visible timeline.
 - Build one Expo codebase for Android and web, checking both throughout development.
 - Use text-only top tabs rather than boxed navigation buttons; underline the active tab.
 - Use four top tabs in order: Location, UV Outlook, Plan an Outing, and Info.

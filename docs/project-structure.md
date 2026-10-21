@@ -16,6 +16,7 @@ src/
     daylight/                  Civil dawn, sunrise, sunset, and civil dusk calculations
     location/locationTypes.ts
     outing/                   Time plan and forecast overlap/coverage calculations
+      getEndTimeSlots.ts      Local half-hour end-time choices through tomorrow
     guidance/whoGuidance.json WHO thresholds and general protection actions
     guidance/getWhoGuidance.ts Validates and interprets the WHO reference
     guidance/uvScoutInsight.json Editable UV Scout wording
@@ -46,6 +47,7 @@ src/
       LocationMap.web.tsx     Leaflet/OpenStreetMap browser map
       LocationPicker.tsx      Search, device location, and shared selection state
     planning/                 Time inputs and platform date/time picker
+      EndTimeSelector.tsx     Collapsible end-time choice list
     outing/                   Outing forecast result
       OutingUvTimeline.tsx    Compact hourly UV preview before guidance
     info/                     UV and cloud-cover explanation screen
