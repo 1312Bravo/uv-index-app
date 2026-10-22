@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { HourlyUvGuidance as HourlyUvGuidanceResult } from '../../domain/guidance/getHourlyUvGuidance';
 import { uiColors } from '../../ui/visualStyle';
+import { CurrentWeatherMetrics } from './CurrentWeatherMetrics';
 
 function formatEstimateTime(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
@@ -31,6 +32,7 @@ export function HourlyUvGuidance({
   isCurrent,
   isInterpolated,
   timezone,
+  currentWeather,
 }: {
   guidance: HourlyUvGuidanceResult;
   estimateTime: number | null;
@@ -38,15 +40,20 @@ export function HourlyUvGuidance({
   isCurrent: boolean;
   isInterpolated: boolean;
   timezone: string;
+  currentWeather?: {
+    temperature: number;
+    cloudCover: number | null;
+    precipitation: number | null;
+    precipitationInterval: number | null;
+    precipitationTime: number | null;
+    timezone: string;
+  };
 }) {
   const guidancePoints = [guidance.meaning, ...guidance.actions];
 
   return (
     <View style={styles.section}>
       <Text style={styles.heading}>{isCurrent ? 'Current UV' : 'UV forecast'}</Text>
-      {isCurrent && estimateTime !== null && (
-        <Text style={styles.estimateTime}>Latest estimate: {formatEstimateTime(estimateTime, timezone)}</Text>
-      )}
       {!isCurrent && (
         <Text style={styles.estimateTime}>
           {isInterpolated ? 'Approx. UV for ' : 'Forecast for '}{formatForecastTime(forecastHourTime, timezone)}
@@ -57,6 +64,11 @@ export function HourlyUvGuidance({
           <Text style={styles.readingLabel}>UV INDEX</Text>
           <Text style={styles.uvValue}>{guidance.uv.toFixed(1)}</Text>
           <Text style={styles.category}>{guidance.category}</Text>
+          {isCurrent && estimateTime !== null && (
+            <Text style={styles.currentEstimateTime}>
+              Latest estimate: {formatEstimateTime(estimateTime, timezone)}
+            </Text>
+          )}
         </View>
         <View style={styles.divider} />
         <View style={styles.protection}>
@@ -80,6 +92,7 @@ export function HourlyUvGuidance({
       <View style={styles.notes}>
         {guidance.categoryNote && <Text style={styles.note}>{guidance.categoryNote}</Text>}
       </View>
+      {isCurrent && currentWeather && <CurrentWeatherMetrics {...currentWeather} />}
     </View>
   );
 }
@@ -88,6 +101,7 @@ const styles = StyleSheet.create({
   section: { borderBottomColor: uiColors.line, borderBottomWidth: 1, paddingBottom: 20 },
   heading: { color: uiColors.ink, fontSize: 16, fontWeight: '600', textAlign: 'center' },
   estimateTime: { color: uiColors.muted, fontSize: 12, marginTop: 5, textAlign: 'center' },
+  currentEstimateTime: { color: uiColors.muted, fontSize: 11, marginTop: 5, textAlign: 'center' },
   reading: { alignItems: 'stretch', flexDirection: 'row', marginTop: 16 },
   uvBlock: { alignItems: 'center', flex: 0.85, justifyContent: 'flex-start', paddingHorizontal: 8 },
   uvValue: { color: uiColors.ink, fontSize: 32, lineHeight: 38, textAlign: 'center' },

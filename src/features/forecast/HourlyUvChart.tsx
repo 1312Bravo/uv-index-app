@@ -83,29 +83,32 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
       {forecast && (
         <>
           {selectedHour && (
-            <OutlookTimeSelector
-              mode={timeMode}
-              hours={forecast.hours}
-              nowTime={currentTime}
-              onSelectMode={(mode) => {
-                setTimeMode(mode);
-                if (mode === 'now') setScrollTarget(undefined);
-                const selectedTimeIsAvailable = customTimeSlots.some((slot) =>
-                  slot.time === selectedTime,
-                );
-                if (mode === 'custom' && !selectedTimeIsAvailable) {
-                  const firstFutureSlot = customTimeSlots[0];
-                  if (firstFutureSlot) setSelectedTime(firstFutureSlot.time);
-                }
-              }}
-              onSelectHour={(time) => {
-                setSelectedTime(time);
-                const selectedForecastHour = getForecastHourForTime(forecast.hours, time);
-                setScrollTarget(selectedForecastHour ? { time: selectedForecastHour.time } : undefined);
-              }}
-              selectedTime={selectedCustomTime}
-              timezone={forecast.timezone}
-            />
+            <>
+              <OutlookTimeSelector
+                mode={timeMode}
+                hours={forecast.hours}
+                nowTime={currentTime}
+                onSelectMode={(mode) => {
+                  setTimeMode(mode);
+                  if (mode === 'now') setScrollTarget(undefined);
+                  const selectedTimeIsAvailable = customTimeSlots.some((slot) =>
+                    slot.time === selectedTime,
+                  );
+                  if (mode === 'custom' && !selectedTimeIsAvailable) {
+                    const firstFutureSlot = customTimeSlots[0];
+                    if (firstFutureSlot) setSelectedTime(firstFutureSlot.time);
+                  }
+                }}
+                onSelectHour={(time) => {
+                  setSelectedTime(time);
+                  const selectedForecastHour = getForecastHourForTime(forecast.hours, time);
+                  setScrollTarget(selectedForecastHour ? { time: selectedForecastHour.time } : undefined);
+                }}
+                selectedTime={selectedCustomTime}
+                timezone={forecast.timezone}
+              />
+              <View style={[styles.selectorDivider, timeMode === 'now' && styles.nowSelectorDivider]} />
+            </>
           )}
           {hourlyGuidance && selectedHour && (
             <HourlyUvGuidance
@@ -115,6 +118,14 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
               isCurrent={timeMode === 'now'}
               isInterpolated={customUvForecast?.interpolated ?? false}
               timezone={forecast.timezone}
+              currentWeather={timeMode === 'now' ? {
+                temperature: selectedHour.temperature,
+                cloudCover: selectedHour.cloudCover,
+                precipitation: forecast.currentPrecipitation,
+                precipitationInterval: forecast.currentPrecipitationInterval,
+                precipitationTime: forecast.currentPrecipitationTime,
+                timezone: forecast.timezone,
+              } : undefined}
             />
           )}
           {!hourlyGuidance && <Text style={styles.message}>UV estimate unavailable.</Text>}
@@ -142,6 +153,15 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
 
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
+  selectorDivider: {
+    alignSelf: 'center',
+    backgroundColor: uiColors.line,
+    height: 1,
+    marginBottom: 16,
+    marginTop: 16,
+    width: '84%',
+  },
+  nowSelectorDivider: { marginTop: 15 },
   heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 26, textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },

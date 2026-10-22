@@ -49,7 +49,7 @@ export function OutlookTimeSelector({
 
   return (
     <View style={styles.section}>
-      <View style={styles.modeChoices}>
+      <View style={[styles.modeChoices, mode === 'custom' && styles.customModeChoices]}>
         {(['now', 'custom'] as const).map((choice) => {
           const active = mode === choice;
           return (
@@ -97,8 +97,9 @@ export function OutlookTimeSelector({
 }
 
 const styles = StyleSheet.create({
-  section: { marginBottom: 22 },
-  modeChoices: { alignSelf: 'center', flexDirection: 'row', gap: 24, marginBottom: 8 },
+  section: { marginBottom: 0 },
+  modeChoices: { alignSelf: 'center', flexDirection: 'row', gap: 24 },
+  customModeChoices: { marginBottom: 8 },
   modeChoice: { borderBottomColor: 'transparent', borderBottomWidth: 2, paddingBottom: 4 },
   selectedModeChoice: { borderBottomColor: uiColors.ink },
   modeText: { color: uiColors.muted, fontSize: 14 },

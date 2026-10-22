@@ -225,6 +225,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
               setStartMode('now');
               setOpenSection(null);
             }}
+            showDivider
           />
           <ChoiceOption
             active={startMode === 'scheduled'}
@@ -234,6 +235,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
               if (!scheduledStart && timeZone) setScheduledStart(getNextHourInTimeZone(currentTime, timeZone));
               setOpenSection(null);
             }}
+            showDivider
           />
         </View>
       )}
@@ -265,6 +267,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
               setEndMode('duration');
               setOpenSection('end');
             }}
+            showDivider
           />
           <ChoiceOption
             active={endMode === 'end-time'}
@@ -273,6 +276,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
               setEndMode('end-time');
               setOpenSection('end');
             }}
+            showDivider
           />
         </View>
       )}
@@ -298,6 +302,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
                     setCustomHours('');
                     setCustomMinutes('');
                   }}
+                  showDivider
                 />
               ))}
               <ChoiceOption
@@ -307,6 +312,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
                   setDuration(null);
                   setIsCustomDuration(true);
                 }}
+                showDivider
               />
             </View>
           )}

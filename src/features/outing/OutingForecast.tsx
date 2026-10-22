@@ -170,6 +170,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
       )}
       {forecast && summary && (
         <>
+          <Text style={styles.sectionLabel}>UV forecast by hour</Text>
           <OutingUvTimeline
             endBoundaryHour={endBoundaryHour}
             hours={summary.hours}
@@ -213,6 +214,8 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
             </View>
           )}
 
+          <View style={styles.summarySectionDivider} />
+          <Text style={styles.summarySectionLabel}>Outing weather summary</Text>
           <View style={styles.summaryGrid}>
             <View style={styles.summaryRow}>
               <SummaryMetric
@@ -256,6 +259,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
             <Text style={styles.guidanceCategoryNote}>{guidance.categoryNote}</Text>
           )}
 
+          <View style={styles.hourlyChartDivider} />
           <Text style={styles.subheading}>UV &amp; weather by hour</Text>
           <HourlyUvBarChart
             hours={forecast.hours}
@@ -279,7 +283,9 @@ const styles = StyleSheet.create({
   timeRange: { color: '#555555', fontSize: 14, fontWeight: '500', textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
-  summaryGrid: { marginTop: 20 },
+  summaryGrid: { marginTop: 8 },
+  summarySectionDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, height: 1, marginTop: 20 },
+  summarySectionLabel: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 12, textAlign: 'center' },
   summaryRow: { alignItems: 'stretch', flexDirection: 'row' },
   summaryItem: { alignItems: 'center', flex: 1, justifyContent: 'flex-start', paddingHorizontal: 4, paddingVertical: 7 },
   summaryDivider: { alignSelf: 'stretch', backgroundColor: '#DDDDDD', marginHorizontal: 7, marginVertical: 5, width: 1 },
@@ -289,6 +295,7 @@ const styles = StyleSheet.create({
   summaryDetail: { color: '#696969', fontSize: 12, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: '#696969', fontSize: 13, marginTop: 4, textAlign: 'center' },
   guidance: { marginTop: 20 },
+  sectionLabel: { color: uiColors.ink, fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 20, textAlign: 'center' },
   guidanceTitle: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, textAlign: 'center' },
   guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14, textAlign: 'center' },
   guidanceCoverage: { color: '#666666', fontSize: 13, lineHeight: 19, marginTop: 10 },
@@ -296,7 +303,7 @@ const styles = StyleSheet.create({
   guidanceCategoryNote: { color: '#777777', fontSize: 12, lineHeight: 17, marginTop: 8, textAlign: 'center' },
   guidanceTakeawayBulletText: { color: '#333333', flex: 1, fontSize: 13, lineHeight: 19 },
   guidanceDetails: { marginTop: 12 },
-  guidanceActions: { borderTopColor: '#E6E6E6', borderTopWidth: 1, marginTop: 18, paddingTop: 2 },
+  guidanceActions: { marginTop: 18 },
   guidanceActionList: { marginTop: 7, rowGap: 5 },
   guidanceContext: { marginTop: 13, paddingLeft: 18 },
   guidanceContextHeading: { color: '#666666', fontSize: 13, lineHeight: 19 },
@@ -310,6 +317,7 @@ const styles = StyleSheet.create({
   guidanceBulletText: { color: '#333333', fontSize: 13, lineHeight: 19 },
   guidanceTextFlex: { flex: 1 },
   guidanceBulletTitle: { color: '#333333', fontWeight: '600' },
-  subheading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 28, textAlign: 'center' },
+  hourlyChartDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, height: 1, marginTop: 20 },
+  subheading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 12, textAlign: 'center' },
   source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });

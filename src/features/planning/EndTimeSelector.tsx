@@ -59,6 +59,7 @@ export function EndTimeSelector({ now, onChange, start, timeZone, value }: Props
                 active={value?.getTime() === choice.slot.getTime()}
                 label={choice.label}
                 onPress={() => onChange(choice.slot)}
+                showDivider
               />
             </View>
           );

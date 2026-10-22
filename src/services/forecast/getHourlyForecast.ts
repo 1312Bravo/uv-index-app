@@ -13,7 +13,7 @@ export async function getHourlyForecast(
   const params = new URLSearchParams({
     latitude: String(latitude),
     longitude: String(longitude),
-    current: 'uv_index,temperature_2m,cloud_cover,wind_speed_10m',
+    current: 'uv_index,temperature_2m,cloud_cover,precipitation,wind_speed_10m',
     hourly: 'uv_index,temperature_2m,cloud_cover,precipitation_probability,precipitation,wind_speed_10m',
     timezone: 'auto',
     timeformat: 'unixtime',
@@ -41,6 +41,13 @@ export async function getHourlyForecast(
   const now = Date.now() / 1000;
   const currentIndex = times.findLastIndex((time) => isNumber(time) && time <= now);
   const current = data.current;
+  const currentPrecipitation = isNumber(current?.precipitation)
+    ? current.precipitation
+    : null;
+  const currentPrecipitationInterval = isNumber(current?.interval)
+    ? current.interval
+    : null;
+  const currentPrecipitationTime = isNumber(current?.time) ? current.time : null;
   const currentConditionsTime = isNumber(current?.time) &&
     isNumber(current?.uv_index) && isNumber(current?.temperature_2m)
     ? current.time
@@ -104,5 +111,13 @@ export async function getHourlyForecast(
   ])];
   const daylight = dates.map((date) => getDaylightEvents(date, latitude, longitude));
 
-  return { timezone: data.timezone, currentConditionsTime, hours, daylight };
+  return {
+    timezone: data.timezone,
+    currentConditionsTime,
+    currentPrecipitation,
+    currentPrecipitationInterval,
+    currentPrecipitationTime,
+    hours,
+    daylight,
+  };
 }
