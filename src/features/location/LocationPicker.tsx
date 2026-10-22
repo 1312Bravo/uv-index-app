@@ -13,6 +13,7 @@ import {
 import type { Place, SelectedLocation } from '../../domain/location/locationTypes';
 import { reverseGeocodePlace } from '../../services/location/reverseGeocode';
 import { searchPlaces } from '../../services/location/searchPlaces';
+import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors, uiType } from '../../ui/visualStyle';
 import { formatPlaceName } from './formatLocation';
 import { LocationMap } from './LocationMap';
@@ -267,18 +268,21 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
       {isSearching && <Text style={styles.message}>Searching places...</Text>}
 
       {results.length > 0 && (
-        <View style={styles.results}>
-          {results.map((place) => (
-            <Pressable
-              accessibilityRole="button"
-              key={place.id}
-              onPress={() => selectPlace(place)}
-              style={({ pressed }) => [styles.result, pressed && styles.buttonPressed]}
-            >
-              <Text style={styles.resultText}>{formatPlaceName(place)}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <>
+          <View style={styles.results}>
+            {results.map((place) => (
+              <Pressable
+                accessibilityRole="button"
+                key={place.id}
+                onPress={() => selectPlace(place)}
+                style={({ pressed }) => [styles.result, pressed && styles.buttonPressed]}
+              >
+                <Text style={styles.resultText}>{formatPlaceName(place)}</Text>
+              </Pressable>
+            ))}
+          </View>
+          <SourceAttribution label="Place data by Open-Meteo / GeoNames" url="https://open-meteo.com/en/docs/geocoding-api" />
+        </>
       )}
 
       {hasSearched && results.length === 0 && (

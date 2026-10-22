@@ -11,6 +11,7 @@ import {
 } from '../../domain/outing/calculateOutingForecast';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
+import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors, uiType } from '../../ui/visualStyle';
 import { OutingUvTimeline } from './OutingUvTimeline';
 
@@ -271,7 +272,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
               end: plan.end.getTime() / 1000,
             }}
           />
-          <Text style={styles.source}>Open-Meteo forecast data</Text>
+          <SourceAttribution label="Forecast data by Open-Meteo" url="https://open-meteo.com/" />
         </>
       )}
     </View>
@@ -319,5 +320,4 @@ const styles = StyleSheet.create({
   guidanceBulletTitle: { color: '#333333', fontWeight: '600' },
   hourlyChartDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, height: 1, marginTop: 20 },
   subheading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 12, textAlign: 'center' },
-  source: { color: '#767676', fontSize: 11, marginTop: 14, textAlign: 'center' },
 });

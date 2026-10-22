@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { getUvForecastAtTime } from '../../domain/forecast/getUvForecastAtTime';
 import { getHourlyUvGuidance } from '../../domain/guidance/getHourlyUvGuidance';
+import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors, uiType } from '../../ui/visualStyle';
 import { ForecastError } from './ForecastError';
 import { HourlyUvGuidance } from './HourlyUvGuidance';
@@ -19,18 +20,6 @@ type Props = {
 
 const INITIAL_SCROLL_HOURS = 2;
 type OutlookTimeMode = 'now' | 'custom';
-
-function formatCurrentDateTime(time: number, timezone: string): string {
-  return new Intl.DateTimeFormat('en', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: timezone,
-  }).format(new Date(time));
-}
 
 export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) {
   const [currentTime, setCurrentTime] = useState(() => Date.now());
@@ -143,8 +132,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
             selectedHourTime={selectedHour?.time}
             scrollTarget={scrollTarget}
           />
-          <Text style={styles.currentTime}>{formatCurrentDateTime(currentTime, forecast.timezone)}</Text>
-          <Text style={styles.source}>Open-Meteo forecast data</Text>
+          <SourceAttribution label="Forecast data by Open-Meteo" url="https://open-meteo.com/" />
         </>
       )}
     </View>
@@ -165,6 +153,4 @@ const styles = StyleSheet.create({
   heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 26, textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
-  currentTime: { color: uiColors.body, fontSize: 13, fontWeight: '500', marginTop: 14, textAlign: 'center' },
-  source: { color: uiColors.muted, fontSize: 11, marginTop: 10, textAlign: 'center' },
 });

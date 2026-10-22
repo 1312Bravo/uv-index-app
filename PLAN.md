@@ -120,6 +120,12 @@ helps people plan outdoor time around the current and forecast UV index.
   plain-language guide to cloud cover and wind speeds.
 - Present Info topics as vertically stacked disclosures, with none expanded at
   first and no more than one topic open at a time.
+- Keep detailed source explanations in a final, collapsed Sources topic within
+  Info. Show a small linked Open-Meteo credit below the forecast chart on UV
+  Outlook and Plan an Outing, and a linked place-data credit next to search
+  results and selected searched places. Keep OpenStreetMap attribution on the
+  map itself. Describe WHO as the source of general protection guidance and UV
+  Scout as the author of outing-specific rules and recommendations.
 - Keep the interface minimal, with a small number of clear inputs and an easy-to-read result.
 - Maintain a source register that identifies the origin, app usage, code/data
   location, and relevant limitations for external data and evidence.
@@ -255,6 +261,8 @@ calculation, supported platform versions, and the final visual polish.
   including metrics, UV breakdown, protection guidance, and hourly chart.
 - [x] Add a central source register and require it to be updated when app data
   providers, scientific evidence, or calculation references are introduced.
+- [x] Add Info > Sources for detailed links and methods, with concise linked
+  Open-Meteo credits near the displayed forecast and place-search data.
 - [x] Review the active outing rules and copy, give low-UV hours a practical
   action, and document the current model separately from older research drafts.
 - [x] Restore the descriptive UV profile bullets in their own section while

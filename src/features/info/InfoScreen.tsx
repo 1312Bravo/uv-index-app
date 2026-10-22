@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { getCloudCoverBands } from '../../domain/weather/getCloudCoverBand';
 import { getPrecipitationRateGuide } from '../../domain/weather/getPrecipitationRateGuide';
@@ -8,6 +8,7 @@ import { getWhoGuidanceTable } from '../../domain/guidance/getWhoGuidance';
 import { getUvCategoryDefinitions } from '../../domain/uv/getUvCategory';
 import { uiColors, uiType } from '../../ui/visualStyle';
 import { InfoAccordion } from './InfoAccordion';
+import { SourcesExplanation } from './SourcesExplanation';
 
 const uvCategories = getUvCategoryDefinitions();
 const cloudCoverBands = getCloudCoverBands();
@@ -15,7 +16,7 @@ const precipitationRateGuide = getPrecipitationRateGuide();
 const windSpeedBands = getWindSpeedBands();
 const whoGuidance = getWhoGuidanceTable();
 
-type InfoTopic = 'uv' | 'clouds' | 'precipitation' | 'wind';
+type InfoTopic = 'uv' | 'clouds' | 'precipitation' | 'wind' | 'sources';
 
 function formatUvRange(index: number): string {
   const category = uvCategories[index];
@@ -27,18 +28,6 @@ function formatUvRange(index: number): string {
 
 function formatCloudRange(minimum: number, maximum: number): string {
   return minimum === maximum ? `${minimum}%` : `${minimum}-${maximum}%`;
-}
-
-function openSource(url: string) {
-  void Linking.openURL(url);
-}
-
-function SourceLink({ label, url }: { label: string; url: string }) {
-  return (
-    <Pressable accessibilityRole="link" onPress={() => openSource(url)}>
-      <Text style={styles.sourceLink}>{label}</Text>
-    </Pressable>
-  );
 }
 
 function UvIndexExplanation() {
@@ -77,14 +66,6 @@ function UvIndexExplanation() {
           </View>
         ))}
       </View>
-      <SourceLink
-        label="WHO: The ultraviolet (UV) index"
-        url="https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index"
-      />
-      <SourceLink
-        label="WHO: Global Solar UV Index guide"
-        url="https://www.who.int/publications/i/item/9241590076"
-      />
     </>
   );
 }
@@ -109,14 +90,6 @@ function CloudCoverExplanation() {
           </View>
         ))}
       </View>
-      <SourceLink
-        label="WHO: UV radiation, clouds and haze"
-        url="https://www.who.int/news-room/questions-and-answers/item/radiation-ultraviolet-(uv)"
-      />
-      <SourceLink
-        label="Open-Meteo: Weather forecast variables"
-        url="https://open-meteo.com/en/docs"
-      />
     </>
   );
 }
@@ -154,14 +127,6 @@ function PrecipitationExplanation() {
         Peak chance is for the highest single hour, not the whole outing. The rain
         guide applies to one hour, not the outing total.
       </Text>
-      <SourceLink
-        label="Open-Meteo: Weather forecast variables"
-        url="https://open-meteo.com/en/docs"
-      />
-      <SourceLink
-        label="WMO: Rain-intensity criteria"
-        url="https://www.weather.gov/media/epz/mesonet/CWOP-WMO8.pdf"
-      />
     </>
   );
 }
@@ -183,14 +148,6 @@ function WindExplanation() {
           </View>
         ))}
       </View>
-      <SourceLink
-        label="U.S. National Weather Service: Beaufort wind scale"
-        url="https://www.weather.gov/mfl/beaufort"
-      />
-      <SourceLink
-        label="Open-Meteo: Weather forecast variables"
-        url="https://open-meteo.com/en/docs?past_days=1"
-      />
     </>
   );
 }
@@ -234,6 +191,13 @@ export function InfoScreen() {
         >
           <WindExplanation />
         </InfoAccordion>
+        <InfoAccordion
+          title="Sources"
+          expanded={openTopic === 'sources'}
+          onPress={() => toggleTopic('sources')}
+        >
+          <SourcesExplanation />
+        </InfoAccordion>
       </View>
     </View>
   );
@@ -273,5 +237,4 @@ const styles = StyleSheet.create({
   cloudRange: { color: '#151515', fontSize: 13, fontWeight: '600', paddingTop: 2, width: 52 },
   windRange: { color: '#151515', fontSize: 12, fontWeight: '600', paddingTop: 2, width: 78 },
   cloudDescription: { flex: 1, minWidth: 0 },
-  sourceLink: { color: '#666666', fontSize: 12, marginTop: 12, textDecorationLine: 'underline' },
 });

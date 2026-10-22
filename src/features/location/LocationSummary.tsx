@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { SelectedLocation } from '../../domain/location/locationTypes';
+import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors } from '../../ui/visualStyle';
 import { formatLocationCoordinates, getLocationName } from './formatLocation';
 
@@ -41,6 +42,9 @@ export function LocationSummary({ location, timeZone, timeZoneUnavailable }: Pro
           <View style={styles.divider} />
           <Text style={styles.name}>{getLocationName(location)}</Text>
           <Text style={styles.coordinates}>{formatLocationCoordinates(location)}</Text>
+          {location.source === 'place' && (
+            <SourceAttribution label="Place data by Open-Meteo / GeoNames" url="https://open-meteo.com/en/docs/geocoding-api" />
+          )}
         </>
       )}
     </View>
