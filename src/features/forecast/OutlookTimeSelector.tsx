@@ -1,8 +1,9 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getLocalDateKey } from '../../domain/daylight/getDaylightEvents';
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
-import { ChoiceOption, choiceFieldLayout, choiceListLayout } from '../../ui/ChoiceOption';
+import { ChoiceOption, choiceFieldLayout } from '../../ui/ChoiceOption';
+import { OptionScrollList } from '../../ui/OptionScrollList';
 import { uiColors } from '../../ui/visualStyle';
 import { getOutlookTimeSlots } from './getOutlookTimeSlots';
 
@@ -72,7 +73,7 @@ export function OutlookTimeSelector({
           <View style={[choiceFieldLayout, styles.selectedTime]}>
             <Text style={styles.selectorValue}>{selectedTimeLabel}</Text>
           </View>
-          <ScrollView nestedScrollEnabled style={[choiceListLayout, styles.hourList]}>
+          <OptionScrollList style={styles.hourList}>
             {timeSlots.map((slot, index) => {
               const active = selectedTime === slot.time;
               const label = formatTime(slot.time, timezone);
@@ -89,7 +90,7 @@ export function OutlookTimeSelector({
                 </View>
               );
             })}
-          </ScrollView>
+          </OptionScrollList>
         </>
       )}
     </View>
@@ -107,5 +108,5 @@ const styles = StyleSheet.create({
   dayLabel: { color: uiColors.muted, fontSize: 12, paddingBottom: 4, paddingHorizontal: 6, paddingTop: 8 },
   selectedTime: { marginTop: 12 },
   selectorValue: { color: uiColors.secondary, fontSize: 14, lineHeight: 20, textAlign: 'center' },
-  hourList: { marginTop: 6, maxHeight: 200 },
+  hourList: { marginTop: 6 },
 });

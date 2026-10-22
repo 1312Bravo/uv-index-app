@@ -19,15 +19,40 @@ export function createNativeMapDocument() {
       html, body, #map { width: 100%; height: 100%; margin: 0; }
       body { overflow: hidden; background: #f2f2f2; }
       .leaflet-container { background: #f2f2f2; font: 12px Arial, sans-serif; }
-      .leaflet-control-attribution { font-size: 10px !important; }
-      .leaflet-tile { filter: grayscale(1) brightness(1.03) contrast(0.96); }
+      .leaflet-tile { filter: grayscale(1) contrast(1.12); }
+      .leaflet-control-zoom {
+        border: 1px solid #dddddd !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px #0000001a !important;
+        margin: 12px !important;
+        overflow: hidden;
+      }
+      .leaflet-control-zoom a {
+        background: #ffffff;
+        color: #333333;
+        height: 30px;
+        line-height: 30px;
+        width: 30px;
+      }
+      .leaflet-control-attribution {
+        background: #ffffffe6 !important;
+        border-top-left-radius: 5px;
+        font-size: 9px !important;
+      }
       .leaflet-marker-icon.${LOCATION_MARKER_CLASS} { background: transparent; border: 0; }
       .${LOCATION_MARKER_CLASS}__glyph {
-        display: block;
+        align-items: center;
+        background: #fffffff0;
+        border: 1px solid #555555;
+        border-radius: 50%;
+        box-shadow: 0 1px 5px #00000033;
+        box-sizing: border-box;
         color: #151515;
-        font: 700 15px/16px Arial, sans-serif;
-        text-align: center;
-        text-shadow: 0 0 2px #FFFFFF, 0 0 4px #FFFFFF;
+        display: flex;
+        font: 500 16px/1 Arial, sans-serif;
+        height: 24px;
+        justify-content: center;
+        width: 24px;
       }
     </style>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

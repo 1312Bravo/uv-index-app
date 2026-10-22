@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { getEndTimeSlots } from '../../domain/outing/getEndTimeSlots';
-import { ChoiceOption, choiceListLayout } from '../../ui/ChoiceOption';
+import { ChoiceOption } from '../../ui/ChoiceOption';
+import { OptionScrollList } from '../../ui/OptionScrollList';
 import { uiColors } from '../../ui/visualStyle';
 
 type Props = {
@@ -49,7 +50,7 @@ export function EndTimeSelector({ now, onChange, start, timeZone, value }: Props
   }, [dayFormatter, slots, timeFormatter, timeWithZoneFormatter]);
   return (
     <View style={styles.section}>
-      <ScrollView nestedScrollEnabled style={[choiceListLayout, styles.timeList]}>
+      <OptionScrollList>
         {choices.map((choice, index) => {
           const previousKey = index > 0 ? choices[index - 1].day : null;
           return (
@@ -65,14 +66,13 @@ export function EndTimeSelector({ now, onChange, start, timeZone, value }: Props
           );
         })}
         {slots.length === 0 && <Text style={styles.empty}>No half-hour times left through tomorrow.</Text>}
-      </ScrollView>
+      </OptionScrollList>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   section: { marginTop: 4 },
-  timeList: { maxHeight: 200 },
   dayLabel: { color: uiColors.muted, fontSize: 12, paddingBottom: 4, paddingHorizontal: 6, paddingTop: 8 },
   empty: { color: uiColors.muted, fontSize: 12, lineHeight: 18, paddingVertical: 12, textAlign: 'center' },
 });

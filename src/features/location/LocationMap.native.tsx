@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     borderColor: '#E2E2E2',
     borderRadius: 12,
     borderWidth: 1,
-    height: 280,
+    height: 310,
     overflow: 'hidden',
     width: '100%',
   },
