@@ -418,6 +418,9 @@ calculation, supported platform versions, and the final visual polish.
 
 ## Progress
 
+- Plan an Outing now refreshes its forecast every 15 minutes while open, in
+  step with the moving Now timeframe. Forecast attempts time out after 12
+  seconds and retry once before showing the existing Try again control.
 - UV Outlook now selects current and future hourly bins through tomorrow.
   The current panel becomes a dated forecast panel for later hours; a compact
   custom-time list spans Today and Tomorrow in half-hour increments. The

@@ -66,6 +66,10 @@ attribution, and limitations.
   15-minute clock slot; this is a refresh choice, not a claim that the forecast
   is an observation. Cloud cover can add a reminder at elevated UV but does not
   change the UV value or protection band.
+- Plan an Outing also refetches at each 15-minute clock slot while it is open.
+  Its Now start and end continue to advance with the clock. Each forecast
+  attempt times out after 12 seconds, then the app retries once before showing
+  a retry control. This refresh and timeout behavior is an app choice.
 - Temperature is context only, not part of UV risk or protection calculations.
 - Show hourly precipitation probability and expected amount in millimeters below
   the hourly labels in both outlook and outing charts. These remain weather context

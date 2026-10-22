@@ -162,7 +162,9 @@ still rounds the UV value to a whole number.
 hourly chart. The Now bin uses the provider's current model estimate when
 available. Custom times on the hour use hourly forecast values; half-hour UV
 is estimated by `src/domain/forecast/getUvForecastAtTime.ts` between adjacent
-hourly values. The open outlook refreshes its forecast every 15 minutes.
+hourly values. Both the open outlook and the outing forecast refresh every 15
+minutes. Forecast attempts time out after 12 seconds and are retried once
+before showing a retry control.
 
 | Change | Home |
 | --- | --- |

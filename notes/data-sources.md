@@ -81,7 +81,9 @@ more than 0.1 mm during the preceding hour. Parsing is in
   shared location summary. An on-the-hour custom selection uses the hourly UV
   value; a half-hour selection estimates UV between adjacent hourly values.
   Its cloud reminder uses the containing hour's cloud-cover forecast.
-  Forecast requests repeat every 15 minutes while UV Outlook is open.
+  Forecast requests repeat every 15 minutes while UV Outlook or Plan an Outing
+  is open. Each attempt times out after 12 seconds and is retried once before
+  the app shows a retry control.
   Open-Meteo remains credited in the UI; its non-commercial licensing and
   grid-cell limitations are described in the provider row above. The refresh
   interval is a UV Scout product choice, not the model's guaranteed update rate.

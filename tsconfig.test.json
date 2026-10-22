@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,
@@ -19,6 +19,7 @@
     "src/domain/outing/getEndTimeSlots.ts",
     "src/domain/guidance/getHourlyUvGuidance.ts",
     "src/domain/guidance/getWhoGuidance.ts",
-    "src/domain/guidance/getUvScoutInsight.ts"
+    "src/domain/guidance/getUvScoutInsight.ts",
+    "src/services/forecast/fetchForecastJson.ts"
   ]
 }

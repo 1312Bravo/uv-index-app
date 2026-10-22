@@ -28,6 +28,6 @@
     "start": "expo start",
     "android": "expo start --android",
     "web": "expo start --web",
-    "test": "tsc --project tsconfig.test.json && node --test tests/domain.test.cjs"
+    "test": "tsc --project tsconfig.test.json && node --test tests/domain.test.cjs tests/forecast-request.test.cjs"
   }
 }

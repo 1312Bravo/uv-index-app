@@ -1,5 +1,28 @@
 import type { ForecastHour, HourlyForecast } from '../../domain/forecast/forecastTypes';
 import { getDaylightEvents, getLocalDateKey } from '../../domain/daylight/getDaylightEvents';
+import { fetchForecastJson } from './fetchForecastJson';
+
+type OpenMeteoForecastData = {
+  timezone: string;
+  hourly: {
+    time: unknown[];
+    uv_index: unknown[];
+    temperature_2m: unknown[];
+    cloud_cover: unknown[];
+    precipitation_probability?: unknown[];
+    precipitation?: unknown[];
+    wind_speed_10m?: unknown[];
+  };
+  current?: {
+    time?: unknown;
+    interval?: unknown;
+    uv_index?: unknown;
+    temperature_2m?: unknown;
+    cloud_cover?: unknown;
+    precipitation?: unknown;
+    wind_speed_10m?: unknown;
+  };
+};
 
 function isNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
@@ -20,12 +43,10 @@ export async function getHourlyForecast(
     past_days: '1',
     forecast_days: '2',
   });
-  const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal });
-  if (!response.ok) {
-    throw new Error('Forecast is unavailable.');
-  }
-
-  const data = await response.json();
+  const data = await fetchForecastJson<OpenMeteoForecastData>(
+    `https://api.open-meteo.com/v1/forecast?${params}`,
+    signal,
+  );
   if (
     !data ||
     typeof data.timezone !== 'string' ||
@@ -68,8 +89,10 @@ export async function getHourlyForecast(
     const hourlyWindSpeed = data.hourly.wind_speed_10m?.[index];
     const useCurrent = index === currentIndex &&
       currentConditionsTime !== null;
-    const uv = useCurrent ? current.uv_index : hourlyUv;
-    const temperature = useCurrent ? current.temperature_2m : hourlyTemperature;
+    const uv = useCurrent && isNumber(current?.uv_index) ? current.uv_index : hourlyUv;
+    const temperature = useCurrent && isNumber(current?.temperature_2m)
+      ? current.temperature_2m
+      : hourlyTemperature;
     const cloudCover = useCurrent && isNumber(current?.cloud_cover)
       ? current.cloud_cover
       : isNumber(hourlyCloudCover) ? hourlyCloudCover : null;

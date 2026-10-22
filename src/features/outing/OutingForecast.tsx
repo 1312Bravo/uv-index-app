@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { getUvScoutInsight, type UvScoutInsightItem } from '../../domain/guidance/getUvScoutInsight';
@@ -137,11 +137,19 @@ function ContextNote({ item }: { item: UvScoutInsightItem }) {
 }
 
 export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: Props) {
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+  const refreshSlot = Math.floor(currentTime / (15 * 60_000));
   const { forecast, error, loading, retry } = useHourlyForecast(
     latitude,
     longitude,
     'Could not load the forecast for this outing.',
+    refreshSlot,
   );
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(Date.now()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (forecast) onTimezoneChange(forecast.timezone);
