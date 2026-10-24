@@ -81,18 +81,39 @@ function formatPrecipitationAmount(value: number | null): string {
   return `${value > 0 && value < 0.1 ? value.toFixed(2) : value.toFixed(1)} mm`;
 }
 
-function SummaryMetric({ title, mainValue, description, secondaryValue }: {
+function SummaryMetric({
+  title,
+  mainValue,
+  description,
+  secondaryValue,
+  highlightedDescriptionValue,
+  highlightedSecondaryValue,
+}: {
   title: string;
   mainValue: string;
   description: string;
   secondaryValue: string;
+  highlightedDescriptionValue?: string;
+  highlightedSecondaryValue?: string;
 }) {
+  const isUvMetric = title === 'UV INDEX';
+
   return (
     <View style={styles.summaryItem}>
-      <Text style={styles.summaryLabel}>{title}</Text>
-      <Text style={styles.summaryValue}>{mainValue}</Text>
-      <Text style={styles.summaryDetail}>{description}</Text>
-      <Text style={styles.summarySecondary}>{secondaryValue}</Text>
+      <Text style={[styles.summaryLabel, isUvMetric && styles.uvIndexSummaryLabel]}>{title}</Text>
+      <Text style={[styles.summaryValue, isUvMetric && styles.uvIndexSummaryValue]}>{mainValue}</Text>
+      <Text style={styles.summaryDetail}>
+        {description}
+        {highlightedDescriptionValue !== undefined && (
+          <Text style={styles.uvIndexSummaryValue}>{highlightedDescriptionValue}</Text>
+        )}
+      </Text>
+      <Text style={styles.summarySecondary}>
+        {secondaryValue}
+        {highlightedSecondaryValue !== undefined && (
+          <Text style={styles.uvIndexSummaryValue}>{highlightedSecondaryValue}</Text>
+        )}
+      </Text>
     </View>
   );
 }
@@ -290,8 +311,10 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
               <SummaryMetric
                 title="UV INDEX"
                 mainValue={summary.highestUv.toFixed(1)}
-                description={`Rounded category: ${summary.highestCategory.label}`}
-                secondaryValue={`Average: ${summary.averageUv.toFixed(1)}`}
+                description="Rounded category: "
+                highlightedDescriptionValue={summary.highestCategory.label}
+                secondaryValue="Average: "
+                highlightedSecondaryValue={summary.averageUv.toFixed(1)}
               />
               <View style={styles.summaryDivider} />
               <SummaryMetric
@@ -360,7 +383,9 @@ const styles = StyleSheet.create({
   summaryDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginHorizontal: 7, marginVertical: 5, width: 1 },
   summaryHorizontalDivider: { backgroundColor: uiColors.line, height: 1 },
   summaryLabel: { color: uiColors.secondary, fontSize: 10, letterSpacing: 0.5, minHeight: 24, textAlign: 'center', textTransform: 'uppercase' },
+  uvIndexSummaryLabel: { color: uiColors.accent },
   summaryValue: { color: uiColors.ink, fontSize: 18, marginTop: 4, textAlign: 'center' },
+  uvIndexSummaryValue: { color: uiColors.accent },
   summaryDetail: { color: uiColors.secondary, fontSize: 12, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: uiColors.secondary, fontSize: 13, marginTop: 4, textAlign: 'center' },
   guidance: { marginTop: 20 },

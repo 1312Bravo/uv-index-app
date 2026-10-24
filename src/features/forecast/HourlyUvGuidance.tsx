@@ -63,7 +63,7 @@ export function HourlyUvGuidance({
       )}
       <View style={[styles.reading, isWideWeb && styles.webReading]}>
         <View style={[styles.uvBlock, isWideWeb && styles.webUvBlock]}>
-          <Text style={styles.readingLabel}>UV INDEX</Text>
+          <Text style={[styles.readingLabel, styles.uvIndexLabel]}>UV INDEX</Text>
           <Text style={styles.uvValue}>{guidance.uv.toFixed(1)}</Text>
           <Text style={styles.category}>{guidance.category}</Text>
           {isCurrent && estimateTime !== null && (
@@ -131,12 +131,13 @@ const styles = StyleSheet.create({
   },
   uvBlock: { alignItems: 'center', flex: 0.85, justifyContent: 'flex-start', paddingHorizontal: 8 },
   webUvBlock: { flexBasis: 'auto', flexGrow: 0, flexShrink: 0, width: '100%' },
-  uvValue: { color: uiColors.ink, fontSize: 32, lineHeight: 38, textAlign: 'center' },
+  uvValue: { color: uiColors.accent, fontSize: 32, lineHeight: 38, textAlign: 'center' },
   readingLabel: { color: uiColors.muted, fontSize: 10, letterSpacing: 0.6 },
+  uvIndexLabel: { color: uiColors.accent },
   guidanceLabel: { textAlign: 'center' },
   divider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginVertical: 4, width: 1 },
   webDivider: { height: 1, marginVertical: 14, width: '100%' },
-  category: { color: uiColors.body, fontSize: 15, fontWeight: '500' },
+  category: { color: uiColors.accent, fontSize: 15, fontWeight: '500' },
   protection: { flex: 1.4, paddingLeft: 12 },
   webProtection: {
     flexBasis: 'auto',

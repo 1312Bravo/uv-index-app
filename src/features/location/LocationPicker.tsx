@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   },
   locationMethods: {
     alignSelf: 'stretch',
-    backgroundColor: uiColors.page,
+    backgroundColor: 'transparent',
     borderColor: uiColors.line,
     borderRadius: 14,
     borderWidth: 1,

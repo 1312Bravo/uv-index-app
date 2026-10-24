@@ -384,7 +384,8 @@ calculation, supported platform versions, and the final visual polish.
 - Use a minimal Warm daylight palette with a warm ivory background across the
   whole screen, including the title and subtitle. Keep dark readable text,
   subtle warm dividers, a very soft diagonal warm-paper texture, and a restrained
-  amber accent for selected states.
+  amber accent for selected states. Fade the texture toward chart-heavy areas so
+  labels and forecast values remain visually clear.
 - Use Fruktur from Google Fonts for the UV Scout wordmark and Almendra for the
   calmer, related old-style subtitle.
 - Calculate daylight events for the forecast location and local date; align the

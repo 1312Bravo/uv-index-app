@@ -63,6 +63,19 @@ export function UvScoutApp() {
         start={{ x: 0, y: 0 }}
         style={styles.backgroundTexture}
       />
+      <LinearGradient
+        colors={[
+          'rgba(249, 244, 235, 0)',
+          'rgba(249, 244, 235, 0)',
+          'rgba(249, 244, 235, 0.4)',
+          'rgba(249, 244, 235, 0.8)',
+        ]}
+        end={{ x: 0, y: 1 }}
+        locations={[0, 0.24, 0.65, 1]}
+        pointerEvents="none"
+        start={{ x: 0, y: 0 }}
+        style={styles.backgroundTexture}
+      />
       <ScrollView
         contentContainerStyle={[styles.content, isWideWeb && styles.webContent]}
         keyboardShouldPersistTaps="handled"
