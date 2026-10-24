@@ -18,6 +18,7 @@ import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors, uiType } from '../../ui/visualStyle';
 import { formatPlaceName } from './formatLocation';
 import { LocationMap } from './LocationMap';
+import { LocationUnavailableNotice } from './LocationUnavailableNotice';
 
 type Props = {
   onSelect: (location: SelectedLocation | null) => void;
@@ -34,6 +35,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
   const [isSearching, setIsSearching] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [locationNotice, setLocationNotice] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const locationRequest = useRef(0);
   const autoLocationStarted = useRef(false);
@@ -75,29 +77,36 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
     };
   }, [query, selected?.source]);
 
-  const useDeviceLocation = useCallback(async (requestPermission = true) => {
+  const useDeviceLocation = useCallback(async (requestPermission = true, showUnavailableNotice = false) => {
     const requestId = ++locationRequest.current;
     let hasCachedPosition = false;
     setIsLocating(true);
     setError(null);
+    setLocationNotice(null);
     setSelected(null);
     onSelect(null);
     setQuery('');
     setResults([]);
     setHasSearched(false);
 
+    function reportUnavailable(message: string) {
+      if (requestId !== locationRequest.current) return;
+      setError(message);
+      if (showUnavailableNotice) setLocationNotice(message);
+    }
+
     try {
       const permission = requestPermission
         ? await Location.requestForegroundPermissionsAsync()
         : await Location.getForegroundPermissionsAsync();
       if (!permission.granted) {
-        setError('Location access is off. Search for a place, or enable access and try again.');
+        reportUnavailable('Location access is off. Search for a place, or enable access and try again.');
         return;
       }
 
       const servicesEnabled = await Location.hasServicesEnabledAsync();
       if (!servicesEnabled) {
-        setError('Turn on your phone’s location services, or search for a place.');
+        reportUnavailable('Turn on your phone’s location services, or search for a place.');
         return;
       }
 
@@ -147,7 +156,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
       setHasSearched(false);
     } catch {
       if (!hasCachedPosition) {
-        setError('Could not get your location. Search for a place or try again.');
+        reportUnavailable('Could not get your location. Search for a place or try again.');
       }
     } finally {
       setIsLocating(false);
@@ -226,7 +235,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
             <Pressable
               accessibilityRole="button"
               disabled={isLocating}
-              onPress={() => { void useDeviceLocation(); }}
+              onPress={() => { void useDeviceLocation(true, Platform.OS !== 'web'); }}
               style={({ pressed }) => [
                 styles.locationButton,
                 pressed && styles.locationButtonPressed,
@@ -313,6 +322,9 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
           />
         </View>
       </View>
+      {Platform.OS !== 'web' && (
+        <LocationUnavailableNotice message={locationNotice} onClose={() => setLocationNotice(null)} />
+      )}
     </View>
   );
 }
