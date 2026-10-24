@@ -12,6 +12,9 @@ helps people plan outdoor time around the current and forecast UV index.
   with temperature, cloud cover, precipitation, and hourly wind context are
   implemented.
 - The app should support Android and web from the beginning.
+- Keep the phone layout unchanged. On wider web screens, use more of the
+  available width. Keep Location, Plan an Outing, and Info in centered,
+  single-column layouts with wider content than on the phone.
 - Open-Meteo is the weather and UV data source for the non-commercial MVP.
 - The initial use case is UV exposure guidance for outdoor activities.
 - UV Scout focuses on UV-aware decisions for outings happening now or planned

@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { uiColors } from '../ui/visualStyle';
 
@@ -11,8 +11,11 @@ type Props = {
 };
 
 export function TopTabs({ activePage, hasLocation, onSelect }: Props) {
+  const { width } = useWindowDimensions();
+  const isWideWeb = Platform.OS === 'web' && width >= 760;
+
   return (
-    <View style={styles.tabs}>
+    <View style={[styles.tabs, isWideWeb && styles.webTabs]}>
       <Pressable accessibilityRole="tab" accessibilityState={{ selected: activePage === 'location' }} onPress={() => onSelect('location')} style={styles.tab}>
         <Text style={[styles.label, activePage === 'location' && styles.activeLabel]}>Location</Text>
       </Pressable>
@@ -55,6 +58,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 24,
   },
+  webTabs: { alignSelf: 'center', maxWidth: 780, width: '100%' },
   tab: {
     alignItems: 'center',
     flex: 1,

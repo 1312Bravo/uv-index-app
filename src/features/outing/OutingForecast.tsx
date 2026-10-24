@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { getUvScoutInsight, type UvScoutInsightItem } from '../../domain/guidance/getUvScoutInsight';
 import { HourlyUvBarChart } from '../forecast/HourlyUvBarChart';
@@ -97,7 +97,29 @@ function SummaryMetric({ title, mainValue, description, secondaryValue }: {
   );
 }
 
-function GuidanceBullet({ item }: { item: UvScoutInsightItem }) {
+function GuidanceBullet({ item, centeredBlock = false }: {
+  item: UvScoutInsightItem;
+  centeredBlock?: boolean;
+}) {
+  if (centeredBlock) {
+    return (
+      <View style={styles.webBulletRow}>
+        <Text style={styles.guidanceBulletMarker}>-</Text>
+        <View style={styles.guidanceBulletContent}>
+          <Text style={[styles.guidanceBulletText, styles.webBulletCopy]}>
+            <Text style={styles.guidanceBulletTitle}>{item.title}{item.text ? ': ' : ''}</Text>
+            {item.text}
+          </Text>
+          {item.subItems?.map((text, index) => (
+            <Text key={`sub-${index}`} style={[styles.guidanceTiming, styles.webBulletCopy]}>
+              {text}
+            </Text>
+          ))}
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.guidanceBullet}>
       <Text style={styles.guidanceBulletMarker}>-</Text>
@@ -115,8 +137,23 @@ function GuidanceBullet({ item }: { item: UvScoutInsightItem }) {
 }
 
 function PlainGuidanceBullet({
-  text, prominent = false,
-}: { text: string; prominent?: boolean }) {
+  text, prominent = false, centeredBlock = false,
+}: { text: string; prominent?: boolean; centeredBlock?: boolean }) {
+  if (centeredBlock) {
+    return (
+      <View style={styles.webBulletRow}>
+        <Text style={styles.guidanceBulletMarker}>-</Text>
+        <Text style={[
+          prominent ? styles.guidanceTakeawayBulletText : styles.guidanceBulletText,
+          styles.guidanceTextFlex,
+          styles.webBulletCopy,
+        ]}>
+          {text}
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.guidanceBullet}>
       <Text style={styles.guidanceBulletMarker}>-</Text>
@@ -127,9 +164,12 @@ function PlainGuidanceBullet({
   );
 }
 
-function ContextNote({ item }: { item: UvScoutInsightItem }) {
+function ContextNote({ item, centeredBlock = false }: {
+  item: UvScoutInsightItem;
+  centeredBlock?: boolean;
+}) {
   return (
-    <Text style={styles.guidanceContextText}>
+    <Text style={[styles.guidanceContextText, centeredBlock && styles.webBulletCopy]}>
       <Text style={styles.guidanceContextTitle}>{item.title}: </Text>
       {item.text}
     </Text>
@@ -137,6 +177,8 @@ function ContextNote({ item }: { item: UvScoutInsightItem }) {
 }
 
 export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: Props) {
+  const { width } = useWindowDimensions();
+  const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [currentTime, setCurrentTime] = useState(() => Date.now());
   const refreshSlot = Math.floor(currentTime / (15 * 60_000));
   const { forecast, error, loading, retry } = useHourlyForecast(
@@ -186,39 +228,57 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
             timezone={forecast.timezone}
           />
           {guidance && (
-            <View style={styles.guidance}>
+            <View style={[styles.guidance, isWideWeb && styles.webGuidance]}>
               <Text style={styles.guidanceTitle}>UV guidance</Text>
               {guidance.coverageMessage && (
-                <Text style={styles.guidanceCoverage}>{guidance.coverageMessage}</Text>
+                <Text style={[styles.guidanceCoverage, isWideWeb && styles.webCenteredText]}>
+                  {guidance.coverageMessage}
+                </Text>
               )}
-              <View style={styles.guidanceTakeawayList}>
-                {guidance.takeawayBullets.map((text, index) => (
-                  <PlainGuidanceBullet key={`takeaway-${index}`} text={text} prominent />
-                ))}
-              </View>
-              <View style={styles.guidanceDetails}>
-                <Text style={styles.guidanceGroupHeading}>UV breakdown</Text>
-                <View style={styles.insightList}>
-                  {guidance.breakdown.map((text, index) => (
-                    <PlainGuidanceBullet key={`detail-${index}`} text={text} />
+              <View style={isWideWeb && styles.webSharedBulletColumn}>
+                <View style={styles.guidanceTakeawayList}>
+                  {guidance.takeawayBullets.map((text, index) => (
+                    <PlainGuidanceBullet
+                      key={`takeaway-${index}`}
+                      centeredBlock={isWideWeb}
+                      text={text}
+                      prominent
+                    />
                   ))}
                 </View>
-              </View>
-              <View style={styles.guidanceActions}>
-                <Text style={styles.guidanceGroupHeading}>Protection steps</Text>
-                <View style={styles.guidanceActionList}>
-                  {guidance.practicalGuidance.map((item, index) => (
-                    <GuidanceBullet key={`action-${index}`} item={item} />
-                  ))}
-                </View>
-                {guidance.contextNotes.length > 0 && (
-                  <View style={styles.guidanceContext}>
-                    <Text style={styles.guidanceContextHeading}>Also consider</Text>
-                    {guidance.contextNotes.map((item, index) => (
-                      <ContextNote key={`context-${index}`} item={item} />
+                <View style={styles.guidanceDetails}>
+                  <Text style={styles.guidanceGroupHeading}>UV breakdown</Text>
+                  <View style={styles.insightList}>
+                    {guidance.breakdown.map((text, index) => (
+                      <PlainGuidanceBullet
+                        key={`detail-${index}`}
+                        centeredBlock={isWideWeb}
+                        text={text}
+                      />
                     ))}
                   </View>
-                )}
+                </View>
+                <View style={styles.guidanceActions}>
+                  <Text style={styles.guidanceGroupHeading}>Protection steps</Text>
+                  <View style={styles.guidanceActionList}>
+                    {guidance.practicalGuidance.map((item, index) => (
+                      <GuidanceBullet key={`action-${index}`} centeredBlock={isWideWeb} item={item} />
+                    ))}
+                  </View>
+                  {guidance.contextNotes.length > 0 && (
+                    <View style={[styles.guidanceContext, isWideWeb && styles.webSharedContext]}>
+                      <Text style={[
+                        styles.guidanceContextHeading,
+                        isWideWeb && styles.webCenteredText,
+                      ]}>
+                        Also consider
+                      </Text>
+                      {guidance.contextNotes.map((item, index) => (
+                        <ContextNote key={`context-${index}`} centeredBlock={isWideWeb} item={item} />
+                      ))}
+                    </View>
+                  )}
+                </View>
               </View>
             </View>
           )}
@@ -304,6 +364,13 @@ const styles = StyleSheet.create({
   summaryDetail: { color: '#696969', fontSize: 12, marginTop: 2, textAlign: 'center' },
   summarySecondary: { color: '#696969', fontSize: 13, marginTop: 4, textAlign: 'center' },
   guidance: { marginTop: 20 },
+  webGuidance: { alignSelf: 'center', maxWidth: 700, width: '100%' },
+  webBulletCopy: { textAlign: 'left' },
+  // One intrinsic-width column aligns all guidance sections to the widest bullet.
+  webSharedBulletColumn: { alignSelf: 'center', maxWidth: '100%', width: 'max-content' as any },
+  webSharedContext: { paddingLeft: 0 },
+  webBulletRow: { alignSelf: 'stretch', flexDirection: 'row', marginTop: 5 },
+  webCenteredText: { alignSelf: 'center', textAlign: 'center' },
   sectionLabel: { color: uiColors.ink, fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 20, textAlign: 'center' },
   guidanceTitle: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, textAlign: 'center' },
   guidanceGroupHeading: { color: '#151515', fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14, textAlign: 'center' },

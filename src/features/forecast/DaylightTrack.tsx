@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { DaylightEvents } from '../../domain/daylight/daylightTypes';
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
-import { BIN_WIDTH } from './hourlyChartLayout';
 
 export const DAYLIGHT_TRACK_HEIGHT = 112;
 
@@ -15,6 +14,7 @@ type Props = {
   timezone: string;
   daylight: DaylightEvents[];
   sunTime: number;
+  binWidth: number;
 };
 
 function formatEventTime(time: number, timezone: string): string {
@@ -71,13 +71,13 @@ function createArcSegments(
   });
 }
 
-export function DaylightTrack({ hours, timezone, daylight, sunTime }: Props) {
+export function DaylightTrack({ hours, timezone, daylight, sunTime, binWidth }: Props) {
   if (hours.length === 0) return null;
 
   const start = hours[0].time;
   const end = hours[hours.length - 1].time + 3600;
-  const width = hours.length * BIN_WIDTH;
-  const xForTime = (time: number) => (time - start) / 3600 * BIN_WIDTH;
+  const width = hours.length * binWidth;
+  const xForTime = (time: number) => (time - start) / 3600 * binWidth;
   const orderedDays = [...daylight].sort((a, b) => a.date.localeCompare(b.date));
   const events = orderedDays.flatMap((day) => ([
     { label: 'Dawn', time: day.civilDawn },

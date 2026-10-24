@@ -2,7 +2,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './locationMap.css';
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 
 import { getLocationCoordinates } from '../../domain/location/getLocationCoordinates';
@@ -56,10 +56,11 @@ function MapBehavior({ selectedLocation, onSelectCoordinates }: LocationMapProps
 }
 
 export function LocationMap({ selectedLocation, onSelectCoordinates }: LocationMapProps) {
+  const { width } = useWindowDimensions();
   const selectedCoordinates = selectedLocation ? getLocationCoordinates(selectedLocation) : null;
 
   return (
-    <View style={styles.frame}>
+    <View style={[styles.frame, width >= 760 && styles.wideFrame]}>
       <MapContainer
         center={selectedCoordinates
           ? [selectedCoordinates.latitude, selectedCoordinates.longitude]
@@ -93,5 +94,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: '100%',
   },
+  wideFrame: { height: 380 },
   map: { height: '100%', width: '100%' },
 });

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 import { DateTimeField } from './DateTimeField';
 import { EndTimeSelector } from './EndTimeSelector';
@@ -75,6 +75,8 @@ function SelectorRow({
 }
 
 export function TimePlanner({ onChange, timeZone }: Props) {
+  const { width } = useWindowDimensions();
+  const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [startMode, setStartMode] = useState<StartMode>('now');
   const [scheduledStart, setScheduledStart] = useState<Date | null>(null);
   const [endMode, setEndMode] = useState<EndMode>('duration');
@@ -197,7 +199,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
   }
 
   return (
-    <View style={[styles.section, choiceFieldLayout]}>
+    <View style={[styles.section, choiceFieldLayout, isWideWeb && styles.webSection]}>
       <View style={styles.headingRow}>
         <Text style={styles.heading}>Plan an outing</Text>
         <Pressable
@@ -377,6 +379,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
 
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
+  webSection: { maxWidth: 520, width: '100%' },
   headingRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginBottom: 8, minHeight: 28, position: 'relative' },
   heading: { color: uiColors.ink, flex: 1, fontSize: uiType.sectionHeading, fontWeight: '600', textAlign: 'center' },
   resetButton: { paddingHorizontal: 4, paddingVertical: 8, position: 'absolute', right: 0 },

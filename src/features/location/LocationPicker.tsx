@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
@@ -24,6 +25,8 @@ type Props = {
 };
 
 export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
+  const { width } = useWindowDimensions();
+  const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [query, setQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [results, setResults] = useState<Place[]>([]);
@@ -152,16 +155,24 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
   }, [onSelect]);
 
   useEffect(() => {
-    if (Platform.OS === 'web' || autoLocationStarted.current) return;
+    if (autoLocationStarted.current) return;
 
     let isActive = true;
     const initialRequest = locationRequest.current;
-    autoLocationStarted.current = true;
 
     async function selectDeviceLocationOnStartup() {
       try {
         if (!isActive || locationRequest.current !== initialRequest) return;
-        await useDeviceLocation();
+        const isWeb = Platform.OS === 'web';
+
+        if (isWeb) {
+          const permission = await Location.getForegroundPermissionsAsync();
+          if (!permission.granted) return;
+        }
+
+        if (!isActive || locationRequest.current !== initialRequest) return;
+        autoLocationStarted.current = true;
+        await useDeviceLocation(!isWeb);
       } catch {
         // Keep location manual when the device cannot provide a permission or service status.
       }
@@ -209,95 +220,99 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
   return (
     <View>
       <Text style={styles.heading}>Location</Text>
+      <View>
+        <View style={isWideWeb ? styles.webSearch : undefined}>
+          <View style={styles.locationMethods}>
+            <Pressable
+              accessibilityRole="button"
+              disabled={isLocating}
+              onPress={() => { void useDeviceLocation(); }}
+              style={({ pressed }) => [
+                styles.locationButton,
+                pressed && styles.locationButtonPressed,
+                isLocating && styles.buttonDisabled,
+              ]}
+            >
+              {isLocating ? (
+                <ActivityIndicator color="#151515" />
+              ) : (
+                <Text style={styles.locationButtonText}>
+                  {selected?.source === 'device' ? 'Current location selected' : 'Use my location'}
+                </Text>
+              )}
+            </Pressable>
 
-      <View style={styles.locationMethods}>
-        <Pressable
-          accessibilityRole="button"
-          disabled={isLocating}
-          onPress={() => { void useDeviceLocation(); }}
-          style={({ pressed }) => [
-            styles.locationButton,
-            pressed && styles.locationButtonPressed,
-            isLocating && styles.buttonDisabled,
-          ]}
-        >
-          {isLocating ? (
-            <ActivityIndicator color="#151515" />
-          ) : (
-            <Text style={styles.locationButtonText}>
-              {selected?.source === 'device' ? 'Current location selected' : 'Use my location'}
-            </Text>
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.or}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <View style={styles.searchField}>
+              <TextInput
+                accessibilityLabel={selected ? 'Search a different location' : 'Search location'}
+                autoCapitalize="words"
+                onBlur={() => setIsSearchFocused(false)}
+                onChangeText={(value) => {
+                  locationRequest.current += 1;
+                  setQuery(value);
+                  setResults([]);
+                  setHasSearched(false);
+                  setSelected(null);
+                  onSelect(null);
+                  setError(null);
+                }}
+                onFocus={() => setIsSearchFocused(true)}
+                cursorColor="#777777"
+                returnKeyType="done"
+                selectionColor="#777777"
+                style={styles.input}
+                value={query}
+              />
+              {!query && !isSearchFocused && (
+                <Text pointerEvents="none" style={styles.searchPrompt}>
+                  {selected ? 'Search a different location' : 'Search location'}
+                </Text>
+              )}
+            </View>
+          </View>
+
+          {isSearching && <Text style={styles.message}>Searching places...</Text>}
+
+          {results.length > 0 && (
+            <>
+              <View style={styles.results}>
+                {results.map((place) => (
+                  <Pressable
+                    accessibilityRole="button"
+                    key={place.id}
+                    onPress={() => selectPlace(place)}
+                    style={({ pressed }) => [styles.result, pressed && styles.buttonPressed]}
+                  >
+                    <Text style={styles.resultText}>{formatPlaceName(place)}</Text>
+                  </Pressable>
+                ))}
+              </View>
+              <SourceAttribution label="Place data by Open-Meteo / GeoNames" url="https://open-meteo.com/en/docs/geocoding-api" />
+            </>
           )}
-        </Pressable>
 
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.or}>or</Text>
-          <View style={styles.dividerLine} />
+          {hasSearched && results.length === 0 && (
+            <Text style={styles.message}>No places found. Try a nearby city or a fuller name.</Text>
+          )}
+
+          {error && <Text style={styles.error}>{error}</Text>}
         </View>
 
-        <View style={styles.searchField}>
-          <TextInput
-            accessibilityLabel={selected ? 'Search a different location' : 'Search location'}
-            autoCapitalize="words"
-            onBlur={() => setIsSearchFocused(false)}
-            onChangeText={(value) => {
-              locationRequest.current += 1;
-              setQuery(value);
-              setResults([]);
-              setHasSearched(false);
-              setSelected(null);
-              onSelect(null);
-              setError(null);
-            }}
-            onFocus={() => setIsSearchFocused(true)}
-            cursorColor="#777777"
-            returnKeyType="done"
-            selectionColor="#777777"
-            style={styles.input}
-            value={query}
+        <View style={isWideWeb ? styles.webMap : undefined}>
+          <Text style={styles.mapHint}>Tap the map to choose a location</Text>
+          <LocationMap
+            onInteractionChange={onMapInteractionChange}
+            onSelectCoordinates={selectMapCoordinates}
+            selectedLocation={selected}
           />
-          {!query && !isSearchFocused && (
-            <Text pointerEvents="none" style={styles.searchPrompt}>
-              {selected ? 'Search a different location' : 'Search location'}
-            </Text>
-          )}
         </View>
       </View>
-
-      {isSearching && <Text style={styles.message}>Searching places...</Text>}
-
-      {results.length > 0 && (
-        <>
-          <View style={styles.results}>
-            {results.map((place) => (
-              <Pressable
-                accessibilityRole="button"
-                key={place.id}
-                onPress={() => selectPlace(place)}
-                style={({ pressed }) => [styles.result, pressed && styles.buttonPressed]}
-              >
-                <Text style={styles.resultText}>{formatPlaceName(place)}</Text>
-              </Pressable>
-            ))}
-          </View>
-          <SourceAttribution label="Place data by Open-Meteo / GeoNames" url="https://open-meteo.com/en/docs/geocoding-api" />
-        </>
-      )}
-
-      {hasSearched && results.length === 0 && (
-        <Text style={styles.message}>No places found. Try a nearby city or a fuller name.</Text>
-      )}
-
-      {error && <Text style={styles.error}>{error}</Text>}
-
-      <Text style={styles.mapHint}>Tap the map to choose a location</Text>
-      <LocationMap
-        onInteractionChange={onMapInteractionChange}
-        onSelectCoordinates={selectMapCoordinates}
-        selectedLocation={selected}
-      />
-
     </View>
   );
 }
@@ -317,6 +332,8 @@ const styles = StyleSheet.create({
     marginTop: 18,
     textAlign: 'center',
   },
+  webSearch: { alignSelf: 'center', maxWidth: 640, width: '100%' },
+  webMap: { alignSelf: 'center', maxWidth: 920, width: '100%' },
   input: {
     alignSelf: 'stretch',
     backgroundColor: 'transparent',

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { getCloudCoverBands } from '../../domain/weather/getCloudCoverBand';
 import { getPrecipitationRateGuide } from '../../domain/weather/getPrecipitationRateGuide';
@@ -153,6 +153,8 @@ function WindExplanation() {
 }
 
 export function InfoScreen() {
+  const { width } = useWindowDimensions();
+  const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [openTopic, setOpenTopic] = useState<InfoTopic | null>(null);
 
   function toggleTopic(topic: InfoTopic) {
@@ -162,7 +164,7 @@ export function InfoScreen() {
   return (
     <View style={styles.section}>
       <Text style={styles.heading}>Understanding the forecast</Text>
-      <View style={styles.topics}>
+      <View style={[styles.topics, isWideWeb && styles.webTopics]}>
         <InfoAccordion
           title="UV Index levels"
           expanded={openTopic === 'uv'}
@@ -207,6 +209,7 @@ const styles = StyleSheet.create({
   section: { marginTop: 24 },
   heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', textAlign: 'center' },
   topics: { alignSelf: 'center', marginTop: 16, maxWidth: 360, width: '90%' },
+  webTopics: { maxWidth: 900, width: '100%' },
   description: { color: uiColors.body, fontSize: uiType.body, lineHeight: 21, marginTop: 8 },
   metricHeading: { color: '#333333', fontSize: 13, fontWeight: '600', marginTop: 14 },
   whoBands: { marginTop: 8 },

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import type { DaylightEvents } from '../../domain/daylight/daylightTypes';
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
 import { DaylightTrack, DAYLIGHT_TRACK_HEIGHT } from './DaylightTrack';
 import { getValueGroupTop, HourBin, formatChartDay } from './HourBin';
-import { BIN_WIDTH, type SelectedRange } from './hourlyChartLayout';
+import { DESKTOP_CHART_LAYOUT, PHONE_CHART_LAYOUT, type SelectedRange } from './hourlyChartLayout';
 
 type Props = {
   hours: ForecastHour[];
@@ -26,7 +26,7 @@ const OUTLOOK_PAST_HOURS = 1;
 const OUTLOOK_FUTURE_HOURS = 18;
 const CHART_TOP_MARGIN = 10;
 const TOP_LEGEND_LINE_HEIGHT = 12;
-const TOP_LEGEND_VALUE_GAP = 10;
+const TOP_LEGEND_VALUE_GAP = 13;
 const LEGEND_SPACE_HEIGHT = 13;
 
 function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange, showFullOutlook = false): ForecastHour[] {
@@ -53,6 +53,9 @@ export function HourlyUvBarChart({
   hours, timezone, daylight, sunTime, initialScrollHours = 0, selectedRange,
   showFullOutlook = false, useHourlyForecast = false, selectedHourTime, scrollTarget,
 }: Props) {
+  const { width } = useWindowDimensions();
+  const layout = Platform.OS === 'web' && width >= 760 ? DESKTOP_CHART_LAYOUT : PHONE_CHART_LAYOUT;
+  const { binWidth } = layout;
   const chartRef = useRef<ScrollView | null>(null);
   const chartHours = useMemo(
     () => getChartHours(hours, selectedRange, showFullOutlook),
@@ -62,7 +65,7 @@ export function HourlyUvBarChart({
     useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv,
   ));
   const highestValueGroupTop = chartHours.length === 0 ? 0 : Math.min(...chartHours.map((hour) =>
-    getValueGroupTop(useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv, scale),
+    getValueGroupTop(useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv, scale, layout),
   ));
   const topLegendTop = CHART_TOP_MARGIN + DAYLIGHT_TRACK_HEIGHT + LEGEND_SPACE_HEIGHT +
     highestValueGroupTop - TOP_LEGEND_LINE_HEIGHT - TOP_LEGEND_VALUE_GAP;
@@ -77,8 +80,8 @@ export function HourlyUvBarChart({
     if (scrollTarget === undefined) return;
     const index = chartHours.findIndex((hour) => hour.time === scrollTarget.time);
     if (index < 0) return;
-    chartRef.current?.scrollTo({ x: Math.max(0, (index - 3) * BIN_WIDTH), animated: true });
-  }, [chartHours, scrollTarget]);
+    chartRef.current?.scrollTo({ x: Math.max(0, (index - 3) * binWidth), animated: true });
+  }, [binWidth, chartHours, scrollTarget]);
 
   return (
     <View style={styles.chartFrame}>
@@ -90,16 +93,16 @@ export function HourlyUvBarChart({
           const targetTime = scrollTarget?.time ?? selectedHourTime;
           if (targetTime !== undefined) {
             const index = chartHours.findIndex((hour) => hour.time === targetTime);
-            if (index >= 0) chartRef.current?.scrollTo({ x: Math.max(0, (index - 3) * BIN_WIDTH), animated: false });
+            if (index >= 0) chartRef.current?.scrollTo({ x: Math.max(0, (index - 3) * binWidth), animated: false });
           } else if (initialScrollHours > 0) {
-            chartRef.current?.scrollTo({ x: initialScrollHours * BIN_WIDTH, animated: false });
+            chartRef.current?.scrollTo({ x: initialScrollHours * binWidth, animated: false });
           }
         }}
         showsHorizontalScrollIndicator
         style={styles.chart}
       >
         <View>
-          <DaylightTrack hours={chartHours} timezone={timezone} daylight={daylight} sunTime={sunTime} />
+          <DaylightTrack hours={chartHours} timezone={timezone} daylight={daylight} sunTime={sunTime} binWidth={binWidth} />
           <View style={styles.legendSpace} />
           <View style={styles.bins}>
             {chartHours.map((hour, index) => {
@@ -109,6 +112,8 @@ export function HourlyUvBarChart({
                 <HourBin
                   key={hour.time}
                   hour={hour}
+                  layout={layout}
+                  valueGroupTop={highestValueGroupTop}
                   timezone={timezone}
                   scale={scale}
                   showDay={index === 0 || day !== previousDay}

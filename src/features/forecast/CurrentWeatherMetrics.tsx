@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { uiColors } from '../../ui/visualStyle';
 
@@ -51,6 +51,8 @@ export function CurrentWeatherMetrics({
   precipitationTime,
   timezone,
 }: Props) {
+  const { width } = useWindowDimensions();
+  const isWideWeb = Platform.OS === 'web' && width >= 760;
   const latestEstimate = precipitationTime === null
     ? null
     : formatTime(precipitationTime, timezone);
@@ -65,7 +67,7 @@ export function CurrentWeatherMetrics({
   return (
     <View>
       <Text style={styles.heading}>Current Weather</Text>
-      <View style={styles.row}>
+      <View style={[styles.row, isWideWeb && styles.webRow]}>
         <Metric
           label="TEMPERATURE"
           value={`${Math.round(temperature)}°C`}
@@ -91,6 +93,7 @@ export function CurrentWeatherMetrics({
 const styles = StyleSheet.create({
   heading: { color: uiColors.ink, fontSize: 14, fontWeight: '600', marginTop: 16, textAlign: 'center' },
   row: { alignItems: 'stretch', flexDirection: 'row', marginTop: 8 },
+  webRow: { alignSelf: 'center', maxWidth: 900, width: '100%' },
   metric: { alignItems: 'center', flex: 1, justifyContent: 'flex-start', paddingHorizontal: 2 },
   divider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginVertical: 4, width: 1 },
   label: { color: uiColors.muted, fontSize: 9, letterSpacing: 0.4, textAlign: 'center' },

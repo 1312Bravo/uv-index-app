@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import type { SelectedLocation } from '../domain/location/locationTypes';
 import { getLocationCoordinates } from '../domain/location/getLocationCoordinates';
@@ -16,6 +16,8 @@ import { uiColors } from '../ui/visualStyle';
 import { TopTabs, type AppPage } from './TopTabs';
 
 export function UvScoutApp() {
+  const { width } = useWindowDimensions();
+  const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [location, setLocation] = useState<SelectedLocation | null>(null);
   const [isMapInteracting, setIsMapInteracting] = useState(false);
   const [timePlan, setTimePlan] = useState<TimePlan | null>(null);
@@ -32,7 +34,7 @@ export function UvScoutApp() {
   return (
     <View style={styles.screen}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, isWideWeb && styles.webContent]}
         keyboardShouldPersistTaps="handled"
         scrollEnabled={!isMapInteracting}
       >
@@ -72,16 +74,20 @@ export function UvScoutApp() {
           />
         )}
         <View style={page === 'plan' ? undefined : styles.hidden}>
-          <TimePlanner onChange={setTimePlan} timeZone={locationTimeZone} />
+          <View style={isWideWeb ? styles.webPlanner : undefined}>
+            <TimePlanner onChange={setTimePlan} timeZone={locationTimeZone} />
+          </View>
+          {page === 'plan' && timePlan && latitude !== undefined && longitude !== undefined && (
+            <View style={isWideWeb ? styles.webOuting : undefined}>
+              <OutingForecast
+                latitude={latitude}
+                longitude={longitude}
+                onTimezoneChange={updateLocationTimeZone}
+                plan={timePlan}
+              />
+            </View>
+          )}
         </View>
-        {page === 'plan' && timePlan && latitude !== undefined && longitude !== undefined && (
-          <OutingForecast
-            latitude={latitude}
-            longitude={longitude}
-            onTimezoneChange={updateLocationTimeZone}
-            plan={timePlan}
-          />
-        )}
         {page === 'info' && <InfoScreen />}
       </ScrollView>
       <StatusBar style="dark" />
@@ -102,6 +108,13 @@ const styles = StyleSheet.create({
     paddingTop: 36,
     paddingBottom: 44,
   },
+  webContent: {
+    maxWidth: 1120,
+    paddingHorizontal: 32,
+    paddingTop: 42,
+  },
+  webPlanner: { alignSelf: 'center', maxWidth: 600, width: '100%' },
+  webOuting: { alignSelf: 'center', maxWidth: 900, width: '100%' },
   header: {
     alignItems: 'center',
     marginBottom: 0,
@@ -121,9 +134,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   subtitle: {
-    color: uiColors.secondary,
-    fontSize: 14,
-    lineHeight: 21,
+    color: uiColors.body,
+    fontSize: 15,
+    fontWeight: '500',
+    lineHeight: 22,
     textAlign: 'center',
   },
 });
