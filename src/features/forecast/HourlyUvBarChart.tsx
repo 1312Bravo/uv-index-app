@@ -139,12 +139,12 @@ export function HourlyUvBarChart({
 const styles = StyleSheet.create({
   chartFrame: { position: 'relative' },
   topLegend: {
-    backgroundColor: uiColors.page, color: uiColors.muted, fontSize: 11, left: 0,
+    color: uiColors.muted, fontSize: 11, left: 0,
     lineHeight: TOP_LEGEND_LINE_HEIGHT, position: 'absolute', right: 0, textAlign: 'center',
     zIndex: 1,
   },
   chart: { marginTop: CHART_TOP_MARGIN },
-  chartContent: { flexGrow: 1, justifyContent: 'center', paddingBottom: 4 },
+  chartContent: { flexGrow: 1, justifyContent: 'center', paddingBottom: 12 },
   legendSpace: { height: LEGEND_SPACE_HEIGHT },
   bins: { alignItems: 'flex-end', flexDirection: 'row', gap: BIN_GAP },
   bottomLegend: { color: uiColors.muted, fontSize: 11, marginTop: 6, textAlign: 'center' },

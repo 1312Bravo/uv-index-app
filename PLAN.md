@@ -383,7 +383,8 @@ calculation, supported platform versions, and the final visual polish.
   twilight or darkness, and keep daylight comparisons distinct.
 - Use a minimal Warm daylight palette with a warm ivory background across the
   whole screen, including the title and subtitle. Keep dark readable text,
-  subtle warm dividers, and a restrained amber accent for selected states.
+  subtle warm dividers, a very soft diagonal warm-paper texture, and a restrained
+  amber accent for selected states.
 - Use Fruktur from Google Fonts for the UV Scout wordmark and Almendra for the
   calmer, related old-style subtitle.
 - Calculate daylight events for the forecast location and local date; align the
