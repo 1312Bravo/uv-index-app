@@ -3,6 +3,7 @@ import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } fro
 
 import type { DaylightEvents } from '../../domain/daylight/daylightTypes';
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
+import { uiColors } from '../../ui/visualStyle';
 import { DaylightTrack, DAYLIGHT_TRACK_HEIGHT } from './DaylightTrack';
 import { getValueGroupTop, HourBin, formatChartDay } from './HourBin';
 import { DESKTOP_CHART_LAYOUT, PHONE_CHART_LAYOUT, type SelectedRange } from './hourlyChartLayout';
@@ -138,7 +139,7 @@ export function HourlyUvBarChart({
 const styles = StyleSheet.create({
   chartFrame: { position: 'relative' },
   topLegend: {
-    backgroundColor: '#FFFFFF', color: '#777777', fontSize: 11, left: 0,
+    backgroundColor: uiColors.page, color: uiColors.muted, fontSize: 11, left: 0,
     lineHeight: TOP_LEGEND_LINE_HEIGHT, position: 'absolute', right: 0, textAlign: 'center',
     zIndex: 1,
   },
@@ -146,5 +147,5 @@ const styles = StyleSheet.create({
   chartContent: { flexGrow: 1, justifyContent: 'center', paddingBottom: 4 },
   legendSpace: { height: LEGEND_SPACE_HEIGHT },
   bins: { alignItems: 'flex-end', flexDirection: 'row', gap: BIN_GAP },
-  bottomLegend: { color: '#777777', fontSize: 11, marginTop: 6, textAlign: 'center' },
+  bottomLegend: { color: uiColors.muted, fontSize: 11, marginTop: 6, textAlign: 'center' },
 });

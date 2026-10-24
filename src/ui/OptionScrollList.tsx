@@ -61,5 +61,5 @@ const styles = StyleSheet.create({
     top: TRACK_INSET,
     width: 3,
   },
-  thumb: { backgroundColor: '#898989', borderRadius: 2, width: 3 },
+  thumb: { backgroundColor: uiColors.muted, borderRadius: 2, width: 3 },
 });

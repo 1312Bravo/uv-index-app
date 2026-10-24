@@ -6,6 +6,7 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 
 import { getLocationCoordinates } from '../../domain/location/getLocationCoordinates';
+import { uiColors } from '../../ui/visualStyle';
 import type { LocationMapProps } from './LocationMapProps';
 import {
   LOCATION_MARKER_ANCHOR,
@@ -87,7 +88,8 @@ export function LocationMap({ selectedLocation, onSelectCoordinates }: LocationM
 
 const styles = StyleSheet.create({
   frame: {
-    borderColor: '#E2E2E2',
+    backgroundColor: uiColors.page,
+    borderColor: uiColors.line,
     borderRadius: 12,
     borderWidth: 1,
     height: 310,

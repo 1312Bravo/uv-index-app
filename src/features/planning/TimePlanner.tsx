@@ -326,7 +326,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
                 maxLength={3}
                 onChangeText={setCustomHours}
                 placeholder="Hours"
-                placeholderTextColor="#909090"
+                placeholderTextColor={uiColors.faint}
                 style={styles.input}
                 value={customHours}
               />
@@ -337,7 +337,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
                 maxLength={2}
                 onChangeText={setCustomMinutes}
                 placeholder="Minutes"
-                placeholderTextColor="#909090"
+                placeholderTextColor={uiColors.faint}
                 style={styles.input}
                 value={customMinutes}
               />
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   headingRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginBottom: 8, minHeight: 28, position: 'relative' },
   heading: { color: uiColors.ink, flex: 1, fontSize: uiType.sectionHeading, fontWeight: '600', textAlign: 'center' },
   resetButton: { paddingHorizontal: 4, paddingVertical: 8, position: 'absolute', right: 0 },
-  resetText: { color: '#696969', fontSize: 12, textDecorationLine: 'underline' },
+  resetText: { color: uiColors.secondary, fontSize: 12, textDecorationLine: 'underline' },
   selectorRow: { alignItems: 'center', borderBottomColor: uiColors.line, borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', minHeight: 46, paddingVertical: 8 },
   selectorLabel: { color: uiColors.ink, fontSize: 14, flexShrink: 1 },
   selectorValueWrap: { alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'flex-end', maxWidth: '65%' },
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
   buttonPressed: { opacity: 0.65 },
   customDurationInputs: { alignItems: 'center', flexDirection: 'row', gap: 10, marginTop: 10 },
   input: { borderColor: uiColors.line, borderRadius: 10, borderWidth: 1, color: uiColors.ink, flex: 1, fontSize: 14, minHeight: 48, paddingHorizontal: 12, textAlign: 'center' },
-  durationSeparator: { color: '#696969', fontSize: 18 },
-  error: { color: '#A6A6A6', fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
-  hint: { color: '#999999', fontSize: 12, lineHeight: 17, marginTop: 18, textAlign: 'center' },
+  durationSeparator: { color: uiColors.secondary, fontSize: 18 },
+  error: { color: uiColors.faint, fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
+  hint: { color: uiColors.muted, fontSize: 12, lineHeight: 17, marginTop: 18, textAlign: 'center' },
 });

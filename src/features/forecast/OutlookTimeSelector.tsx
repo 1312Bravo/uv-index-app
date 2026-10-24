@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   customModeChoices: { marginBottom: 8 },
   modeChoice: { borderBottomColor: 'transparent', borderBottomWidth: 2, paddingBottom: 4 },
   modeChoiceContent: { alignItems: 'center', flexDirection: 'row', gap: 4 },
-  selectedModeChoice: { borderBottomColor: uiColors.ink },
+  selectedModeChoice: { borderBottomColor: uiColors.accent },
   modeText: { color: uiColors.muted, fontSize: 14 },
   selectedModeText: { color: uiColors.ink },
   dayLabel: { color: uiColors.muted, fontSize: 12, paddingBottom: 4, paddingHorizontal: 6, paddingTop: 8 },

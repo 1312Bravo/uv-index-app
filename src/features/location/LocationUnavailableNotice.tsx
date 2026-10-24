@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   dialog: {
-    backgroundColor: uiColors.white,
+    backgroundColor: uiColors.surface,
     borderRadius: 14,
     maxWidth: 320,
     paddingBottom: 24,

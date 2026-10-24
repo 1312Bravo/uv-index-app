@@ -81,5 +81,5 @@ const styles = StyleSheet.create({
   content: { flex: 1 },
   text: { color: uiColors.body, fontSize: 13, lineHeight: 19 },
   links: { marginTop: 3, rowGap: 3 },
-  link: { color: '#666666', fontSize: 12, lineHeight: 18, textDecorationLine: 'underline' },
+  link: { color: uiColors.secondary, fontSize: 12, lineHeight: 18, textDecorationLine: 'underline' },
 });

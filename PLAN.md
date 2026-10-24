@@ -381,7 +381,11 @@ calculation, supported platform versions, and the final visual polish.
   comparison when no earlier future window is available.
 - Show civil dawn, sunrise, sunset, and civil dusk. Mark comparisons that include
   twilight or darkness, and keep daylight comparisons distinct.
-- Use a minimal, neutral visual style with clear typography and little decoration.
+- Use a minimal Warm daylight palette with a warm ivory background across the
+  whole screen, including the title and subtitle. Keep dark readable text,
+  subtle warm dividers, and a restrained amber accent for selected states.
+- Use Fruktur from Google Fonts for the UV Scout wordmark and Almendra for the
+  calmer, related old-style subtitle.
 - Calculate daylight events for the forecast location and local date; align the
   event markers, paired day/night arcs, and time-dependent sun/moon icon with
   hourly chart bins. Calculate the following local date too, so the final night
@@ -405,7 +409,7 @@ calculation, supported platform versions, and the final visual polish.
   duration-based outings at their selected elapsed duration.
 - Use English for the first version.
 - Do not include accounts or history in the first version.
-- Start with a neutral, straightforward visual style.
+- Keep the Warm daylight style restrained and straightforward.
 - Use the installed Codex skills under `C:\Users\Urh\.codex\skills`.
 - Record external sources and how they inform app data or behavior in
   `notes/data-sources.md`; keep detailed research in topic-specific notes and

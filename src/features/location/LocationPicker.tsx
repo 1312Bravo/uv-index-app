@@ -243,7 +243,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
               ]}
             >
               {isLocating ? (
-                <ActivityIndicator color="#151515" />
+                <ActivityIndicator color={uiColors.accent} />
               ) : (
                 <Text style={styles.locationButtonText}>
                   {selected?.source === 'device' ? 'Current location selected' : 'Use my location'}
@@ -272,9 +272,9 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
                   setError(null);
                 }}
                 onFocus={() => setIsSearchFocused(true)}
-                cursorColor="#777777"
+                cursorColor={uiColors.accent}
                 returnKeyType="done"
-                selectionColor="#777777"
+                selectionColor={uiColors.accent}
                 style={styles.input}
                 value={query}
               />
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
   },
   searchField: { justifyContent: 'center', minHeight: 48 },
   searchPrompt: {
-    color: '#909090',
+    color: uiColors.faint,
     fontSize: 15,
     left: 0,
     position: 'absolute',
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   },
   locationMethods: {
     alignSelf: 'stretch',
-    backgroundColor: uiColors.white,
+    backgroundColor: uiColors.page,
     borderColor: uiColors.line,
     borderRadius: 14,
     borderWidth: 1,
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   results: {
-    borderColor: '#E2E2E2',
+    borderColor: uiColors.line,
     borderRadius: 10,
     borderWidth: 1,
     marginTop: 8,
@@ -413,24 +413,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   resultText: {
-    color: '#151515',
+    color: uiColors.ink,
     fontSize: 14,
   },
   or: {
-    color: '#8A8A8A',
+    color: uiColors.muted,
     fontSize: 12,
     marginHorizontal: 10,
     textAlign: 'center',
   },
   message: {
-    color: '#666666',
+    color: uiColors.secondary,
     fontSize: 14,
     marginTop: 12,
     textAlign: 'center',
   },
   error: {
     alignSelf: 'center',
-    color: '#A6A6A6',
+    color: uiColors.faint,
     fontSize: 13,
     lineHeight: 20,
     marginBottom: 8,

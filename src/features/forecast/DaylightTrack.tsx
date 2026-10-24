@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { DaylightEvents } from '../../domain/daylight/daylightTypes';
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
+import { uiColors } from '../../ui/visualStyle';
 
 export const DAYLIGHT_TRACK_HEIGHT = 112;
 
@@ -181,18 +182,18 @@ export function DaylightTrack({ hours, timezone, daylight, sunTime, binWidth }: 
 
 const styles = StyleSheet.create({
   daylightTrack: { position: 'relative' },
-  horizonLine: { backgroundColor: '#E7E7E7', height: 1, position: 'absolute' },
-  dayArcSegment: { backgroundColor: '#333333', borderRadius: 2, height: 2, position: 'absolute' },
-  nightArcSegment: { backgroundColor: '#9A9A9A', borderRadius: 2, height: 2, position: 'absolute' },
-  timeMarker: { backgroundColor: '#777777', opacity: 0.3, position: 'absolute', top: 34, width: 1 },
+  horizonLine: { backgroundColor: uiColors.line, height: 1, position: 'absolute' },
+  dayArcSegment: { backgroundColor: uiColors.accent, borderRadius: 2, height: 2, position: 'absolute' },
+  nightArcSegment: { backgroundColor: uiColors.bar, borderRadius: 2, height: 2, position: 'absolute' },
+  timeMarker: { backgroundColor: uiColors.muted, opacity: 0.3, position: 'absolute', top: 34, width: 1 },
   eventMarker: { bottom: 0, position: 'absolute', top: 0, width: 1 },
   eventLine: {
-    backgroundColor: '#888888', height: 13, left: 0, position: 'absolute',
+    backgroundColor: uiColors.muted, height: 13, left: 0, position: 'absolute',
     top: HORIZON_Y - 6, width: 1,
   },
-  eventLabel: { color: '#4D4D4D', fontSize: 10, position: 'absolute', textAlign: 'center', width: 72 },
+  eventLabel: { color: uiColors.secondary, fontSize: 10, position: 'absolute', textAlign: 'center', width: 72 },
   sun: { height: 28, position: 'absolute', width: 28 },
-  sunRay: { backgroundColor: '#555555', borderRadius: 1, height: 5, position: 'absolute', width: 2 },
+  sunRay: { backgroundColor: uiColors.accent, borderRadius: 1, height: 5, position: 'absolute', width: 2 },
   sunRayTop: { left: 13, top: 0 },
   sunRayTopRight: { left: 20, top: 3, transform: [{ rotate: '45deg' }] },
   sunRayRight: { left: 26, top: 12, transform: [{ rotate: '90deg' }] },
@@ -202,10 +203,10 @@ const styles = StyleSheet.create({
   sunRayLeft: { left: 0, top: 12, transform: [{ rotate: '90deg' }] },
   sunRayTopLeft: { left: 5, top: 3, transform: [{ rotate: '135deg' }] },
   sunDisk: {
-    backgroundColor: '#555555', borderColor: '#FFFFFF', borderRadius: 7, borderWidth: 1,
+    backgroundColor: uiColors.accent, borderColor: uiColors.page, borderRadius: 7, borderWidth: 1,
     height: 14, left: 7, position: 'absolute', top: 7, width: 14,
   },
   moon: { height: 28, position: 'absolute', width: 28 },
-  moonDisk: { backgroundColor: '#555555', borderRadius: 11, height: 22, left: 3, position: 'absolute', top: 3, width: 22 },
-  moonCutout: { backgroundColor: '#FFFFFF', borderRadius: 10, height: 20, left: 11, position: 'absolute', top: 0, width: 20 },
+  moonDisk: { backgroundColor: uiColors.secondary, borderRadius: 11, height: 22, left: 3, position: 'absolute', top: 3, width: 22 },
+  moonCutout: { backgroundColor: uiColors.page, borderRadius: 10, height: 20, left: 11, position: 'absolute', top: 0, width: 20 },
 });

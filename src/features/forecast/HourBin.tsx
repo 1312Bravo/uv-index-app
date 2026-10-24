@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
 import type { HourlyChartLayout, SelectedRange } from './hourlyChartLayout';
+import { uiColors } from '../../ui/visualStyle';
 
 const VALUE_BAR_GAP = 16;
 const TOP_PADDING = 5;
@@ -153,7 +154,7 @@ export function HourBin({
 const styles = StyleSheet.create({
   bin: { alignItems: 'center', paddingHorizontal: 1, position: 'relative' },
   selectedRangeBackground: {
-    backgroundColor: '#F4F4F4', bottom: -8, left: 0, position: 'absolute', right: 0,
+    backgroundColor: uiColors.soft, bottom: -8, left: 0, position: 'absolute', right: 0,
   },
   focusedHourBackground: { borderRadius: 8 },
   selectedRangeStart: { borderBottomLeftRadius: 8, borderTopLeftRadius: 8 },
@@ -161,27 +162,27 @@ const styles = StyleSheet.create({
   valueGroup: {
     alignItems: 'center', position: 'absolute',
   },
-  cloudCover: { color: '#767676', fontSize: 10, includeFontPadding: false, lineHeight: 12, textAlign: 'center' },
+  cloudCover: { color: uiColors.muted, fontSize: 10, includeFontPadding: false, lineHeight: 12, textAlign: 'center' },
   desktopCloudCover: { fontSize: 11, lineHeight: 14 },
-  temperature: { color: '#5F5F5F', fontSize: 11, includeFontPadding: false, lineHeight: 13, textAlign: 'center' },
+  temperature: { color: uiColors.secondary, fontSize: 11, includeFontPadding: false, lineHeight: 13, textAlign: 'center' },
   desktopTemperature: { fontSize: 12, lineHeight: 15 },
-  uv: { color: '#151515', fontSize: 12, fontWeight: '500', includeFontPadding: false, lineHeight: 15, textAlign: 'center' },
+  uv: { color: uiColors.ink, fontSize: 12, fontWeight: '500', includeFontPadding: false, lineHeight: 15, textAlign: 'center' },
   desktopUv: { fontSize: 14, lineHeight: 17 },
   barArea: {
-    borderBottomColor: '#D6D6D6', borderBottomWidth: 1, justifyContent: 'flex-end',
+    borderBottomColor: uiColors.line, borderBottomWidth: 1, justifyContent: 'flex-end',
   },
-  bar: { backgroundColor: '#606060', borderRadius: 3 },
-  pastBar: { backgroundColor: '#999999' },
-  currentBar: { backgroundColor: '#222222' },
-  selectedBar: { backgroundColor: '#222222' },
-  contextBar: { backgroundColor: '#C8C8C8' },
-  contextText: { color: '#A0A0A0' },
-  hour: { color: '#5F5F5F', fontSize: 11, marginTop: 4, textAlign: 'center' },
+  bar: { backgroundColor: uiColors.bar, borderRadius: 3 },
+  pastBar: { backgroundColor: uiColors.contextBar },
+  currentBar: { backgroundColor: uiColors.accent },
+  selectedBar: { backgroundColor: uiColors.accent },
+  contextBar: { backgroundColor: uiColors.contextBar },
+  contextText: { color: uiColors.faint },
+  hour: { color: uiColors.secondary, fontSize: 11, marginTop: 4, textAlign: 'center' },
   desktopHour: { fontSize: 12 },
-  currentText: { color: '#151515', fontWeight: '600' },
-  day: { color: '#767676', fontSize: 10, marginTop: 2, minHeight: 15, textAlign: 'center' },
-  precipitationProbability: { color: '#686868', fontSize: 10, marginTop: 5, textAlign: 'center' },
-  precipitation: { color: '#686868', fontSize: 10, marginTop: 1, textAlign: 'center' },
-  windSpeed: { color: '#686868', fontSize: 10, marginTop: 1, textAlign: 'center' },
+  currentText: { color: uiColors.ink, fontWeight: '600' },
+  day: { color: uiColors.muted, fontSize: 10, marginTop: 2, minHeight: 15, textAlign: 'center' },
+  precipitationProbability: { color: uiColors.secondary, fontSize: 10, marginTop: 5, textAlign: 'center' },
+  precipitation: { color: uiColors.secondary, fontSize: 10, marginTop: 1, textAlign: 'center' },
+  windSpeed: { color: uiColors.secondary, fontSize: 10, marginTop: 1, textAlign: 'center' },
   desktopWeatherValue: { fontSize: 11 },
 });

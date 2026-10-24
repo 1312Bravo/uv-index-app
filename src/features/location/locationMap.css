@@ -1,9 +1,13 @@
+.leaflet-container {
+  background: #f9f4eb;
+}
+
 .leaflet-tile {
-  filter: grayscale(1) contrast(1.12);
+  filter: grayscale(1) sepia(0.2) contrast(1.08);
 }
 
 .leaflet-control-zoom {
-  border: 1px solid #dddddd !important;
+  border: 1px solid #e9e0d4 !important;
   border-radius: 8px !important;
   box-shadow: 0 2px 8px #0000001a !important;
   margin: 12px !important;
@@ -11,15 +15,15 @@
 }
 
 .leaflet-control-zoom a {
-  background: #ffffff;
-  color: #333333;
+  background: #fffdf8;
+  color: #29241e;
   height: 30px;
   line-height: 30px;
   width: 30px;
 }
 
 .leaflet-control-attribution {
-  background: #ffffffe6 !important;
+  background: #fffdf8e6 !important;
   border-top-left-radius: 5px;
   font-size: 9px !important;
 }
@@ -31,12 +35,12 @@
 
 .uv-scout-location-marker__glyph {
   align-items: center;
-  background: #fffffff0;
-  border: 1px solid #555555;
+  background: #fffdf8f0;
+  border: 1px solid #b26c3b;
   border-radius: 50%;
   box-shadow: 0 1px 5px #00000033;
   box-sizing: border-box;
-  color: #151515;
+  color: #29241e;
   display: flex;
   font: 500 16px/1 Arial, sans-serif;
   height: 24px;

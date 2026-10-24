@@ -67,7 +67,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
 
   return (
     <View style={styles.section}>
-      {loading && <ActivityIndicator color="#151515" style={styles.loading} />}
+      {loading && <ActivityIndicator color={uiColors.accent} style={styles.loading} />}
       {error && <ForecastError message={error} onRetry={retry} />}
       {forecast && (
         <>
@@ -152,5 +152,5 @@ const styles = StyleSheet.create({
   nowSelectorDivider: { marginTop: 15 },
   heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 26, textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
-  message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
+  message: { color: uiColors.faint, fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
 });

@@ -2,6 +2,7 @@ import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } fro
 
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
 import { getUvCategory } from '../../domain/uv/getUvCategory';
+import { uiColors } from '../../ui/visualStyle';
 
 type Props = {
   endBoundaryHour?: ForecastHour;
@@ -106,18 +107,18 @@ const styles = StyleSheet.create({
   hours: { flexGrow: 1, justifyContent: 'center', paddingBottom: 10 },
   bin: { alignItems: 'center' },
   barArea: {
-    borderBottomColor: '#D6D6D6', borderBottomWidth: 1,
+    borderBottomColor: uiColors.line, borderBottomWidth: 1,
     justifyContent: 'flex-end',
   },
   valueGroup: { alignItems: 'center', position: 'absolute' },
-  category: { color: '#777777', fontSize: 10, lineHeight: 12, textAlign: 'center' },
+  category: { color: uiColors.muted, fontSize: 10, lineHeight: 12, textAlign: 'center' },
   desktopCategory: { fontSize: 11, lineHeight: 14 },
-  uvValue: { color: '#151515', fontSize: 16, fontWeight: '500', lineHeight: 18, textAlign: 'center' },
+  uvValue: { color: uiColors.ink, fontSize: 16, fontWeight: '500', lineHeight: 18, textAlign: 'center' },
   desktopUvValue: { fontSize: 18, lineHeight: 20 },
-  bar: { backgroundColor: '#222222', borderRadius: 3 },
-  clock: { color: '#5F5F5F', fontSize: 11, marginTop: 5, textAlign: 'center' },
+  bar: { backgroundColor: uiColors.accent, borderRadius: 3 },
+  clock: { color: uiColors.secondary, fontSize: 11, marginTop: 5, textAlign: 'center' },
   desktopClock: { fontSize: 12 },
-  period: { color: '#767676', fontSize: 10, textAlign: 'center' },
+  period: { color: uiColors.muted, fontSize: 10, textAlign: 'center' },
   desktopPeriod: { fontSize: 11 },
-  day: { color: '#767676', fontSize: 9, marginTop: 3, minHeight: 13, textAlign: 'center' },
+  day: { color: uiColors.muted, fontSize: 9, marginTop: 3, minHeight: 13, textAlign: 'center' },
 });

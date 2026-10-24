@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   noteRow: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
   actionRow: { alignItems: 'flex-start', flexDirection: 'row' },
-  marker: { color: '#555555', fontSize: 12, lineHeight: 16, marginRight: 5, width: 8 },
+  marker: { color: uiColors.secondary, fontSize: 12, lineHeight: 16, marginRight: 5, width: 8 },
   actionText: { color: uiColors.body, flex: 1, fontSize: 13, lineHeight: 19 },
   notes: { marginTop: 8 },
   note: { color: uiColors.muted, flex: 1, fontSize: 12, lineHeight: 17 },

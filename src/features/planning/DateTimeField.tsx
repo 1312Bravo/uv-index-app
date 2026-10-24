@@ -108,6 +108,6 @@ export function DateTimeField(props: Props) {
 const styles = StyleSheet.create({
   nativeField: { borderColor: uiColors.line, borderRadius: 10, borderWidth: 1, justifyContent: 'center', marginTop: 10, minHeight: 48, paddingHorizontal: 12 },
   nativeValue: { color: uiColors.ink, fontSize: 14 },
-  nativePlaceholder: { color: '#909090', fontSize: 14 },
-  webInput: { backgroundColor: uiColors.white, borderColor: uiColors.line, borderRadius: 10, borderStyle: 'solid', borderWidth: 1, boxSizing: 'border-box', color: uiColors.ink, fontFamily: 'inherit', fontSize: 14, marginTop: 10, minHeight: 48, paddingLeft: 12, paddingRight: 12, width: '100%' },
+  nativePlaceholder: { color: uiColors.faint, fontSize: 14 },
+  webInput: { backgroundColor: uiColors.surface, borderColor: uiColors.line, borderRadius: 10, borderStyle: 'solid', borderWidth: 1, boxSizing: 'border-box', color: uiColors.ink, fontFamily: 'inherit', fontSize: 14, marginTop: 10, minHeight: 48, paddingLeft: 12, paddingRight: 12, width: '100%' },
 });

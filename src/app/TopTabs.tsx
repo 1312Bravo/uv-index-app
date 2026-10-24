@@ -74,10 +74,10 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   disabledLabel: {
-    color: '#BBBBBB',
+    color: uiColors.faint,
   },
   activeLabel: {
-    borderBottomColor: uiColors.ink,
+    borderBottomColor: uiColors.accent,
     borderBottomWidth: 2,
   },
 });

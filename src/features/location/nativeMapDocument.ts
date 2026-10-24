@@ -1,3 +1,4 @@
+import { uiColors } from '../../ui/visualStyle';
 import {
   LOCATION_MARKER_ANCHOR,
   LOCATION_MARKER_CLASS,
@@ -17,37 +18,37 @@ export function createNativeMapDocument() {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
       html, body, #map { width: 100%; height: 100%; margin: 0; }
-      body { overflow: hidden; background: #f2f2f2; }
-      .leaflet-container { background: #f2f2f2; font: 12px Arial, sans-serif; }
-      .leaflet-tile { filter: grayscale(1) contrast(1.12); }
+      body { overflow: hidden; background: ${uiColors.page}; }
+      .leaflet-container { background: ${uiColors.page}; font: 12px Arial, sans-serif; }
+      .leaflet-tile { filter: grayscale(1) sepia(0.2) contrast(1.08); }
       .leaflet-control-zoom {
-        border: 1px solid #dddddd !important;
+        border: 1px solid #e9e0d4 !important;
         border-radius: 8px !important;
         box-shadow: 0 2px 8px #0000001a !important;
         margin: 12px !important;
         overflow: hidden;
       }
       .leaflet-control-zoom a {
-        background: #ffffff;
-        color: #333333;
+        background: #fffdf8;
+        color: #29241e;
         height: 30px;
         line-height: 30px;
         width: 30px;
       }
       .leaflet-control-attribution {
-        background: #ffffffe6 !important;
+        background: #fffdf8e6 !important;
         border-top-left-radius: 5px;
         font-size: 9px !important;
       }
       .leaflet-marker-icon.${LOCATION_MARKER_CLASS} { background: transparent; border: 0; }
       .${LOCATION_MARKER_CLASS}__glyph {
         align-items: center;
-        background: #fffffff0;
-        border: 1px solid #555555;
+        background: #fffdf8f0;
+        border: 1px solid #b26c3b;
         border-radius: 50%;
         box-shadow: 0 1px 5px #00000033;
         box-sizing: border-box;
-        color: #151515;
+        color: #29241e;
         display: flex;
         font: 500 16px/1 Arial, sans-serif;
         height: 24px;

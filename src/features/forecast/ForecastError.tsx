@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { uiColors } from '../../ui/visualStyle';
 
 type Props = {
   message: string;
@@ -18,7 +19,7 @@ export function ForecastError({ message, onRetry }: Props) {
 
 const styles = StyleSheet.create({
   container: { alignItems: 'center', marginTop: 16 },
-  message: { color: '#A6A6A6', fontSize: 14, lineHeight: 20, textAlign: 'center' },
+  message: { color: uiColors.faint, fontSize: 14, lineHeight: 20, textAlign: 'center' },
   retryButton: { marginTop: 6, paddingHorizontal: 10, paddingVertical: 4 },
-  retryText: { color: '#777777', fontSize: 13, textDecorationLine: 'underline' },
+  retryText: { color: uiColors.muted, fontSize: 13, textDecorationLine: 'underline' },
 });

@@ -1,4 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
+import { Almendra_400Regular } from '@expo-google-fonts/almendra';
+import { Fruktur_400Regular, useFonts } from '@expo-google-fonts/fruktur';
 import { useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
@@ -16,6 +18,7 @@ import { uiColors } from '../ui/visualStyle';
 import { TopTabs, type AppPage } from './TopTabs';
 
 export function UvScoutApp() {
+  const [fontsLoaded] = useFonts({ Fruktur_400Regular, Almendra_400Regular });
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [location, setLocation] = useState<SelectedLocation | null>(null);
@@ -39,8 +42,13 @@ export function UvScoutApp() {
         scrollEnabled={!isMapInteracting}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>UV Scout</Text>
-          <Text style={styles.subtitle}>Plan your time outside based on the UV Index.</Text>
+          <Text style={[styles.title, fontsLoaded && styles.fruktur]}>
+            <Text style={styles.titleAccent}>UV</Text>
+            <Text> Scout</Text>
+          </Text>
+          <Text style={[styles.subtitle, fontsLoaded && styles.almendra]}>
+            Plan your time outside based on the UV Index.
+          </Text>
         </View>
 
         <TopTabs activePage={page} hasLocation={location !== null} onSelect={setPage} />
@@ -98,7 +106,7 @@ export function UvScoutApp() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: uiColors.white,
+    backgroundColor: uiColors.page,
   },
   content: {
     width: '100%',
@@ -128,15 +136,15 @@ const styles = StyleSheet.create({
   title: {
     color: uiColors.ink,
     fontSize: 34,
-    fontWeight: '700',
-    letterSpacing: -0.8,
     marginBottom: 8,
     textAlign: 'center',
   },
+  titleAccent: { color: uiColors.accent },
+  fruktur: { fontFamily: 'Fruktur_400Regular' },
+  almendra: { fontFamily: 'Almendra_400Regular' },
   subtitle: {
     color: uiColors.body,
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 16,
     lineHeight: 22,
     textAlign: 'center',
   },
