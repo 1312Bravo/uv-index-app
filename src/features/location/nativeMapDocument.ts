@@ -1,4 +1,3 @@
-import { uiColors } from '../../ui/visualStyle';
 import {
   LOCATION_MARKER_ANCHOR,
   LOCATION_MARKER_CLASS,
@@ -6,8 +5,9 @@ import {
   LOCATION_MARKER_SIZE,
 } from './locationMapMarker';
 
-const EUROPE_LATITUDE = 50.5;
-const EUROPE_LONGITUDE = 15;
+const EUROPE_LATITUDE = 46.5;
+const EUROPE_LONGITUDE = 13.5;
+const EUROPE_DEFAULT_ZOOM = 4.5;
 
 export function createNativeMapDocument() {
   return `<!doctype html>
@@ -18,37 +18,37 @@ export function createNativeMapDocument() {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
       html, body, #map { width: 100%; height: 100%; margin: 0; }
-      body { overflow: hidden; background: ${uiColors.page}; }
-      .leaflet-container { background: ${uiColors.page}; font: 12px Arial, sans-serif; }
-      .leaflet-tile { filter: grayscale(1) sepia(0.2) contrast(1.08); }
+      body { overflow: hidden; background: #f3f3f3; }
+      .leaflet-container { background: #f3f3f3; font: 12px Arial, sans-serif; }
+      .leaflet-tile { filter: saturate(0.65) contrast(1.02); }
       .leaflet-control-zoom {
-        border: 1px solid #e9e0d4 !important;
+        border: 1px solid #d8d8d8 !important;
         border-radius: 8px !important;
         box-shadow: 0 2px 8px #0000001a !important;
         margin: 12px !important;
         overflow: hidden;
       }
       .leaflet-control-zoom a {
-        background: #fffdf8;
-        color: #29241e;
+        background: #ffffff;
+        color: #292929;
         height: 30px;
         line-height: 30px;
         width: 30px;
       }
       .leaflet-control-attribution {
-        background: #fffdf8e6 !important;
+        background: #ffffffe6 !important;
         border-top-left-radius: 5px;
         font-size: 9px !important;
       }
       .leaflet-marker-icon.${LOCATION_MARKER_CLASS} { background: transparent; border: 0; }
       .${LOCATION_MARKER_CLASS}__glyph {
         align-items: center;
-        background: #fffdf8f0;
-        border: 1px solid #b26c3b;
+        background: #fffffff2;
+        border: 1px solid #777777;
         border-radius: 50%;
         box-shadow: 0 1px 5px #00000033;
         box-sizing: border-box;
-        color: #29241e;
+        color: #292929;
         display: flex;
         font: 500 16px/1 Arial, sans-serif;
         height: 24px;
@@ -62,7 +62,7 @@ export function createNativeMapDocument() {
     <div id="map" aria-label="Tap the map to choose a location"></div>
     <script>
       const map = L.map('map', { zoomControl: true, attributionControl: true })
-        .setView([${EUROPE_LATITUDE}, ${EUROPE_LONGITUDE}], 4);
+        .setView([${EUROPE_LATITUDE}, ${EUROPE_LONGITUDE}], ${EUROPE_DEFAULT_ZOOM});
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         keepBuffer: 2,

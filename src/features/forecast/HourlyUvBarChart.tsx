@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, type ScrollViewInstance, useWindowDimensions, View } from 'react-native';
 
 import type { DaylightEvents } from '../../domain/daylight/daylightTypes';
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
@@ -57,7 +57,7 @@ export function HourlyUvBarChart({
   const { width } = useWindowDimensions();
   const layout = Platform.OS === 'web' && width >= 760 ? DESKTOP_CHART_LAYOUT : PHONE_CHART_LAYOUT;
   const { binWidth } = layout;
-  const chartRef = useRef<ScrollView | null>(null);
+  const chartRef = useRef<ScrollViewInstance | null>(null);
   const chartHours = useMemo(
     () => getChartHours(hours, selectedRange, showFullOutlook),
     [hours, selectedRange, showFullOutlook],

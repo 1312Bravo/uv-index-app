@@ -6,7 +6,6 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 
 import { getLocationCoordinates } from '../../domain/location/getLocationCoordinates';
-import { uiColors } from '../../ui/visualStyle';
 import type { LocationMapProps } from './LocationMapProps';
 import {
   LOCATION_MARKER_ANCHOR,
@@ -15,7 +14,8 @@ import {
   LOCATION_MARKER_SIZE,
 } from './locationMapMarker';
 
-const EUROPE_CENTER: L.LatLngExpression = [50.5, 15];
+const EUROPE_CENTER: L.LatLngExpression = [46.5, 13.5];
+const EUROPE_DEFAULT_ZOOM = 4.5;
 const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const LOCATION_MARKER_ICON = L.divIcon({
   className: LOCATION_MARKER_CLASS,
@@ -69,7 +69,7 @@ export function LocationMap({ selectedLocation, onSelectCoordinates }: LocationM
         doubleClickZoom
         scrollWheelZoom={false}
         style={styles.map}
-        zoom={selectedCoordinates ? 14 : 4}
+        zoom={selectedCoordinates ? 14 : EUROPE_DEFAULT_ZOOM}
         zoomControl
       >
         <TileLayer
@@ -88,8 +88,8 @@ export function LocationMap({ selectedLocation, onSelectCoordinates }: LocationM
 
 const styles = StyleSheet.create({
   frame: {
-    backgroundColor: uiColors.page,
-    borderColor: uiColors.line,
+    backgroundColor: '#f3f3f3',
+    borderColor: '#d8d8d8',
     borderRadius: 12,
     borderWidth: 1,
     height: 310,

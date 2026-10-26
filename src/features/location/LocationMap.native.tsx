@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
 import { getLocationCoordinates } from '../../domain/location/getLocationCoordinates';
-import { uiColors } from '../../ui/visualStyle';
 import type { LocationMapProps } from './LocationMapProps';
 import { createNativeMapDocument } from './nativeMapDocument';
 
@@ -14,7 +13,7 @@ export function LocationMap({
   onSelectCoordinates,
   onInteractionChange,
 }: LocationMapProps) {
-  const mapRef = useRef<WebView>(null);
+  const mapRef = useRef<WebView<unknown>>(null);
   const [isMapReady, setIsMapReady] = useState(false);
   const coordinates = selectedLocation ? getLocationCoordinates(selectedLocation) : null;
 
@@ -47,7 +46,7 @@ export function LocationMap({
 
   return (
     <View style={styles.frame}>
-      <WebView
+      <WebView<unknown>
         ref={mapRef}
         javaScriptEnabled
         onError={() => setIsMapReady(false)}
@@ -68,8 +67,8 @@ export function LocationMap({
 
 const styles = StyleSheet.create({
   frame: {
-    backgroundColor: uiColors.page,
-    borderColor: uiColors.line,
+    backgroundColor: '#f3f3f3',
+    borderColor: '#d8d8d8',
     borderRadius: 12,
     borderWidth: 1,
     height: 310,

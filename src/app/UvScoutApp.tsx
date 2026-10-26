@@ -1,7 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Almendra_400Regular } from '@expo-google-fonts/almendra';
 import { Fruktur_400Regular, useFonts } from '@expo-google-fonts/fruktur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
@@ -37,45 +36,6 @@ export function UvScoutApp() {
 
   return (
     <View style={styles.screen}>
-      <LinearGradient
-        colors={[
-          'rgba(151, 104, 64, 0)',
-          'rgba(151, 104, 64, 0)',
-          'rgba(151, 104, 64, 0.04)',
-          'rgba(151, 104, 64, 0.12)',
-          'rgba(151, 104, 64, 0.04)',
-          'rgba(151, 104, 64, 0)',
-          'rgba(151, 104, 64, 0)',
-          'rgba(151, 104, 64, 0.04)',
-          'rgba(151, 104, 64, 0.12)',
-          'rgba(151, 104, 64, 0.04)',
-          'rgba(151, 104, 64, 0)',
-          'rgba(151, 104, 64, 0)',
-          'rgba(151, 104, 64, 0.04)',
-          'rgba(151, 104, 64, 0.12)',
-          'rgba(151, 104, 64, 0.04)',
-          'rgba(151, 104, 64, 0)',
-          'rgba(151, 104, 64, 0)',
-        ]}
-        end={{ x: 1, y: 1 }}
-        locations={[0, 0.06, 0.1, 0.15, 0.2, 0.24, 0.35, 0.39, 0.44, 0.49, 0.53, 0.65, 0.69, 0.74, 0.79, 0.83, 1]}
-        pointerEvents="none"
-        start={{ x: 0, y: 0 }}
-        style={styles.backgroundTexture}
-      />
-      <LinearGradient
-        colors={[
-          'rgba(249, 244, 235, 0)',
-          'rgba(249, 244, 235, 0)',
-          'rgba(249, 244, 235, 0.4)',
-          'rgba(249, 244, 235, 0.8)',
-        ]}
-        end={{ x: 0, y: 1 }}
-        locations={[0, 0.24, 0.65, 1]}
-        pointerEvents="none"
-        start={{ x: 0, y: 0 }}
-        style={styles.backgroundTexture}
-      />
       <ScrollView
         contentContainerStyle={[styles.content, isWideWeb && styles.webContent]}
         keyboardShouldPersistTaps="handled"
@@ -147,13 +107,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: uiColors.page,
-  },
-  backgroundTexture: {
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
   },
   content: {
     width: '100%',

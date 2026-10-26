@@ -1,6 +1,6 @@
 // Warm daylight palette shared by the app shell and feature screens.
 export const uiColors = {
-  page: '#F9F4EB',
+  page: '#F5F2EC',
   surface: '#FFFDF8',
   ink: '#29241E',
   body: '#3D3732',
