@@ -192,6 +192,10 @@ calculation, supported platform versions, and the final visual polish.
 
 ## Tasks
 
+- [x] Link the project to EAS Updates with an internal Android APK profile and
+  the `preview` channel. Keep store publication out of the first release.
+- [x] Deploy the web app to EAS Hosting at `https://uvscout.expo.app`.
+- [ ] Build the update-enabled APK and share its install link.
 - [x] Confirm general outdoor users, English, and no accounts or history.
 - [x] Name the app `UV Scout`.
 - [x] Confirm device location plus manual place selection.
@@ -315,6 +319,9 @@ calculation, supported platform versions, and the final visual polish.
 - Use "Plan your time outside based on the UV Index." as the current subtitle.
 - Use Expo + React Native + TypeScript.
 - Support Android and web.
+- Distribute the first Android phone release as a signed EAS internal APK link,
+  without publishing to Google Play. Use EAS Updates for compatible JavaScript
+  and asset changes; native changes require a new APK build.
 - Use Open-Meteo as the initial UV and temperature source. This is an ease-of-
   implementation choice, not a claim of superior forecast accuracy.
 - Request two local forecast days from Open-Meteo for outing planning and UV
@@ -427,6 +434,13 @@ calculation, supported platform versions, and the final visual polish.
 
 ## Progress
 
+- Added `expo-updates`, an app-version runtime policy, and an internal Android
+  APK build profile. Linked this repository to `@bravogroup/uvscout` and
+  configured the EAS Update URL. Set the stable Android application ID to
+  `com.bravogroup.uvscout`; the first APK build is next.
+- Documented install-link and OTA update behavior in `docs/mobile-release.md`.
+- Deployed the web app to EAS Hosting production at `https://uvscout.expo.app`;
+  deployment steps are in `docs/web-release.md`.
 - Plan an Outing now refreshes its forecast every 15 minutes while open, in
   step with the moving Now timeframe. Forecast attempts time out after 12
   seconds and retry once before showing the existing Try again control.

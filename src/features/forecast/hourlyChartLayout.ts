@@ -13,10 +13,10 @@ export const PHONE_CHART_LAYOUT: HourlyChartLayout = {
 };
 
 export const DESKTOP_CHART_LAYOUT: HourlyChartLayout = {
-  binWidth: 64,
-  barWidth: 24,
-  maxBarHeight: 76,
-  valueGroupHeight: 46,
+  binWidth: 76,
+  barWidth: 30,
+  maxBarHeight: 86,
+  valueGroupHeight: 50,
 };
 
 export type SelectedRange = { start: number; end: number };

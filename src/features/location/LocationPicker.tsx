@@ -12,6 +12,11 @@ import {
 } from 'react-native';
 
 import type { Place, SelectedLocation } from '../../domain/location/locationTypes';
+import {
+  BrowserGeolocationError,
+  getBrowserCurrentPosition,
+  getBrowserLocationPermission,
+} from '../../services/location/browserGeolocation';
 import { reverseGeocodePlace } from '../../services/location/reverseGeocode';
 import { searchPlaces } from '../../services/location/searchPlaces';
 import { SourceAttribution } from '../../ui/SourceAttribution';
@@ -39,6 +44,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
   const [hasSearched, setHasSearched] = useState(false);
   const locationRequest = useRef(0);
   const autoLocationStarted = useRef(false);
+  const browserLocationButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const term = query.trim();
@@ -77,7 +83,11 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
     };
   }, [query, selected?.source]);
 
-  const useDeviceLocation = useCallback(async (requestPermission = true, showUnavailableNotice = false) => {
+  const useDeviceLocation = useCallback(async (
+    requestPermission = true,
+    showUnavailableNotice = false,
+    browserPosition?: Promise<GeolocationPosition>,
+  ) => {
     const requestId = ++locationRequest.current;
     let hasCachedPosition = false;
     setIsLocating(true);
@@ -96,6 +106,32 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
     }
 
     try {
+      if (Platform.OS === 'web') {
+        if (!requestPermission && !browserPosition && await getBrowserLocationPermission() !== 'granted') return;
+
+        const position = await (browserPosition ?? getBrowserCurrentPosition());
+        if (requestId !== locationRequest.current) return;
+        const location: SelectedLocation = {
+          source: 'device',
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+        setSelected(location);
+        onSelect(location);
+
+        void reverseGeocodePlace(location.latitude, location.longitude)
+          .then((placeName) => {
+            if (requestId !== locationRequest.current || !placeName) return;
+            const resolvedLocation: SelectedLocation = { ...location, placeName };
+            setSelected(resolvedLocation);
+            onSelect(resolvedLocation);
+          })
+          .catch(() => {
+            // Keep the coordinates when the optional place label lookup is unavailable.
+          });
+        return;
+      }
+
       const permission = requestPermission
         ? await Location.requestForegroundPermissionsAsync()
         : await Location.getForegroundPermissionsAsync();
@@ -154,14 +190,37 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
         });
       setResults([]);
       setHasSearched(false);
-    } catch {
-      if (!hasCachedPosition) {
+    } catch (cause) {
+      if (Platform.OS === 'web' && cause instanceof BrowserGeolocationError) {
+        const message = cause.code === 'permission-denied'
+          ? 'Allow location access for this website in your browser settings, then try again.'
+          : cause.code === 'timeout'
+            ? 'UV Scout could not receive your location. Try again, or search for a place or choose one on the map.'
+            : cause.code === 'position-unavailable'
+              ? 'Your browser could not determine your location. Check your device location settings and try again.'
+              : 'Current location is unavailable in this browser. Try a secure connection or choose a place on the map.';
+        reportUnavailable(message);
+      } else if (!hasCachedPosition) {
         reportUnavailable('Could not get your location. Search for a place or try again.');
       }
     } finally {
       setIsLocating(false);
     }
   }, [onSelect]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const button = browserLocationButton.current;
+    if (!button) return;
+
+    function requestBrowserLocation() {
+      // Start the browser request in the native click handler, before React updates the page.
+      void useDeviceLocation(true, true, getBrowserCurrentPosition());
+    }
+
+    button.addEventListener('click', requestBrowserLocation);
+    return () => button.removeEventListener('click', requestBrowserLocation);
+  }, [useDeviceLocation]);
 
   useEffect(() => {
     if (autoLocationStarted.current) return;
@@ -175,13 +234,14 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
         const isWeb = Platform.OS === 'web';
 
         if (isWeb) {
-          const permission = await Location.getForegroundPermissionsAsync();
-          if (!permission.granted) return;
+          const permission = await getBrowserLocationPermission();
+          if (permission !== 'granted') return;
         }
 
         if (!isActive || locationRequest.current !== initialRequest) return;
         autoLocationStarted.current = true;
-        await useDeviceLocation(!isWeb);
+        const browserPosition = isWeb ? getBrowserCurrentPosition() : undefined;
+        await useDeviceLocation(!isWeb, false, browserPosition);
       } catch {
         // Keep location manual when the device cannot provide a permission or service status.
       }
@@ -232,24 +292,53 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
       <View>
         <View style={isWideWeb ? styles.webSearch : undefined}>
           <View style={styles.locationMethods}>
-            <Pressable
-              accessibilityRole="button"
-              disabled={isLocating}
-              onPress={() => { void useDeviceLocation(true, Platform.OS !== 'web'); }}
-              style={({ pressed }) => [
-                styles.locationButton,
-                pressed && styles.locationButtonPressed,
-                isLocating && styles.buttonDisabled,
-              ]}
-            >
-              {isLocating ? (
-                <ActivityIndicator color={uiColors.accent} />
-              ) : (
-                <Text style={styles.locationButtonText}>
-                  {selected?.source === 'device' ? 'Current location selected' : 'Use my location'}
-                </Text>
-              )}
-            </Pressable>
+            {Platform.OS === 'web' ? (
+              <button
+                ref={browserLocationButton}
+                type="button"
+                disabled={isLocating}
+                style={{
+                  alignItems: 'center',
+                  background: 'transparent',
+                  border: 0,
+                  color: uiColors.ink,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: 15,
+                  fontWeight: 500,
+                  justifyContent: 'center',
+                  minHeight: 48,
+                  opacity: isLocating ? 0.45 : 1,
+                  padding: 0,
+                  textDecoration: 'underline',
+                  width: '100%',
+                }}
+              >
+                {isLocating ? <ActivityIndicator color={uiColors.accent} /> : (
+                  selected?.source === 'device' ? 'Current location selected' : 'Use my location'
+                )}
+              </button>
+            ) : (
+              <Pressable
+                accessibilityRole="button"
+                disabled={isLocating}
+                onPress={() => { void useDeviceLocation(true, true); }}
+                style={({ pressed }) => [
+                  styles.locationButton,
+                  pressed && styles.locationButtonPressed,
+                  isLocating && styles.buttonDisabled,
+                ]}
+              >
+                {isLocating ? (
+                  <ActivityIndicator color={uiColors.accent} />
+                ) : (
+                  <Text style={styles.locationButtonText}>
+                    {selected?.source === 'device' ? 'Current location selected' : 'Use my location'}
+                  </Text>
+                )}
+              </Pressable>
+            )}
 
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
@@ -257,7 +346,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
               <View style={styles.dividerLine} />
             </View>
 
-            <View style={styles.searchField}>
+            <View style={[styles.searchField, Platform.OS === 'web' && isSearchFocused && styles.webSearchFieldFocused]}>
               <TextInput
                 accessibilityLabel={selected ? 'Search a different location' : 'Search location'}
                 autoCapitalize="words"
@@ -275,7 +364,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
                 cursorColor={uiColors.accent}
                 returnKeyType="done"
                 selectionColor={uiColors.accent}
-                style={styles.input}
+                style={[styles.input, Platform.OS === 'web' && styles.webInput]}
                 value={query}
               />
               {!query && !isSearchFocused && (
@@ -322,9 +411,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
           />
         </View>
       </View>
-      {Platform.OS !== 'web' && (
-        <LocationUnavailableNotice message={locationNotice} onClose={() => setLocationNotice(null)} />
-      )}
+      <LocationUnavailableNotice message={locationNotice} onClose={() => setLocationNotice(null)} />
     </View>
   );
 }
@@ -356,6 +443,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   searchField: { justifyContent: 'center', minHeight: 48 },
+  webSearchFieldFocused: { borderBottomColor: uiColors.accent, borderBottomWidth: 1 },
+  webInput: { outlineColor: 'transparent', outlineStyle: 'solid', outlineWidth: 0 },
   searchPrompt: {
     color: uiColors.faint,
     fontSize: 15,

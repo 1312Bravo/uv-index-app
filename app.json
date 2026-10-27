@@ -1,12 +1,21 @@
 {
   "expo": {
     "name": "UV Scout",
-    "slug": "uv-index-app",
+    "slug": "uvscout",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/16af89d2-ff27-4f27-9586-517473700c63"
+    },
     "android": {
+      "package": "com.bravogroup.uvscout",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -21,7 +30,15 @@
     "plugins": [
       "@react-native-community/datetimepicker",
       "expo-font",
+      "expo-updates",
       "expo-status-bar"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "16af89d2-ff27-4f27-9586-517473700c63"
+      }
+    },
+    "owner": "bravogroup",
+    "ios": {}
   }
 }
