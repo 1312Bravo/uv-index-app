@@ -346,7 +346,7 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
               <View style={styles.dividerLine} />
             </View>
 
-            <View style={[styles.searchField, Platform.OS === 'web' && isSearchFocused && styles.webSearchFieldFocused]}>
+            <View style={styles.searchField}>
               <TextInput
                 accessibilityLabel={selected ? 'Search a different location' : 'Search location'}
                 autoCapitalize="words"
@@ -443,7 +443,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   searchField: { justifyContent: 'center', minHeight: 48 },
-  webSearchFieldFocused: { borderBottomColor: uiColors.accent, borderBottomWidth: 1 },
   webInput: { outlineColor: 'transparent', outlineStyle: 'solid', outlineWidth: 0 },
   searchPrompt: {
     color: uiColors.faint,
