@@ -15,8 +15,9 @@ The central list of tester links is in [`release-links.md`](release-links.md).
   service, associated with this project and the `preview` channel. Users keep
   the installed app and receive updates when they reopen it.
 - A new APK is still required for native changes, such as adding or changing a
-  native dependency, app permissions, or the Expo SDK. Users install that build
-  over the existing app; keep the same Android application ID and signing key.
+  native dependency, app permissions, the app icon, or the Expo SDK. Users
+  install that build over the existing app; keep the same Android application
+  ID and signing key.
 
 ## Current setup state
 

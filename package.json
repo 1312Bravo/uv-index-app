@@ -33,6 +33,7 @@
     "start": "expo start",
     "android": "expo start --android",
     "web": "expo start --web",
+    "build:brand-assets": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/generate-brand-assets.ps1",
     "test": "tsc --project tsconfig.test.json && node --test tests/domain.test.cjs tests/forecast-request.test.cjs"
   }
 }

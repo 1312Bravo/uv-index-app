@@ -7,6 +7,28 @@ UV Scout's web app is deployed to EAS Hosting:
 
 The central list of tester links is in [`release-links.md`](release-links.md).
 
+## Link previews and home-screen icons
+
+The static page metadata in `public/index.html` provides the title, description,
+and social preview image. The image lives at `public/icons/og-image-v2.png`.
+`public/manifest-v2.json` defines the UV Scout name, theme, and icons used when the
+site is added to a phone's home screen. The Apple touch icon is in the same
+icons directory.
+
+To add the website to an Android home screen, open it in Chrome and choose
+**Install app** or **Add to Home screen** from the browser menu. On iPhone, open
+it in Safari, tap **Share**, then **Add to Home Screen**. The saved shortcut
+uses the site's configured name and icon; it opens the live website.
+
+When changing the logo or its palette, regenerate the image files with:
+
+```powershell
+pnpm build:brand-assets
+```
+
+Then export and deploy the web app as usual. Messaging and social platforms may
+cache link-preview images, so an old preview can remain visible for a while.
+
 ## Publish an update
 
 From the repository root, export the web app and deploy that export to

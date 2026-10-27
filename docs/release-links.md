@@ -13,10 +13,8 @@ The production URL is the stable link to share with anyone. See
 ## Android app
 
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
-- Current initial build: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/09adece5-fad7-4512-b565-54d241a9bac8>
-- APK install link: pending build completion
+- Current icon and home-screen branding build (queued): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/af5781f2-04dc-486b-8e61-17663c798643>
+- APK install link: available from the build page after it finishes
 
-When the build succeeds, copy its install link from the build page above and
-replace the pending line with that URL. The install link is specific to a build;
-share the newest one with Android users. See [`mobile-release.md`](mobile-release.md)
-for install and update details.
+The install link is specific to a build; share the newest one with Android users.
+See [`mobile-release.md`](mobile-release.md) for install and update details.
