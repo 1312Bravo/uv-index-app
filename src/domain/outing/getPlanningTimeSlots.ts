@@ -13,11 +13,12 @@ function localMidnight(year: number, month: number, day: number, timeZone: strin
   }, timeZone);
 }
 
-export function getEndTimeSlots(now: Date, start: Date, timeZone: string): Date[] {
+// Both planner lists use future local half-hours; end choices must also follow the start.
+export function getPlanningTimeSlots(now: Date, after: Date, timeZone: string): Date[] {
   const localToday = getZonedDateTimeParts(now, timeZone);
   const firstTime = localMidnight(localToday.year, localToday.month, localToday.day, timeZone).getTime();
   const lastTime = localMidnight(localToday.year, localToday.month, localToday.day + 2, timeZone).getTime();
-  const earliestAllowed = Math.max(now.getTime(), start.getTime());
+  const earliestAllowed = Math.max(now.getTime(), after.getTime());
   const slots: Date[] = [];
 
   for (let time = firstTime; time < lastTime; time += HALF_HOUR_MS) {

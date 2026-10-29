@@ -15,9 +15,9 @@ The central list of tester links is in [`release-links.md`](release-links.md).
   service, associated with this project and the `preview` channel. Users keep
   the installed app and receive updates when they reopen it.
 - A new APK is still required for native changes, such as adding or changing a
-  native dependency, app permissions, the app icon, or the Expo SDK. Users
-  install that build over the existing app; keep the same Android application
-  ID and signing key.
+  native dependency, app permissions, the app icon, splash screen, or the Expo
+  SDK. Users install that build over the existing app; keep the same Android
+  application ID and signing key.
 
 ## Current setup state
 
@@ -39,6 +39,26 @@ After selecting the Android application ID:
    Existing installs download the update from Expo; no new APK link is needed.
 4. For native changes, create and share a new APK build. Android can install it
    as an update when its package ID and signing key match the original build.
+
+## Publish a compatible Android update
+
+After merging and checking the source on `main`, publish to the channel used
+by the installed preview APKs:
+
+```powershell
+pnpm dlx eas-cli@25.3.0 update --channel preview --platform android --environment preview --message "Describe the changes"
+```
+
+The installed app checks on launch. With the current zero-wait launch setting,
+it can open its cached version while downloading an update. Fully close and
+reopen it after the download to use the new version.
+
+The update must only use native modules already available in the target APK.
+The guidance and planner-selector changes use those existing modules; the
+new splash-screen package is configured for the APK build and is not imported
+by app JavaScript. Changing the loading logo still requires installing the
+new APK. Keep runtime versions distinct when future JavaScript requires a
+changed native API.
 
 EAS Update support and behavior are documented by Expo:
 https://docs.expo.dev/eas-update/introduction/

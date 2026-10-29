@@ -8,8 +8,11 @@
   custom minutes available.
 - A scheduled start and an end time must be in the future, and the end must be
   after the start. Crossing midnight is allowed.
-- Scheduled start/end use a native Android date/time flow and a browser
-  `datetime-local` control on web.
+- Scheduled starts and end times use the same compact scrollable list on
+  Android and web, with future local half-hour slots through tomorrow and
+  Today/Tomorrow labels. Choosing a scheduled start opens its list immediately.
+  Selecting a slot keeps the list open; tapping its selector row closes it.
+  End-time choices also exclude times at or before the selected start.
 - Scheduled start and end controls use the selected location's time zone. If the
   location changes, keep the chosen local calendar date and clock time, then
   resolve them in the new time zone. `Now` remains the actual current instant.

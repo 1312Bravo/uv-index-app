@@ -16,7 +16,7 @@ src/
     daylight/                  Civil dawn, sunrise, sunset, and civil dusk calculations
     location/locationTypes.ts
     outing/                   Time plan and forecast overlap/coverage calculations
-      getEndTimeSlots.ts      Local half-hour end-time choices through tomorrow
+      getPlanningTimeSlots.ts Local half-hour start/end choices through tomorrow
     guidance/whoGuidance.json WHO thresholds and general protection actions
     guidance/getWhoGuidance.ts Validates and interprets the WHO reference
     guidance/uvScoutInsight.json Editable UV Scout wording
@@ -46,8 +46,8 @@ src/
       nativeMapDocument.ts    Native map HTML, tiles, and tap bridge
       LocationMap.web.tsx     Leaflet/OpenStreetMap browser map
       LocationPicker.tsx      Search, device location, and shared selection state
-    planning/                 Time inputs and platform date/time picker
-      EndTimeSelector.tsx     Collapsible end-time choice list
+    planning/                 Time inputs and shared scrollable time selector
+      PlanningTimeSelector.tsx Collapsible start/end half-hour choice list
     outing/                   Outing forecast result
       OutingUvTimeline.tsx    Compact hourly UV preview before guidance
     info/                     UV and cloud-cover explanation screen
@@ -156,8 +156,11 @@ UV Outlook's single-hour advice is separate from the outing profile. Edit
 in `uvScoutRecommendationRules.json` and the existing display categories.
 Those bands are raw UVI below 3, 3 to below 8, and 8 or higher. A cloud
 reminder appears at 76% cover or more only when raw UVI is at least 3;
-cloud cover does not change the protection band. The displayed category
-still rounds the UV value to a whole number.
+cloud cover does not change the protection band. Intensity descriptions use
+the unrounded UV value and the thresholds in `uv/uvCategories.json`, so a value
+below 3 keeps the low-intensity explanation. The displayed category still
+rounds the UV value to a whole number. UV Outlook omits the category-rounding
+note.
 `src/features/forecast/HourlyUvGuidance.tsx` renders the result above the
 hourly chart. The Now bin uses the provider's current model estimate when
 available. Custom times on the hour use hourly forecast values; half-hour UV

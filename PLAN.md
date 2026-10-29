@@ -41,8 +41,11 @@ helps people plan outdoor time around the current and forecast UV index.
   not the device's time zone. When the selected location changes, preserve the
   chosen local calendar date and clock time, then resolve them in the new
   location's time zone before recalculating the forecast.
-- End-time mode offers a compact list of future local half-hour times through
-  tomorrow. Selecting a time keeps the list open; tap its row to close it.
+- Scheduled start and end-time mode share a compact scrollable list of future
+  local half-hour times through tomorrow, with Today/Tomorrow labels and a
+  visible scroll indicator. Choosing a scheduled start opens its list
+  immediately. Selecting a time keeps the list open; tap its row to close it.
+  End-time choices must also be later than the selected start.
 - Show the selected location's current local date and time beside its name and
   coordinates in the shared header on the first three tabs. Resolve the zone as
   soon as a location is selected, and use it consistently for planner and
@@ -60,7 +63,10 @@ helps people plan outdoor time around the current and forecast UV index.
   time is centered and shows its full local date and time. Each custom
   time on the hour uses the hourly forecast value; half-hour UV is estimated
   between adjacent hourly values and labeled approximate. Earlier bins
-  remain context only. Single-hour guidance assumes no outing duration. Show
+  remain context only. Single-hour guidance assumes no outing duration; its
+  intensity description and protection actions follow unrounded UV values.
+  Keep the rounded display category without a category-rounding note in UV
+  Outlook. Show
   the provider's current-conditions timestamp for Now. Refresh the open outlook
   about every 15 minutes.
 - Keep the full two local forecast days available to Plan an Outing and UV Outlook
@@ -224,7 +230,8 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add Now/scheduled start, duration presets including 3 hours, custom duration,
   and explicit end-time mode.
 - [x] Move the planner to a third tab reached after Location and UV Outlook.
-- [x] Add native Android and browser date/time pickers.
+- [x] Use matching scrollable half-hour selectors for scheduled starts and end
+  times on Android and web, replacing the earlier platform date/time pickers.
 - [x] Add text-only `UV Outlook` and `Plan an Outing` tabs below the app header,
   with the outlook tab selected by default.
 - [x] Add the selected-outing hourly UV and temperature forecast plus its highest

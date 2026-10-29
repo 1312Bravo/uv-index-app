@@ -42,8 +42,11 @@ attribution, and limitations.
   before the selected outing, continues through the available forecast, and
   marks selected outing hours with a very light grey background.
 - Above the UV Outlook chart, show a compact single-hour UV section. It defaults
-  to Now and shows the UV estimate, rounded display category, category meaning,
-  and short protection actions. A Now/Custom time choice appears above the
+  to Now and shows the UV estimate, rounded display category, intensity description,
+  and short protection actions. The description and actions use the unrounded
+  UV value, so values below 3 retain the low-intensity wording even if their
+  display category rounds up. Omit the category-rounding note from UV Outlook.
+  A Now/Custom time choice appears above the
   reading, with Now selected by default and labeled simply “Now”; exact local
   time remains in the shared location summary. Choosing Custom time reveals one
   compact scrollable list of future half-hour slots, with Today and Tomorrow

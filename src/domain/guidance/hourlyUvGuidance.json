@@ -13,6 +13,5 @@
       "Limit direct sun and prioritize shade while UV is this strong."
     ]
   },
-  "cloudNote": "Heavy cloud cover does not replace UV protection.",
-  "roundedCategoryNote": "The category is rounded for display. Protection advice uses the unrounded UV value."
+  "cloudNote": "Heavy cloud cover does not replace UV protection."
 }

@@ -26,12 +26,26 @@
     "web": {
       "name": "UV Scout",
       "shortName": "UV Scout",
-      "themeColor": "#F5F2EC"
+      "themeColor": "#F5F2EC",
+      "splash": {
+        "image": "./assets/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#F5F2EC"
+      }
     },
     "plugins": [
       "@react-native-community/datetimepicker",
       "expo-font",
       "expo-updates",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 250,
+          "resizeMode": "contain",
+          "backgroundColor": "#F5F2EC"
+        }
+      ],
       "expo-status-bar"
     ],
     "extra": {

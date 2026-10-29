@@ -1,6 +1,6 @@
 # Data and evidence sources
 
-Updated 2026-10-27. This is the source register for UV Scout. It records the
+Updated 2026-10-29. This is the source register for UV Scout. It records the
 origin of external forecast/location data and evidence used to shape app
 behavior, plus where each source enters the project and how it is interpreted.
 Topic-specific research notes contain the fuller evidence review and rationale.
@@ -101,6 +101,22 @@ more than 0.1 mm during the preceding hour. Parsing is in
 - UV Scout's Now/Custom controls above the UV reading use the existing two-day
   Open-Meteo response. The chart highlights the choice; earlier model hours
   are shown only as context.
+
+#### Low-UV wording review, 2026-10-29
+
+Rechecked WHO's [UV Index Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index)
+(20 June 2022) and [UV radiation fact sheet](https://www.who.int/news-room/fact-sheets/detail/ultraviolet-radiation)
+(21 June 2022). The former gives reassuring general advice for UVI 0-2; the
+latter recommends sun protection from UVI 3. UV Scout retains its existing
+raw-UVI protection bands. In `src/domain/guidance/getHourlyUvGuidance.ts`,
+intensity descriptions now also use raw UV thresholds from
+`src/domain/uv/uvCategories.json`, rather than the rounded category label.
+Values such as 2.5 and 2.9 therefore receive the low-intensity description
+alongside the existing no-extra-protection advice for most people. The display
+category still rounds as before; the rounding note was removed from UV Outlook.
+These wording and presentation decisions are UV Scout choices, not a new WHO
+rule or a statement that low UV is harmless. See the
+[detailed wording review](protection-guidance-research.md#uv-outlook-low-uv-wording-review-2026-10-29).
   Custom half-hour slots appear in one continuous list with local-day labels at
   date boundaries. This is a presentation choice, not a new provider field or a
   personal exposure calculation.

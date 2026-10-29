@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { getEndTimeSlots } from '../../domain/outing/getEndTimeSlots';
+import { getPlanningTimeSlots } from '../../domain/outing/getPlanningTimeSlots';
 import { ChoiceOption } from '../../ui/ChoiceOption';
 import { OptionScrollList } from '../../ui/OptionScrollList';
 import { uiColors } from '../../ui/visualStyle';
@@ -9,15 +9,15 @@ import { uiColors } from '../../ui/visualStyle';
 type Props = {
   now: Date;
   onChange: (value: Date) => void;
-  start: Date;
+  after?: Date;
   timeZone: string;
   value: Date | null;
 };
 
-export function EndTimeSelector({ now, onChange, start, timeZone, value }: Props) {
+export function PlanningTimeSelector({ now, after = now, onChange, timeZone, value }: Props) {
   const slots = useMemo(
-    () => getEndTimeSlots(now, start, timeZone),
-    [now, start, timeZone],
+    () => getPlanningTimeSlots(now, after, timeZone),
+    [now, after, timeZone],
   );
   const timeFormatter = useMemo(
     () => new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit', timeZone }),

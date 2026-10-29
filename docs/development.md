@@ -14,10 +14,11 @@ location summary.
 The first page keeps this overview focused. Use the **Plan an Outing** tab to
 open the planner, which supports Now or a scheduled start, duration presets
 including 3 hours, custom minutes, or an explicit end time. Scheduled starts
-use Android date/time dialogs or a browser date/time control. End-time mode
-offers a collapsible list of future half-hour choices through tomorrow in the
-selected location's time zone. The selected choice stays visible with its list
-until the row is tapped again. Duration choices behave the same way.
+and end times use matching collapsible lists of future half-hour choices
+through tomorrow in the selected location's time zone. Choosing a scheduled
+start opens the list immediately. The selected choice stays visible with its
+list until the row is tapped again. End-time choices must follow the selected
+start. Duration choices behave the same way.
 
 ## Android phone with Expo Go
 

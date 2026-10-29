@@ -7,29 +7,38 @@ const { getHourlyUvGuidance } = require(`${domainBuild}/guidance/getHourlyUvGuid
 const { getUvScoutInsight } = require(`${domainBuild}/guidance/getUvScoutInsight.js`);
 const { getWhoGuidanceTable } = require(`${domainBuild}/guidance/getWhoGuidance.js`);
 const { summarizeOutingForecast } = require(`${domainBuild}/outing/calculateOutingForecast.js`);
-const { getEndTimeSlots } = require(`${domainBuild}/outing/getEndTimeSlots.js`);
+const { getPlanningTimeSlots } = require(`${domainBuild}/outing/getPlanningTimeSlots.js`);
 const { getUvCategory } = require(`${domainBuild}/uv/getUvCategory.js`);
+
+test('start-time choices skip the current half-hour and roll into tomorrow', () => {
+  const now = new Date('2026-10-21T23:30:00Z');
+  const slots = getPlanningTimeSlots(now, now, 'UTC');
+
+  assert.equal(slots[0].toISOString(), '2026-10-22T00:00:00.000Z');
+  assert.equal(slots.at(-1).toISOString(), '2026-10-22T23:30:00.000Z');
+  assert.ok(slots.every((slot) => slot > now));
+});
 
 test('end-time choices begin after the outing start and stop at tomorrow in the selected zone', () => {
   const now = new Date('2026-10-21T10:17:00Z');
   const start = new Date('2026-10-21T13:23:00Z');
-  const slots = getEndTimeSlots(now, start, 'UTC');
+  const slots = getPlanningTimeSlots(now, start, 'UTC');
 
   assert.equal(slots[0].toISOString(), '2026-10-21T13:30:00.000Z');
   assert.equal(slots.at(-1).toISOString(), '2026-10-22T23:30:00.000Z');
   assert.ok(slots.every((slot) => slot > start));
 });
 
-test('end-time choices follow local half-hours in a quarter-hour-offset zone', () => {
+test('planner time choices follow local half-hours in a quarter-hour-offset zone', () => {
   const now = new Date('2026-10-21T06:17:00Z');
-  const slots = getEndTimeSlots(now, now, 'Asia/Kathmandu');
+  const slots = getPlanningTimeSlots(now, now, 'Asia/Kathmandu');
 
   assert.equal(slots[0].toISOString(), '2026-10-21T06:45:00.000Z');
 });
 
-test('end-time choices retain both repeated half-hours when clocks move back', () => {
+test('planner time choices retain both repeated half-hours when clocks move back', () => {
   const now = new Date('2026-10-25T00:10:00Z');
-  const slots = getEndTimeSlots(now, now, 'Europe/Ljubljana');
+  const slots = getPlanningTimeSlots(now, now, 'Europe/Ljubljana');
 
   assert.deepEqual(slots.slice(0, 3).map((slot) => slot.toISOString()), [
     '2026-10-25T00:30:00.000Z',
@@ -38,9 +47,9 @@ test('end-time choices retain both repeated half-hours when clocks move back', (
   ]);
 });
 
-test('end-time choices skip nonexistent local times when clocks move forward', () => {
+test('planner time choices skip nonexistent local times when clocks move forward', () => {
   const now = new Date('2026-03-29T00:10:00Z');
-  const slots = getEndTimeSlots(now, now, 'Europe/Ljubljana');
+  const slots = getPlanningTimeSlots(now, now, 'Europe/Ljubljana');
 
   assert.deepEqual(slots.slice(0, 2).map((slot) => slot.toISOString()), [
     '2026-03-29T00:30:00.000Z',
@@ -127,20 +136,34 @@ test('UV display category rounds decimal values with .5 upward', () => {
   assert.equal(getUvCategory(5.5).key, 'high');
 });
 
-test('single-hour UV guidance uses raw protection bands and explains rounded category crossings', () => {
+test('single-hour descriptions and actions follow raw UV even when the displayed category rounds up', () => {
+  const belowRoundingBoundary = getHourlyUvGuidance(2.4, 40);
+  const atRoundingBoundary = getHourlyUvGuidance(2.5, 40);
   const low = getHourlyUvGuidance(2.9, 40);
   const moderate = getHourlyUvGuidance(3, 40);
+  const nearHigh = getHourlyUvGuidance(5.9, 40);
+  const high = getHourlyUvGuidance(6, 40);
   const nearVeryHigh = getHourlyUvGuidance(7.9, 40);
   const veryHigh = getHourlyUvGuidance(8, 40);
+  const nearExtreme = getHourlyUvGuidance(10.9, 40);
+  const extreme = getHourlyUvGuidance(11, 40);
 
+  assert.equal(atRoundingBoundary.category, 'Moderate');
+  assert.equal(atRoundingBoundary.meaning, belowRoundingBoundary.meaning);
   assert.equal(low.category, 'Moderate');
+  assert.match(low.meaning, /relatively weak/i);
+  assert.equal(low.meaning, belowRoundingBoundary.meaning);
+  assert.notEqual(low.meaning, moderate.meaning);
   assert.match(low.actions[0], /no extra sun protection/i);
-  assert.match(low.categoryNote, /unrounded UV value/i);
-  assert.equal(moderate.categoryNote, null);
   assert.match(moderate.actions.join(' '), /SPF 30\+/i);
+  assert.equal(nearHigh.meaning, moderate.meaning);
+  assert.notEqual(nearHigh.meaning, high.meaning);
+  assert.equal(nearVeryHigh.meaning, high.meaning);
+  assert.notEqual(nearVeryHigh.meaning, veryHigh.meaning);
   assert.doesNotMatch(nearVeryHigh.actions.join(' '), /limit direct sun/i);
-  assert.match(nearVeryHigh.categoryNote, /unrounded UV value/i);
   assert.match(veryHigh.actions.join(' '), /limit direct sun/i);
+  assert.equal(nearExtreme.meaning, veryHigh.meaning);
+  assert.notEqual(nearExtreme.meaning, extreme.meaning);
 });
 
 test('single-hour cloud reminder follows the UV and cloud thresholds', () => {

@@ -48,4 +48,5 @@ pnpm-debug.log*
 *.stackdump
 
 # User-provided attachments kept for Codex conversations, not app assets
+.codex-attachments/
 .codex-remote-attachments/

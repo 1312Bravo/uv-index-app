@@ -12,8 +12,11 @@ The central list of tester links is in [`release-links.md`](release-links.md).
 The static page metadata in `public/index.html` provides the title, description,
 and social preview image. The image lives at `public/icons/og-image-v2.png`.
 `public/manifest-v2.json` defines the UV Scout name, theme, and icons used when the
-site is added to a phone's home screen. The Apple touch icon is in the same
-icons directory.
+site is added to a phone's home screen. Its transparent v3 icons also provide the
+artwork for Android's generated PWA launch screen, without a square background.
+The Apple touch icon is in the same icons directory. `web.splash` in `app.json`
+uses the matching transparent `assets/splash-icon.png` for Expo's PWA splash
+configuration.
 
 To add the website to an Android home screen, open it in Chrome and choose
 **Install app** or **Add to Home screen** from the browser menu. On iPhone, open

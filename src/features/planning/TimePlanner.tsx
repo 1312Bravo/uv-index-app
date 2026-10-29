@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
-import { DateTimeField } from './DateTimeField';
-import { EndTimeSelector } from './EndTimeSelector';
+import { PlanningTimeSelector } from './PlanningTimeSelector';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import { convertInstantPreservingLocalTime, getNextHourInTimeZone } from '../../domain/time/zonedDateTime';
 import { ChoiceOption, choiceFieldLayout, choiceListLayout } from '../../ui/ChoiceOption';
@@ -15,7 +14,7 @@ type Props = {
 
 type StartMode = 'now' | 'scheduled';
 type EndMode = 'duration' | 'end-time';
-type OpenSection = 'start' | 'end' | 'duration' | 'end-time' | null;
+type OpenSection = 'start' | 'start-time' | 'end' | 'duration' | 'end-time' | null;
 
 const DURATION_OPTIONS = [30, 60, 120, 180, 240];
 
@@ -29,7 +28,7 @@ function formatDuration(minutes: number): string {
   return `${hours}:${String(remainingMinutes).padStart(2, '0')}`;
 }
 
-function formatEndTime(value: Date, timeZone: string): string {
+function formatPlanTime(value: Date, timeZone: string): string {
   return new Intl.DateTimeFormat('en', {
     weekday: 'short', hour: 'numeric', minute: '2-digit', timeZone,
   }).format(value);
@@ -62,6 +61,7 @@ function SelectorRow({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ expanded }}
       onPress={onPress}
       style={({ pressed }) => [styles.selectorRow, pressed && styles.buttonPressed]}
     >
@@ -216,7 +216,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
         expanded={openSection === 'start'}
         label="Start"
         onPress={() => setOpenSection(openSection === 'start' ? null : 'start')}
-        value={startMode === 'now' ? 'Now' : 'Choose a time'}
+        value={startMode === 'now' ? 'Now' : 'Start time'}
       />
       {openSection === 'start' && (
         <View style={choiceListLayout}>
@@ -235,22 +235,30 @@ export function TimePlanner({ onChange, timeZone }: Props) {
             onPress={() => {
               setStartMode('scheduled');
               if (!scheduledStart && timeZone) setScheduledStart(getNextHourInTimeZone(currentTime, timeZone));
-              setOpenSection(null);
+              setOpenSection('start-time');
             }}
             showDivider
           />
         </View>
       )}
 
-      {startMode === 'scheduled' && timeZone && (
-        <DateTimeField
-          accessibilityLabel="Start date and time"
-          minimumDate={new Date()}
-          onChange={setScheduledStart}
-          placeholder="Choose start date and time"
-          timeZone={timeZone}
-          value={scheduledStart}
-        />
+      {startMode === 'scheduled' && (
+        <>
+          <SelectorRow
+            expanded={openSection === 'start-time'}
+            label="Start time"
+            onPress={() => setOpenSection(openSection === 'start-time' ? null : 'start-time')}
+            value={scheduledStart && timeZone ? formatPlanTime(scheduledStart, timeZone) : 'Choose a time'}
+          />
+          {openSection === 'start-time' && timeZone && (
+            <PlanningTimeSelector
+              now={currentTime}
+              onChange={setScheduledStart}
+              timeZone={timeZone}
+              value={scheduledStart}
+            />
+          )}
+        </>
       )}
       {startMode === 'scheduled' && !timeZone && <Text style={styles.hint}>Loading the selected location's time zone...</Text>}
 
@@ -350,15 +358,15 @@ export function TimePlanner({ onChange, timeZone }: Props) {
             expanded={openSection === 'end-time'}
             label="End time"
             onPress={() => setOpenSection(openSection === 'end-time' ? null : 'end-time')}
-            value={endTime && timeZone ? formatEndTime(endTime, timeZone) : 'Choose a time'}
+            value={endTime && timeZone ? formatPlanTime(endTime, timeZone) : 'Choose a time'}
           />
           {openSection === 'end-time' && timeZone && (
-            <EndTimeSelector
+            <PlanningTimeSelector
+              after={startMode === 'scheduled' ? scheduledStart ?? currentTime : currentTime}
               now={currentTime}
               onChange={(value) => {
                 setEndTime(value);
               }}
-              start={startMode === 'scheduled' ? scheduledStart ?? currentTime : currentTime}
               timeZone={timeZone}
               value={endTime}
             />

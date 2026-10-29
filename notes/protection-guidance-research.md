@@ -12,6 +12,32 @@ Neither is a personal dose or validated health-risk model.
 **Status:** First general guidance rules are implemented. The cited sources and
 rationale below remain the record for review and future edits.
 
+## UV Outlook low-UV wording review, 2026-10-29
+
+- **Source-backed:** WHO's [UV Index Q&A](https://www.who.int/news-room/questions-and-answers/item/radiation-the-ultraviolet-%28uv%29-index)
+  (20 June 2022, rechecked 29 October 2026) gives reassuring general advice for
+  UVI 0-2. Its statement about limited risk even for very sensitive fair skin
+  specifically refers to below UVI 2; do not extend that statement to every
+  value below 3. WHO's [UV radiation fact sheet](https://www.who.int/news-room/fact-sheets/detail/ultraviolet-radiation)
+  (21 June 2022, rechecked 29 October 2026) recommends sun protection at UVI 3
+  and above. Low UV does not imply zero exposure or a personal safety guarantee.
+- **Issue found:** UV Outlook selected its intensity description from the
+  rounded display category. A forecast of 2.5 or 2.9 therefore showed the
+  Moderate description about effects on unprotected skin and eyes while its
+  actions followed the existing raw-UVI below-3 protection band.
+- **Product choice:** Select the intensity description using raw UV and the
+  existing editable category thresholds. Below 3, show the existing wording,
+  "UV is relatively weak compared with higher levels.", followed by the
+  existing qualified advice for most people. Descriptions at the other raw
+  category boundaries also change at 3, 6, 8, and 11, rather than half a unit
+  earlier. Preserve the rounded display label. Remove the rounding note from
+  UV Outlook without adding a replacement warning. This does not change the
+  protection thresholds or introduce duration or personal-sensitivity inputs.
+- **Implementation:** `src/domain/guidance/getHourlyUvGuidance.ts` selects the
+  raw-value description from `src/domain/uv/uvCategories.json` and actions from
+  `hourlyUvGuidance.json`. `src/features/forecast/HourlyUvGuidance.tsx` renders
+  those bullets for both Now and Custom time, on mobile and web.
+
 ## Decision this research supports
 
 For a planned outing, explain the highest forecast UV category, what it implies,

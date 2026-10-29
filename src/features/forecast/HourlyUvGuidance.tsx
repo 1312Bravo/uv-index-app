@@ -105,13 +105,6 @@ export function HourlyUvGuidance({
           )}
         </View>
       </View>
-      <View style={styles.notes}>
-        {guidance.categoryNote && (
-          <Text style={[styles.note, isWideWeb && styles.webCategoryNote]}>
-            {guidance.categoryNote}
-          </Text>
-        )}
-      </View>
       {isCurrent && currentWeather && <CurrentWeatherMetrics {...currentWeather} />}
     </View>
   );
@@ -162,7 +155,5 @@ const styles = StyleSheet.create({
   actionRow: { alignItems: 'flex-start', flexDirection: 'row' },
   marker: { color: uiColors.secondary, fontSize: 12, lineHeight: 16, marginRight: 5, width: 8 },
   actionText: { color: uiColors.body, flex: 1, fontSize: 13, lineHeight: 19 },
-  notes: { marginTop: 8 },
   note: { color: uiColors.muted, flex: 1, fontSize: 12, lineHeight: 17 },
-  webCategoryNote: { textAlign: 'center' },
 });

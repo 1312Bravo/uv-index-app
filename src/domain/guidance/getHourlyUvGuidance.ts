@@ -10,7 +10,6 @@ export type HourlyUvGuidance = {
   meaning: string;
   actions: string[];
   cloudNote: string | null;
-  categoryNote: string | null;
 };
 
 const bandKeys: UvBandKey[] = ['below-3', '3-to-8', '8-plus'];
@@ -26,7 +25,7 @@ if (
   bands[2].maximumUvExclusive !== null ||
   bandKeys.some((key) => definitions.actions[key].length === 0 ||
     definitions.actions[key].some((action) => !action.trim())) ||
-  !definitions.cloudNote.trim() || !definitions.roundedCategoryNote.trim() ||
+  !definitions.cloudNote.trim() ||
   !cloudyRule || cloudyRule.whenUvAtOrAbove !== 3 ||
   cloudyRule.whenCloudCoverAtOrAbovePercent !== 76
 ) {
@@ -45,11 +44,9 @@ export function getHourlyUvGuidance(uv: number, cloudCover: number | null): Hour
   if (!band) throw new Error('No protection band covers the current UV value.');
 
   const category = getUvCategory(uv);
-  const meaning = getUvCategoryDefinitions().find((entry) => entry.key === category.key)?.meaning;
+  // Explain the actual UV intensity; rounding the display label must not strengthen the advice.
+  const meaning = getUvCategoryDefinitions().findLast((entry) => uv >= entry.minimumUvInclusive)?.meaning;
   if (!meaning) throw new Error('Hourly UV category has no description.');
-
-  const categoryCrossesThreshold = (uv < 3 && category.key !== 'low') ||
-    (uv < 8 && category.key === 'very-high');
 
   return {
     uv,
@@ -60,6 +57,5 @@ export function getHourlyUvGuidance(uv: number, cloudCover: number | null): Hour
       cloudCover >= cloudyRule!.whenCloudCoverAtOrAbovePercent
       ? definitions.cloudNote
       : null,
-    categoryNote: categoryCrossesThreshold ? definitions.roundedCategoryNote : null,
   };
 }
