@@ -16,6 +16,7 @@
     },
     "android": {
       "package": "com.bravogroup.uvscout",
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#F5F2EC",
         "foregroundImage": "./assets/android-icon-foreground.png",

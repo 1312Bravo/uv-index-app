@@ -96,22 +96,6 @@ function New-BrandedIcon([int]$size, [bool]$includeScout) {
   return $small
 }
 
-function New-SplashLogo {
-  $canvas = New-Canvas 1024 1024 ([System.Drawing.Color]::Transparent)
-  Draw-CenteredWord $canvas.Graphics 'UV' 42 132 $orange
-  Draw-SunTrail $canvas.Graphics 185 500
-  Draw-CenteredWord $canvas.Graphics 'Scout' 700 180 $brown
-  return $canvas
-}
-
-function New-ScaledSplashLogo([int]$size) {
-  $source = New-SplashLogo
-  $canvas = New-Canvas $size $size ([System.Drawing.Color]::Transparent)
-  $canvas.Graphics.DrawImage($source.Bitmap, 0, 0, $size, $size)
-  $source.Graphics.Dispose(); $source.Bitmap.Dispose()
-  return $canvas
-}
-
 function New-AdaptiveForeground([int]$size, [bool]$monochrome) {
   $base = New-Canvas 1024 1024 ([System.Drawing.Color]::Transparent)
   Draw-CenteredWord $base.Graphics 'UV' 42 132 $orange
@@ -147,16 +131,16 @@ New-Item -ItemType Directory -Force -Path $iconDirectory | Out-Null
 
 Save-Png (New-BrandedIcon 1024 $true) (Join-Path $assetDirectory 'icon.png')
 Save-Png (New-BrandedIcon 512 $true) (Join-Path $assetDirectory 'uv-scout-logo.png')
-Save-Png (New-SplashLogo) (Join-Path $assetDirectory 'splash-icon.png')
+Save-Png (New-BrandedIcon 1024 $true) (Join-Path $assetDirectory 'splash-icon.png')
 Save-Png (New-AdaptiveForeground 1024 $false) (Join-Path $assetDirectory 'android-icon-foreground.png')
 Save-Png (New-AdaptiveForeground 1024 $true) (Join-Path $assetDirectory 'android-icon-monochrome.png')
 Save-Png (New-BrandedIcon 192 $true) (Join-Path $iconDirectory 'uv-scout-192-v2.png')
 Save-Png (New-BrandedIcon 512 $true) (Join-Path $iconDirectory 'uv-scout-512-v2.png')
 Save-Png (New-MaskableIcon 512) (Join-Path $iconDirectory 'uv-scout-maskable-512-v2.png')
 Save-Png (New-BrandedIcon 180 $true) (Join-Path $iconDirectory 'apple-touch-icon-v2.png')
-Save-Png (New-ScaledSplashLogo 192) (Join-Path $iconDirectory 'uv-scout-192-v3.png')
-Save-Png (New-ScaledSplashLogo 512) (Join-Path $iconDirectory 'uv-scout-512-v3.png')
-Save-Png (New-AdaptiveForeground 512 $false) (Join-Path $iconDirectory 'uv-scout-maskable-512-v3.png')
+Save-Png (New-BrandedIcon 192 $true) (Join-Path $iconDirectory 'uv-scout-192-v4.png')
+Save-Png (New-BrandedIcon 512 $true) (Join-Path $iconDirectory 'uv-scout-512-v4.png')
+Save-Png (New-MaskableIcon 512) (Join-Path $iconDirectory 'uv-scout-maskable-512-v4.png')
 
 # A wide social preview card with the approved mark and the app's current tagline.
 $card = New-Canvas 1200 630 $stone
