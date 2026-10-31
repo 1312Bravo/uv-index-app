@@ -69,13 +69,15 @@ export function HourBin({
   const height = Math.max(0, uv / scale * maxBarHeight);
   const selectedBackgroundTop = Math.max(0, valueGroupTop - 5);
   const isSelected = selectedRange !== undefined &&
-    hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start;
+    (uvSelectedRange
+      ? hour.time > uvSelectedRange.start && hour.time - 3600 < uvSelectedRange.end
+      : hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start);
   const isContext = selectedRange !== undefined && !isSelected;
   // Open-Meteo timestamps UV at the end of its preceding-hour mean interval.
-  const isUvSelected = uvSelectedRange === undefined
-    ? isSelected
-    : hour.time > uvSelectedRange.start && hour.time - 3600 < uvSelectedRange.end;
-  const isUvContext = (selectedRange !== undefined || uvSelectedRange !== undefined) && !isUvSelected;
+  const isUvSelected = isSelected;
+  const isUvContext = selectedRange !== undefined && !isUvSelected;
+  const isWeatherContext = selectedRange !== undefined &&
+    !(hour.time >= selectedRange.start && hour.time < selectedRange.end);
   const isFocused = selectedHourTime === hour.time;
   const showFocusedBackground = selectedRange === undefined && isFocused;
   const cloudCoverDescription = cloudCover === null
@@ -116,10 +118,10 @@ export function HourBin({
       )}
       <View style={[styles.barArea, { height: barAreaHeight, width: barWidth }]}>
         <View style={[styles.valueGroup, { height: valueGroupHeight, left: (barWidth - binWidth) / 2, top: valueGroupTop, width: binWidth }]}>
-          <Text numberOfLines={1} style={[styles.cloudCover, columnWidth, isDesktop && styles.desktopCloudCover, isContext && styles.contextText]}>
+          <Text numberOfLines={1} style={[styles.cloudCover, columnWidth, isDesktop && styles.desktopCloudCover, isWeatherContext && styles.contextText]}>
             {cloudCover === null ? '-' : `${Math.round(cloudCover)}%`}
           </Text>
-          <Text numberOfLines={1} style={[styles.temperature, columnWidth, isDesktop && styles.desktopTemperature, isContext && styles.contextText]}>
+          <Text numberOfLines={1} style={[styles.temperature, columnWidth, isDesktop && styles.desktopTemperature, isWeatherContext && styles.contextText]}>
             {Math.round(hour.temperature)}°
           </Text>
           <Text numberOfLines={1} style={[styles.uv, columnWidth, isDesktop && styles.desktopUv, isUvContext && styles.contextText]}>
@@ -145,13 +147,13 @@ export function HourBin({
       <Text numberOfLines={1} style={[styles.day, columnWidth, isContext && styles.contextText]}>
         {showDay ? formatChartDay(hour.time, timezone) : ' '}
       </Text>
-      <Text numberOfLines={1} style={[styles.precipitationProbability, columnWidth, isDesktop && styles.desktopWeatherValue, isContext && styles.contextText]}>
+      <Text numberOfLines={1} style={[styles.precipitationProbability, columnWidth, isDesktop && styles.desktopWeatherValue, isWeatherContext && styles.contextText]}>
         {formatPrecipitationProbability(hour.precipitationProbability)}
       </Text>
-      <Text numberOfLines={1} style={[styles.precipitation, columnWidth, isDesktop && styles.desktopWeatherValue, isContext && styles.contextText]}>
+      <Text numberOfLines={1} style={[styles.precipitation, columnWidth, isDesktop && styles.desktopWeatherValue, isWeatherContext && styles.contextText]}>
         {formatPrecipitation(hour.precipitation)}
       </Text>
-      <Text numberOfLines={1} style={[styles.windSpeed, columnWidth, isDesktop && styles.desktopWeatherValue, isContext && styles.contextText]}>
+      <Text numberOfLines={1} style={[styles.windSpeed, columnWidth, isDesktop && styles.desktopWeatherValue, isWeatherContext && styles.contextText]}>
         {hour.windSpeed === null ? '-' : Math.round(hour.windSpeed)}
       </Text>
     </View>

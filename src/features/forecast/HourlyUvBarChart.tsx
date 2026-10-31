@@ -31,7 +31,16 @@ const TOP_LEGEND_LINE_HEIGHT = 12;
 const TOP_LEGEND_VALUE_GAP = 13;
 const LEGEND_SPACE_HEIGHT = 13;
 
-function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange, showFullOutlook = false): ForecastHour[] {
+function isUvIntervalSelected(time: number, range: SelectedRange): boolean {
+  return time > range.start && time - 3600 < range.end;
+}
+
+function getChartHours(
+  hours: ForecastHour[],
+  selectedRange?: SelectedRange,
+  uvSelectedRange?: SelectedRange,
+  showFullOutlook = false,
+): ForecastHour[] {
   if (!selectedRange) {
     const currentIndex = hours.findIndex((hour) => hour.period === 'now');
     if (currentIndex < 0) return hours;
@@ -43,7 +52,9 @@ function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange, sho
   }
 
   const selectedIndices = hours.flatMap((hour, index) =>
-    hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start ? [index] : [],
+    (uvSelectedRange
+      ? isUvIntervalSelected(hour.time, uvSelectedRange)
+      : hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start) ? [index] : [],
   );
   if (selectedIndices.length === 0) return hours;
 
@@ -61,8 +72,8 @@ export function HourlyUvBarChart({
   const { binWidth } = layout;
   const chartRef = useRef<ScrollViewInstance | null>(null);
   const chartHours = useMemo(
-    () => getChartHours(hours, selectedRange, showFullOutlook),
-    [hours, selectedRange, showFullOutlook],
+    () => getChartHours(hours, selectedRange, uvSelectedRange, showFullOutlook),
+    [hours, selectedRange, uvSelectedRange, showFullOutlook],
   );
   const uvValues = chartHours.map((hour) =>
     useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv,
@@ -74,11 +85,15 @@ export function HourlyUvBarChart({
   const topLegendTop = CHART_TOP_MARGIN + DAYLIGHT_TRACK_HEIGHT + LEGEND_SPACE_HEIGHT +
     highestValueGroupTop - TOP_LEGEND_LINE_HEIGHT - TOP_LEGEND_VALUE_GAP;
   const selectedHours = selectedRange
-    ? chartHours.filter((hour) => hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start)
+    ? chartHours.filter((hour) => uvSelectedRange
+      ? isUvIntervalSelected(hour.time, uvSelectedRange)
+      : hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start)
     : [];
   const firstSelectedTime = selectedHours[0]?.time;
   const lastSelectedHour = selectedHours.at(-1);
-  const endBoundaryTime = lastSelectedHour ? lastSelectedHour.time + 3600 : null;
+  const endBoundaryTime = lastSelectedHour
+    ? uvSelectedRange ? lastSelectedHour.time : lastSelectedHour.time + 3600
+    : null;
 
   useEffect(() => {
     if (scrollTarget === undefined) return;

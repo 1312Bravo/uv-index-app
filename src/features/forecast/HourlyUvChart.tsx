@@ -34,6 +34,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
     refreshSlot,
   );
   const currentHour = forecast?.hours.find((hour) => hour.period === 'now');
+  const currentUvSourceHour = forecast?.hours.find((hour) => hour.time * 1000 > currentTime);
   const customTimeSlots = useMemo(
     () => forecast ? getOutlookTimeSlots(forecast.hours, forecast.timezone, currentTime) : [],
     [currentTime, forecast],
@@ -130,8 +131,8 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
               : selectedCustomTime ?? (selectedHour?.time ?? currentTime / 1000) + 1800}
             initialScrollHours={INITIAL_SCROLL_HOURS}
             showFullOutlook
-            useHourlyForecast={timeMode === 'custom'}
-            selectedHourTime={selectedHour?.time}
+            useHourlyForecast
+            selectedHourTime={timeMode === 'now' ? currentUvSourceHour?.time : selectedHour?.time}
             scrollTarget={scrollTarget}
           />
           <SourceAttribution label="Forecast data by Open-Meteo" url="https://open-meteo.com/" />
