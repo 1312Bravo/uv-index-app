@@ -5,8 +5,9 @@ export type UvForecastAtTime = {
   interpolated: boolean;
 };
 
-// Hourly UV values describe their timestamps. A half-hour reading is estimated
-// between adjacent provider values, without changing the hourly chart data.
+// Custom-time smoothing between adjacent hourly means is a product approximation,
+// not a provider-issued instantaneous UV forecast. The outing calculation uses
+// the source's preceding-hour intervals instead; see notes/uv-hourly-timing-review.md.
 export function getUvForecastAtTime(hours: ForecastHour[], time: number): UvForecastAtTime | null {
   const index = hours.findIndex((hour) => time >= hour.time && time < hour.time + 3600);
   if (index < 0) return null;

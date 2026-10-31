@@ -1,11 +1,18 @@
 # UV Scout outing guidance: active MVP rules
 
-Reviewed 2026-10-17. This is the current, reviewable description of the rules
+Reviewed 2026-10-17; UV interval timing corrected 2026-10-31. This is the current, reviewable description of the rules
 the app runs. The older [recommendation-model research](recommendation-model-research.md)
 and [recommendation-tree draft](recommendation-tree-draft.md) preserve the evidence
 and earlier proposals; they are not the source of truth for current behavior.
 
 ## What the user sees
+
+Hourly UV values represent preceding-hour means. A 12:00 reading covers
+11:00-12:00. The outing maximum is the highest overlapping hourly mean;
+averages and guidance durations use exact overlap with those intervals.
+Partial-hour weighting assumes the full mean represents that partial hour.
+The normalized UV intervals and original chart timestamps are kept separate.
+See [the timing review](uv-hourly-timing-review.md) for the provider definition.
 
 In Plan an Outing, **UV guidance** shows any forecast-coverage warning
 and a short, untitled bulleted takeaway. For mixed UV, the first bullet gives

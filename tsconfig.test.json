@@ -20,6 +20,7 @@
     "src/domain/guidance/getHourlyUvGuidance.ts",
     "src/domain/guidance/getWhoGuidance.ts",
     "src/domain/guidance/getUvScoutInsight.ts",
-    "src/services/forecast/fetchForecastJson.ts"
+    "src/services/forecast/fetchForecastJson.ts",
+    "src/services/forecast/getHourlyForecast.ts"
   ]
 }

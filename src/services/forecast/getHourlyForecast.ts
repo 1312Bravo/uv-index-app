@@ -12,6 +12,7 @@ type OpenMeteoForecastData = {
     precipitation_probability?: unknown[];
     precipitation?: unknown[];
     wind_speed_10m?: unknown[];
+    wind_gusts_10m?: unknown[];
   };
   current?: {
     time?: unknown;
@@ -37,7 +38,7 @@ export async function getHourlyForecast(
     latitude: String(latitude),
     longitude: String(longitude),
     current: 'uv_index,temperature_2m,cloud_cover,precipitation,wind_speed_10m',
-    hourly: 'uv_index,temperature_2m,cloud_cover,precipitation_probability,precipitation,wind_speed_10m',
+    hourly: 'uv_index,temperature_2m,cloud_cover,precipitation_probability,precipitation,wind_speed_10m,wind_gusts_10m',
     timezone: 'auto',
     timeformat: 'unixtime',
     past_days: '1',
@@ -87,6 +88,7 @@ export async function getHourlyForecast(
     const hourlyPrecipitationProbability = data.hourly.precipitation_probability?.[index];
     const hourlyPrecipitation = data.hourly.precipitation?.[index];
     const hourlyWindSpeed = data.hourly.wind_speed_10m?.[index];
+    const hourlyWindGust = data.hourly.wind_gusts_10m?.[index];
     const useCurrent = index === currentIndex &&
       currentConditionsTime !== null;
     const uv = useCurrent && isNumber(current?.uv_index) ? current.uv_index : hourlyUv;
@@ -116,6 +118,7 @@ export async function getHourlyForecast(
         : null,
       precipitation: isNumber(hourlyPrecipitation) ? hourlyPrecipitation : null,
       windSpeed,
+      windGust: isNumber(hourlyWindGust) && hourlyWindGust >= 0 ? hourlyWindGust : null,
       period: index < currentIndex ? 'past' : index === currentIndex ? 'now' : 'future',
     });
   }

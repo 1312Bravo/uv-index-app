@@ -215,14 +215,13 @@ limitations are in [active UV guidance](active-uv-guidance.md); earlier row
 descriptions of the full profile refer to calculations, not all currently
 displayed guidance bullets. Recheck provider terms before commercial release.
 
-Open-Meteo says most hourly weather values are instantaneous at the indicated
-hour. UV Scout assigns each UV value to the following hour for overlap,
-duration, and protection-window summaries in
-`src/domain/outing/calculateOutingForecast.ts` and
-`src/domain/guidance/getUvScoutInsight.ts`. That bin interpretation is UV
-Scout's simplifying assumption, not a provider-issued minute-by-minute UV
-forecast. Window starts/ends and durations are approximate, especially near
-transitions. Open-Meteo documentation rechecked 2026-10-15.
+Open-Meteo defines hourly UV as the mean of the preceding hour (rechecked
+2026-10-31). The earlier forward-hour interpretation was incorrect and is
+superseded by [the interval correction](uv-hourly-timing-review.md).
+`src/domain/outing/outingUvIntervals.ts` normalizes the UV periods used by
+`calculateOutingForecast.ts` and `getUvScoutInsight.ts`. Weighting part of an
+hour by its full hourly mean remains a UV Scout approximation, not a
+provider-issued minute-by-minute forecast.
 
 ## UV Scout-authored definitions and decisions
 
@@ -290,13 +289,55 @@ changes between the hourly samples, or provide a personal UV measurement.
 
 Plan an Outing uses the Open-Meteo hourly `uv_index` values in a compact UV-only
 preview before the guidance. `src/domain/outing/calculateOutingForecast.ts`
-selects the hours that overlap the chosen outing; `summary.hours` supplies
-those values to `src/features/outing/OutingUvTimeline.tsx`. Each displayed bin
+now selects UV intervals using their preceding-hour meaning. The compact
+`src/features/outing/OutingUvTimeline.tsx` uses original hourly means and
+source endpoint labels separately from `summary.hours`. Each displayed bin
 covers a full forecast hour, so an outing from 9:23 to 10:13 displays the
 9:00-11:00 hours. Showing whole overlapping hours and placing this chart before
 the guidance are UV Scout presentation choices. The chart does not add forecast
 detail or change the outing guidance's overlap-weighted calculations. The
 forecast provider, attribution, and limitations remain as recorded above.
+
+### Outing wind summary, 2026-10-31
+
+The outing summary reuses the Open-Meteo hourly `wind_speed_10m` readings
+already fetched and parsed into `ForecastHour.windSpeed` in km/h. No new API
+fields or provider were added. `src/domain/outing/calculateOutingForecast.ts`
+weights available readings by their overlap with the selected outing, and
+returns their minimum and maximum. Missing readings contribute neither zero
+wind nor time to the average; an entirely missing series returns null values.
+`src/features/outing/OutingForecastMetrics.tsx` rounds these results to whole
+km/h for the 2x2 weather summary. These interval and rounding choices are UV
+Scout's interpretation of model readings, not provider-supplied outing
+statistics. The range describes available hourly speeds, not gusts or
+within-hour variability. Existing Open-Meteo attribution and limits apply.
+
+### Hourly UV interval definition, checked 2026-10-31
+
+The Open-Meteo Forecast API parameter table defines hourly `uv_index` as the
+average of the preceding hour, rather than an instantaneous timestamp value.
+This supersedes earlier timestamp assumptions in the outing and custom-time
+interpolation notes above. Outing calculations and guidance now use the
+preceding-hour intervals and preserve raw hourly means separately from Now.
+Custom-time smoothing in UV Outlook remains a separate review item.
+See [hourly UV timing review](uv-hourly-timing-review.md)
+for affected code, the reported example, and source facts versus product
+choices. The existing source credit, licence, and model limitations apply.
+
+### Outing gust summary, checked 2026-10-31
+
+The [Open-Meteo Forecast API](https://open-meteo.com/en/docs) defines hourly
+`wind_gusts_10m` as the preceding-hour maximum at 10 m, in km/h by default.
+The unversioned parameter table was checked 2026-10-31. The forecast service
+now requests that field and preserves it separately from current wind speed.
+`src/domain/outing/calculateOutingForecast.ts` calculates an overlap-weighted
+average of available hourly maxima and their minimum/maximum;
+`src/features/outing/OutingForecastMetrics.tsx` displays them in the wind cell.
+These outing statistics are UV Scout choices, not instantaneous gust forecasts
+or wind-safety guidance. Partial hours may include peaks outside the selected
+minutes. See [wind and gust summary](wind-gust-summary.md) for definitions,
+missing-data handling, transformations, and code paths. Existing Open-Meteo
+attribution, licence, model limitations, and usage limits apply.
 
 ## Review checklist for future sources
 

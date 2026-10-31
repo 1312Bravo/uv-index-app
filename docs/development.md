@@ -64,6 +64,23 @@ temporary connection to the computer running the project, not a published app.
 
 ## Domain checks
 
+The outing wind cell shows average wind with the average hourly gust peak in
+parentheses at the same size, with smaller labels beneath. Wind and gust
+ranges share a smaller line. Gusts use
+the provider's preceding-hour maxima;
+the gust average weights available hourly peaks by outing overlap. It is
+not the single strongest gust. See `notes/wind-gust-summary.md` for the partial
+hour and missing-data rules.
+
+Outing UV calculations interpret each provider hourly value as the mean of
+the preceding hour. For example, the 12:00 UV reading overlaps an outing
+ending at 11:52. The maximum is the highest overlapping hourly mean, and the
+average weights each mean by the covered minutes. Partial-hour weighting is
+an approximation, not an instantaneous maximum or a minute-resolution forecast.
+The compact outing chart consumes the summary's overlapping UV intervals,
+keeps source endpoint labels, and uses the same opacity for every bar.
+See `notes/uv-hourly-timing-review.md` for details.
+
 Run `pnpm test` to compile and run the dependency-free domain test suite. It
 covers the WHO reference table, UV category rounding, outing aggregation,
 forecast gaps, precipitation totals, raw UV action boundaries, low-UV advice,

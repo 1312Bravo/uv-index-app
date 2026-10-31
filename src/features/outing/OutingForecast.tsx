@@ -5,15 +5,13 @@ import { getUvScoutInsight, type UvScoutInsightItem } from '../../domain/guidanc
 import { HourlyUvBarChart } from '../forecast/HourlyUvBarChart';
 import { ForecastError } from '../forecast/ForecastError';
 import { useHourlyForecast } from '../forecast/useHourlyForecast';
-import {
-  summarizeOutingForecast,
-  type OutingForecastSummary,
-} from '../../domain/outing/calculateOutingForecast';
+import { summarizeOutingForecast } from '../../domain/outing/calculateOutingForecast';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
 import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors, uiType } from '../../ui/visualStyle';
 import { OutingUvTimeline } from './OutingUvTimeline';
+import { OutingUvSummary, OutingWeatherSummary } from './OutingForecastMetrics';
 
 type Props = {
   latitude: number;
@@ -59,63 +57,10 @@ function getForecastLimitMessage(forecast: HourlyForecast, outingEnd: Date): str
   const lastHour = forecast.hours[forecast.hours.length - 1];
   if (!lastHour) return null;
 
-  const forecastEnd = lastHour.time + 3600;
+  const forecastEnd = lastHour.time;
   if (outingEnd.getTime() / 1000 <= forecastEnd) return null;
 
   return `The forecast is available through ${formatDate(forecastEnd, forecast.timezone)} at ${formatTime(forecastEnd, forecast.timezone)}. Adjust the outing time or duration to see its full forecast.`;
-}
-
-function formatTemperatureRange(summary: OutingForecastSummary): string {
-  const low = Math.round(summary.lowestTemperature);
-  const high = Math.round(summary.highestTemperature);
-  return low === high ? `${low}°C` : `${low}-${high}°C`;
-}
-
-function formatCloudCoverRange(summary: OutingForecastSummary): string {
-  if (summary.lowestCloudCover === null || summary.highestCloudCover === null) return 'Range unavailable';
-  return `Range ${Math.round(summary.lowestCloudCover)}-${Math.round(summary.highestCloudCover)}%`;
-}
-
-function formatPrecipitationAmount(value: number | null): string {
-  if (value === null) return '-';
-  return `${value > 0 && value < 0.1 ? value.toFixed(2) : value.toFixed(1)} mm`;
-}
-
-function SummaryMetric({
-  title,
-  mainValue,
-  description,
-  secondaryValue,
-  highlightedDescriptionValue,
-  highlightedSecondaryValue,
-}: {
-  title: string;
-  mainValue: string;
-  description: string;
-  secondaryValue: string;
-  highlightedDescriptionValue?: string;
-  highlightedSecondaryValue?: string;
-}) {
-  const isUvMetric = title === 'UV INDEX';
-
-  return (
-    <View style={styles.summaryItem}>
-      <Text style={[styles.summaryLabel, isUvMetric && styles.uvIndexSummaryLabel]}>{title}</Text>
-      <Text style={[styles.summaryValue, isUvMetric && styles.uvIndexSummaryValue]}>{mainValue}</Text>
-      <Text style={styles.summaryDetail}>
-        {description}
-        {highlightedDescriptionValue !== undefined && (
-          <Text style={styles.uvIndexSummaryValue}>{highlightedDescriptionValue}</Text>
-        )}
-      </Text>
-      <Text style={styles.summarySecondary}>
-        {secondaryValue}
-        {highlightedSecondaryValue !== undefined && (
-          <Text style={styles.uvIndexSummaryValue}>{highlightedSecondaryValue}</Text>
-        )}
-      </Text>
-    </View>
-  );
 }
 
 function GuidanceBullet({ item, centeredBlock = false }: {
@@ -221,10 +166,6 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
   const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;
   const forecastLimitMessage = forecast ? getForecastLimitMessage(forecast, plan.end) : null;
-  const lastOutingHour = summary?.hours.at(-1);
-  const endBoundaryHour = lastOutingHour
-    ? forecast?.hours.find((hour) => hour.time === lastOutingHour.time + 3600)
-    : undefined;
 
   return (
     <View style={styles.section}>
@@ -242,12 +183,14 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
       )}
       {forecast && summary && (
         <>
-          <Text style={styles.sectionLabel}>UV forecast by hour</Text>
+          <Text style={styles.sectionLabel}>UV summary</Text>
+          <OutingUvSummary summary={summary} />
+          <View style={styles.uvSummaryDivider} />
           <OutingUvTimeline
-            endBoundaryHour={endBoundaryHour}
             hours={summary.hours}
             timezone={forecast.timezone}
           />
+          {guidance && <View style={styles.guidanceDivider} />}
           {guidance && (
             <View style={[styles.guidance, isWideWeb && styles.webGuidance]}>
               <Text style={styles.guidanceTitle}>UV guidance</Text>
@@ -304,52 +247,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
             </View>
           )}
 
-          <View style={styles.summarySectionDivider} />
-          <Text style={styles.summarySectionLabel}>Outing weather summary</Text>
-          <View style={styles.summaryGrid}>
-            <View style={styles.summaryRow}>
-              <SummaryMetric
-                title="UV INDEX"
-                mainValue={summary.highestUv.toFixed(1)}
-                description="Rounded category: "
-                highlightedDescriptionValue={summary.highestCategory.label}
-                secondaryValue="Average: "
-                highlightedSecondaryValue={summary.averageUv.toFixed(1)}
-              />
-              <View style={styles.summaryDivider} />
-              <SummaryMetric
-                title="TEMPERATURE"
-                mainValue={`${Math.round(summary.averageTemperature)}°C`}
-                description="Average"
-                secondaryValue={`Range: ${formatTemperatureRange(summary)}`}
-              />
-            </View>
-            <View style={styles.summaryHorizontalDivider} />
-            <View style={styles.summaryRow}>
-              <SummaryMetric
-                title="CLOUD COVER"
-                mainValue={summary.averageCloudCover === null ? '-' : `${Math.round(summary.averageCloudCover)}%`}
-                description={summary.averageCloudCover === null ? 'Average unavailable' : 'Average'}
-                secondaryValue={formatCloudCoverRange(summary)}
-              />
-              <View style={styles.summaryDivider} />
-              <SummaryMetric
-                title="EXPECTED PRECIPITATION"
-                mainValue={formatPrecipitationAmount(summary.expectedPrecipitationMm)}
-                description={summary.completePrecipitationHours === 0
-                  ? 'No full forecast hours'
-                  : summary.expectedPrecipitationMm === null
-                    ? 'Amount unavailable'
-                    : `Across ${summary.completePrecipitationHours} complete ${summary.completePrecipitationHours === 1 ? 'hour' : 'hours'}`}
-                secondaryValue={summary.peakHourlyPrecipitationProbability === null
-                  ? 'Hourly chance unavailable'
-                  : `Peak hourly chance: ${Math.round(summary.peakHourlyPrecipitationProbability)}%`}
-              />
-            </View>
-          </View>
-          {guidance?.categoryNote && (
-            <Text style={styles.guidanceCategoryNote}>{guidance.categoryNote}</Text>
-          )}
+          <OutingWeatherSummary summary={summary} />
 
           <View style={styles.hourlyChartDivider} />
           <Text style={styles.subheading}>UV &amp; weather by hour</Text>
@@ -375,20 +273,9 @@ const styles = StyleSheet.create({
   timeRange: { color: uiColors.secondary, fontSize: 14, fontWeight: '500', textAlign: 'center' },
   loading: { alignSelf: 'center', marginTop: 20 },
   message: { color: uiColors.faint, fontSize: 14, lineHeight: 20, marginTop: 16, textAlign: 'center' },
-  summaryGrid: { marginTop: 8 },
-  summarySectionDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, height: 1, marginTop: 20 },
-  summarySectionLabel: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 12, textAlign: 'center' },
-  summaryRow: { alignItems: 'stretch', flexDirection: 'row' },
-  summaryItem: { alignItems: 'center', flex: 1, justifyContent: 'flex-start', paddingHorizontal: 4, paddingVertical: 7 },
-  summaryDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginHorizontal: 7, marginVertical: 5, width: 1 },
-  summaryHorizontalDivider: { backgroundColor: uiColors.line, height: 1 },
-  summaryLabel: { color: uiColors.secondary, fontSize: 10, letterSpacing: 0.5, minHeight: 24, textAlign: 'center', textTransform: 'uppercase' },
-  uvIndexSummaryLabel: { color: uiColors.accent },
-  summaryValue: { color: uiColors.ink, fontSize: 18, marginTop: 4, textAlign: 'center' },
-  uvIndexSummaryValue: { color: uiColors.accent },
-  summaryDetail: { color: uiColors.secondary, fontSize: 12, marginTop: 2, textAlign: 'center' },
-  summarySecondary: { color: uiColors.secondary, fontSize: 13, marginTop: 4, textAlign: 'center' },
-  guidance: { marginTop: 20 },
+  uvSummaryDivider: { alignSelf: 'center', backgroundColor: uiColors.line, height: 1, marginBottom: 10, width: 96 },
+  guidanceDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, height: 1, marginTop: 20 },
+  guidance: { marginTop: 12 },
   webGuidance: { alignSelf: 'center', maxWidth: 700, width: '100%' },
   webBulletCopy: { textAlign: 'left' },
   // One intrinsic-width column aligns all guidance sections to the widest bullet.
@@ -401,7 +288,6 @@ const styles = StyleSheet.create({
   guidanceGroupHeading: { color: uiColors.ink, fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14, textAlign: 'center' },
   guidanceCoverage: { color: uiColors.secondary, fontSize: 13, lineHeight: 19, marginTop: 10 },
   guidanceTakeawayList: { marginTop: 10 },
-  guidanceCategoryNote: { color: uiColors.muted, fontSize: 12, lineHeight: 17, marginTop: 8, textAlign: 'center' },
   guidanceTakeawayBulletText: { color: uiColors.body, flex: 1, fontSize: 13, lineHeight: 19 },
   guidanceDetails: { marginTop: 12 },
   guidanceActions: { marginTop: 18 },
