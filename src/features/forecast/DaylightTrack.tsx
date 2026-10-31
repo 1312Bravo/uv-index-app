@@ -75,10 +75,11 @@ function createArcSegments(
 export function DaylightTrack({ hours, timezone, daylight, sunTime, binWidth }: Props) {
   if (hours.length === 0) return null;
 
-  const start = hours[0].time;
-  const end = hours[hours.length - 1].time + 3600;
+  const firstHourTime = hours[0].time;
+  const start = firstHourTime - 1800;
+  const end = hours[hours.length - 1].time + 1800;
   const width = hours.length * binWidth;
-  const xForTime = (time: number) => (time - start) / 3600 * binWidth;
+  const xForTime = (time: number) => (time - firstHourTime) / 3600 * binWidth + binWidth / 2;
   const orderedDays = [...daylight].sort((a, b) => a.date.localeCompare(b.date));
   const events = orderedDays.flatMap((day) => ([
     { label: 'Dawn', time: day.civilDawn },
