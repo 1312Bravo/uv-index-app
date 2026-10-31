@@ -1,12 +1,11 @@
 import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
-import type { ForecastHour } from '../../domain/forecast/forecastTypes';
+import type { OutingUvInterval } from '../../domain/outing/outingUvIntervals';
 import { getUvCategory } from '../../domain/uv/getUvCategory';
 import { uiColors } from '../../ui/visualStyle';
 
 type Props = {
-  endBoundaryHour?: ForecastHour;
-  hours: ForecastHour[];
+  hours: OutingUvInterval[];
   timezone: string;
 };
 
@@ -40,7 +39,7 @@ function formatWeekday(time: number, timezone: string): string {
     .format(new Date(time * 1000));
 }
 
-export function OutingUvTimeline({ endBoundaryHour, hours, timezone }: Props) {
+export function OutingUvTimeline({ hours, timezone }: Props) {
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 760;
   const binWidth = isWideWeb ? DESKTOP_BIN_WIDTH : PHONE_BIN_WIDTH;
@@ -49,11 +48,10 @@ export function OutingUvTimeline({ endBoundaryHour, hours, timezone }: Props) {
   const valueGroupHeight = isWideWeb ? DESKTOP_VALUE_GROUP_HEIGHT : PHONE_VALUE_GROUP_HEIGHT;
   if (hours.length === 0) return null;
 
-  const displayHours = endBoundaryHour ? [...hours, endBoundaryHour] : hours;
-  const highestUv = Math.max(...displayHours.map(({ uv }) => uv));
+  const highestUv = Math.max(...hours.map((hour) => hour.uv));
   const scale = Math.max(8, highestUv);
   const tallestBar = Math.max(2, highestUv / scale * barHeight);
-  // Keep the gap above the tallest value steady without moving the shared bar baseline.
+  // Align every label group above the tallest bar while keeping a shared bar baseline.
   const barAreaHeight = tallestBar + valueGroupHeight + VALUE_BAR_GAP + TOP_GAP;
   return (
     <View style={styles.section}>
@@ -62,37 +60,39 @@ export function OutingUvTimeline({ endBoundaryHour, hours, timezone }: Props) {
         contentContainerStyle={styles.hours}
         showsHorizontalScrollIndicator
       >
-        {displayHours.map((hour, index) => {
-          const { clock, period } = formatReadingTime(hour.time, timezone);
-          const day = formatReadingDay(hour.time, timezone);
-          const previousDay = index > 0 ? formatReadingDay(displayHours[index - 1].time, timezone) : null;
-          const height = Math.max(2, hour.uv / scale * barHeight);
-          const endTime = formatReadingTime(hour.time + 3600, timezone);
-          const category = getUvCategory(hour.uv).label;
+        {hours.map((hour, index) => {
+          const { clock, period } = formatReadingTime(hour.sourceTime, timezone);
+          const day = formatReadingDay(hour.sourceTime, timezone);
+          const previousDay = index > 0 ? formatReadingDay(hours[index - 1].sourceTime, timezone) : null;
+          const uv = hour.uv;
+          const height = Math.max(2, uv / scale * barHeight);
+          const startTime = formatReadingTime(hour.time, timezone);
+          const startDay = formatReadingDay(hour.time, timezone);
+          const category = getUvCategory(uv).label;
           return (
             <View
               accessible
-              accessibilityLabel={`${day}, ${clock} ${period} to ${endTime.clock} ${endTime.period}. UV Index ${hour.uv.toFixed(1)}, ${category}.`}
+              accessibilityLabel={`${startDay}, ${startTime.clock} ${startTime.period} to ${day !== startDay ? `${day}, ` : ''}${clock} ${period}. Hourly mean UV Index ${uv.toFixed(1)}, ${category}.`}
               accessibilityRole="text"
               key={hour.time}
               style={[styles.bin, { width: binWidth }]}
             >
               <View style={[styles.barArea, { height: barAreaHeight, width: barWidth }]}>
                 <View style={[styles.valueGroup, {
-                  bottom: height + VALUE_BAR_GAP,
+                  bottom: tallestBar + VALUE_BAR_GAP,
                   height: valueGroupHeight,
                   left: (barWidth - binWidth) / 2,
                   width: binWidth,
                 }]}>
                   <Text style={[styles.category, isWideWeb && styles.desktopCategory]} numberOfLines={1}>{category}</Text>
-                  <Text style={[styles.uvValue, isWideWeb && styles.desktopUvValue]}>{hour.uv.toFixed(1)}</Text>
+                  <Text style={[styles.uvValue, isWideWeb && styles.desktopUvValue]}>{uv.toFixed(1)}</Text>
                 </View>
                 <View style={[styles.bar, { height, width: barWidth }]} />
               </View>
               <Text style={[styles.clock, isWideWeb && styles.desktopClock]}>{clock}</Text>
               <Text style={[styles.period, isWideWeb && styles.desktopPeriod]}>{period}</Text>
               <Text style={[styles.day, { width: binWidth }]}>
-                {index === 0 || day !== previousDay ? formatWeekday(hour.time, timezone) : ' '}
+                  {index === 0 || day !== previousDay ? formatWeekday(hour.sourceTime, timezone) : ' '}
               </Text>
             </View>
           );

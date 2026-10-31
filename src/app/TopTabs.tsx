@@ -26,7 +26,9 @@ export function TopTabs({ activePage, hasLocation, onSelect }: Props) {
         onPress={() => onSelect('outlook')}
         style={styles.tab}
       >
-        <Text style={[styles.label, !hasLocation && styles.disabledLabel, activePage === 'outlook' && styles.activeLabel]}>UV Outlook</Text>
+        <Text style={[styles.label, !hasLocation && styles.disabledLabel, activePage === 'outlook' && styles.activeLabel]}>
+          <Text style={styles.uvAccent}>UV</Text> Outlook
+        </Text>
       </Pressable>
       <Pressable
         accessibilityRole="tab"
@@ -73,6 +75,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     paddingBottom: 8,
   },
+  uvAccent: { color: uiColors.accent },
   disabledLabel: {
     color: uiColors.faint,
   },

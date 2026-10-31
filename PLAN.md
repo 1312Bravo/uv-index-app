@@ -30,10 +30,29 @@ helps people plan outdoor time around the current and forecast UV index.
 - Plan an Outing defaults to a selected timeframe from Now for 4 hours.
   Forecast metrics, UV breakdown, and protection guidance use this timeframe.
   The charts include hourly context around it without changing those calculations.
-- Before the outing guidance, show a compact UV chart of the hourly bins that
-  overlap the selected outing, plus the full forecast bin at the next hourly
-  boundary when available. Show all values and the bar for that final bin too.
-  Guidance and averages still use only the selected outing period.
+- UV Outlook stacks the centered UV reading above its guidance on phone and
+  web. Current weather follows in a 2x2 grid: temperature and cloud cover,
+  then precipitation and wind. Wind shows current speed with the current gust
+  estimate in parentheses and a smaller Wind (gusts) label. A short centered
+  rule separates UV from guidance; a full-width rule precedes Current weather.
+- Outing UV readings are means of the preceding hour: 12:00 covers 11:00-12:00.
+  Maximum, average, coverage, and protection windows use those intervals and
+  the original hourly UV, with partial-hour weighting. Temperature, cloud cover,
+  and wind retain their separate forward-hour approximation. UV Outlook's
+  custom-time smoothing needs a separate review against the provider definition.
+- The outing weather summary shows temperature, cloud cover, precipitation, and
+  wind in a 2x2 grid after the protection steps. Wind shows an average weighted
+  by the selected outing's overlap with each available hourly reading, plus its
+  minimum and maximum in km/h. Missing wind readings are excluded, not zeroed.
+  The wind cell also shows average hourly gust peak and the range of hourly
+  peaks, using each source peak's preceding-hour interval. Show the average
+  gust peak in parentheses beside average wind, slightly smaller. Put the
+  smaller labels below: Average (hourly gust peak). Pair wind and
+  gust ranges on one smaller line, with gust ranges in parentheses.
+- Before the outing guidance, show a compact UV chart using the same hourly
+  intervals as the outing summary. Include only intervals with positive overlap
+  with the selected outing. Keep source endpoint labels and show complete hourly
+  means for partial boundary hours. Averages weight only the selected minutes.
 - In the outing weather chart, show one hour before the outing and then continue
   through the available forecast. Shade selected outing hours with a very light
   grey background; extend the sun/moon trace to the chart's final bin.

@@ -38,12 +38,12 @@
     {
       "key": "hourly-uv-forecast",
       "role": "primary-profile-input",
-      "handling": "Use provider raw hourly UV values as the forecast signal; do not apply an additional cloud or shade multiplier."
+      "handling": "Use the provider's raw preceding-hour UV means as the forecast signal, preserving the original hourly values rather than Now overrides; do not apply an additional cloud or shade multiplier."
     },
     {
       "key": "outing-start-end",
       "role": "profile-window",
-      "handling": "Use actual overlap with each hourly forecast bin, including partial first and last hours."
+      "handling": "Use actual overlap with each UV reading's preceding-hour interval, including partial first and last hours. The partial-interval mean is approximated by the full hourly mean."
     },
     {
       "key": "forecast-coverage",

@@ -17,6 +17,7 @@ src/
     location/locationTypes.ts
     outing/                   Time plan and forecast overlap/coverage calculations
       getPlanningTimeSlots.ts Local half-hour start/end choices through tomorrow
+      outingUvIntervals.ts   UV means normalized to preceding-hour intervals
     guidance/whoGuidance.json WHO thresholds and general protection actions
     guidance/getWhoGuidance.ts Validates and interprets the WHO reference
     guidance/uvScoutInsight.json Editable UV Scout wording
@@ -50,6 +51,7 @@ src/
       PlanningTimeSelector.tsx Collapsible start/end half-hour choice list
     outing/                   Outing forecast result
       OutingUvTimeline.tsx    Compact hourly UV preview before guidance
+      OutingForecastMetrics.tsx Centered UV summary and 2x2 outing weather grid
     info/                     UV and cloud-cover explanation screen
 notes/                        Durable decisions and requirements
   protection-guidance-research.md Sources and proposed guidance rules
@@ -66,6 +68,10 @@ The `useHourlyForecast` hook calls the forecast service and manages loading and
 error state. The service parses the provider response into `HourlyForecast`.
 `OutingForecast` passes that data and the selected time window to
 `summarizeOutingForecast`, then renders the returned result.
+Its `hours` field contains UV intervals with `time` at the interval start and
+`sourceTime` at the provider's endpoint. Hourly charts use the original forecast
+timestamps. Weather summaries select their own intervals; do not shift their
+timestamps to follow the UV convention.
 
 Imports flow from app to features, from features to services and domain, and
 from services to domain types. Domain modules only depend on other domain modules.
@@ -94,8 +100,9 @@ percentage meaning (sky area covered) separate from UV exposure and route shade.
 For the Info screen's wind guide, edit `src/domain/weather/windSpeedBands.json`.
 Ranges are consecutive integer km/h values beginning at zero; the last range has
 no upper bound. These six rows group land-based Beaufort descriptions into a
-shorter guide; they are not official Beaufort categories. The app currently shows
-wind speed only; gust values are not fetched or displayed.
+shorter guide; they are not official Beaufort categories. The Info screen's
+wind guide describes sustained wind speed. Outing summaries also show hourly
+gust peaks; see `notes/wind-gust-summary.md`.
 
 Follow this pattern for future editable domain mappings and guidance content:
 JSON holds the definitions, TypeScript validates and interprets them, and UI

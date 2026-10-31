@@ -66,6 +66,7 @@ function hour(time, uv, overrides = {}) {
     precipitationProbability: null,
     precipitation: null,
     windSpeed: 5,
+    windGust: null,
     period: 'future',
     ...overrides,
   };
@@ -88,12 +89,89 @@ test('half-hour UV is unavailable without the following hourly forecast', () => 
 });
 
 function forecast(hours) {
-  return { timezone: 'UTC', hours, daylight: [] };
+  // Guidance fixtures below describe UV intervals by START time. Convert them
+  // into real provider-shaped END timestamps, keeping weather at its own time.
+  const weatherAt = new Map(hours.map((entry) => [entry.time, entry]));
+  return {
+    timezone: 'UTC',
+    hours: [
+      { ...hours[0], uv: 0, hourlyUv: 0 },
+      ...hours.map((entry) => ({
+        ...(weatherAt.get(entry.time + 3600) ?? {
+          ...entry, cloudCover: null, windSpeed: null,
+          precipitation: null, precipitationProbability: null,
+        }),
+        time: entry.time + 3600,
+        uv: entry.uv,
+        hourlyUv: entry.uv,
+      })),
+    ],
+    daylight: [],
+  };
 }
 
 function summarize(hours, start, end) {
   return summarizeOutingForecast(forecast(hours), new Date(start * 1000), new Date(end * 1000));
 }
+
+test('provider UV endpoints match the reported 07:52-11:52 outing', () => {
+  const hours = [0.4, 0.3, 1.1, 1.9, 2.6, 2.9].map((uv, index) => hour((7 + index) * 3600, uv));
+  const result = summarizeOutingForecast({ timezone: 'UTC', hours, daylight: [] },
+    new Date((7 * 3600 + 52 * 60) * 1000), new Date((11 * 3600 + 52 * 60) * 1000));
+  assert.equal(result.highestUv, 2.9);
+  assert.ok(Math.abs(result.averageUv - 2.038333333333333) < 1e-10);
+  assert.deepEqual(result.hours.map(({ sourceTime }) => sourceTime / 3600), [8, 9, 10, 11, 12]);
+  assert.equal(result.coveredSeconds, 4 * 3600);
+  const insight = getUvScoutInsight(result, 'UTC');
+  assert.match(insight.takeawayBullets[0], /average 2\.0; highest 2\.9/);
+  assert.match(insight.breakdown[1], /Highest UV is 2\.9 for about 52 minutes/);
+});
+
+test('UV intervals use original hourly means and respect exact end boundaries', () => {
+  const hours = [hour(0, 0), hour(3600, 9, { hourlyUv: 2, temperature: 30 }), hour(7200, 8)];
+  const result = summarizeOutingForecast({ timezone: 'UTC', hours, daylight: [] }, new Date(0), new Date(3600 * 1000));
+  assert.equal(result.highestUv, 2);
+  assert.equal(result.averageUv, 2);
+  assert.equal(result.averageTemperature, 20);
+  assert.deepEqual(result.hours.map(({ sourceTime }) => sourceTime), [3600]);
+  assert.equal(getUvScoutInsight(result, 'UTC').practicalGuidance[0].title, 'Low UV');
+});
+
+test('UV coverage ends at the last source endpoint without inventing another hour', () => {
+  const hours = [hour(0, 0), hour(3600, 4)];
+  const result = summarizeOutingForecast({ timezone: 'UTC', hours, daylight: [] }, new Date(0), new Date(7200 * 1000));
+  assert.equal(result.coveredSeconds, 3600);
+  assert.deepEqual(result.missingIntervals, [{ start: 3600, end: 7200 }]);
+  assert.equal(summarizeOutingForecast({ timezone: 'UTC', hours, daylight: [] },
+    new Date(3600 * 1000), new Date(7200 * 1000)), null);
+});
+
+test('raw UV endpoints keep gaps and use cloud cover from the same physical interval', () => {
+  const hours = [
+    hour(0, 0, { cloudCover: 90 }),
+    hour(3600, 5, { cloudCover: 20 }),
+    hour(7200, 2, { cloudCover: 100 }),
+    hour(14400, 8, { cloudCover: 0 }),
+  ];
+  const result = summarizeOutingForecast({ timezone: 'UTC', hours, daylight: [] }, new Date(0), new Date(14400 * 1000));
+  assert.equal(result.coveredSeconds, 3 * 3600);
+  assert.deepEqual(result.missingIntervals, [{ start: 7200, end: 10800 }]);
+  const insight = getUvScoutInsight(result, 'UTC');
+  assert.match(timingLines(insight)[0], /12:00 AM-1:00 AM and 3:00 AM-4:00 AM/);
+  assert.match(insight.contextNotes.find(({ title }) => title === 'Cloudy hours').text, /12:00 AM-1:00 AM/);
+  assert.doesNotMatch(insight.contextNotes.find(({ title }) => title === 'Cloudy hours').text, /1:00 AM-2:00 AM/);
+});
+
+test('a UV mean can cover an outing even when instantaneous weather is unavailable', () => {
+  const hours = [hour(3600, 4)];
+  const result = summarizeOutingForecast({ timezone: 'UTC', hours, daylight: [] }, new Date(0), new Date(3600 * 1000));
+  assert.equal(result.highestUv, 4);
+  assert.equal(result.coveredSeconds, 3600);
+  assert.equal(result.averageTemperature, null);
+  assert.equal(result.lowestTemperature, null);
+  assert.equal(result.highestTemperature, null);
+  assert.equal(result.averageWindSpeed, null);
+});
 
 test('outing preview uses the full hourly bins overlapping the selected time', () => {
   const hours = [hour(8 * 3600, 2), hour(9 * 3600, 4), hour(10 * 3600, 6), hour(11 * 3600, 8), hour(12 * 3600, 10)];
@@ -171,6 +249,63 @@ test('single-hour cloud reminder follows the UV and cloud thresholds', () => {
   assert.equal(getHourlyUvGuidance(5, 75).cloudNote, null);
   assert.match(getHourlyUvGuidance(5, 76).cloudNote, /cloud cover/i);
   assert.equal(getHourlyUvGuidance(5, null).cloudNote, null);
+});
+
+test('gust averages use preceding-hour maxima and weight only the selected overlap', () => {
+  const hours = [
+    hour(0, 2, { windGust: 999 }),
+    hour(3600, 2, { windGust: 12 }),
+    hour(7200, 2, { windGust: 36 }),
+    hour(10800, 2, { windGust: 90 }),
+  ];
+  const result = summarizeOutingForecast({ timezone: 'UTC', hours, daylight: [] },
+    new Date(1800 * 1000), new Date(7200 * 1000));
+  assert.equal(result.averageHourlyGustPeak, 28);
+  assert.equal(result.lowestHourlyGustPeak, 12);
+  assert.equal(result.highestHourlyGustPeak, 36);
+});
+
+test('gust averages preserve zero and exclude missing or invalid hourly peaks', () => {
+  const hours = [
+    hour(0, 2), hour(3600, 2, { windGust: 0 }),
+    hour(7200, 2, { windGust: null }), hour(10800, 2, { windGust: 20 }),
+    hour(14400, 2, { windGust: -1 }), hour(18000, 2, { windGust: undefined }),
+  ];
+  const result = summarizeOutingForecast({ timezone: 'UTC', hours, daylight: [] },
+    new Date(0), new Date(18000 * 1000));
+  assert.equal(result.averageHourlyGustPeak, 10);
+  assert.equal(result.lowestHourlyGustPeak, 0);
+  assert.equal(result.highestHourlyGustPeak, 20);
+  const missing = summarize([hour(0, 2)], 0, 3600);
+  assert.equal(missing.averageHourlyGustPeak, null);
+  assert.equal(missing.lowestHourlyGustPeak, null);
+  assert.equal(missing.highestHourlyGustPeak, null);
+});
+
+test('outing wind weights partial hours and excludes the end boundary from its range', () => {
+  const result = summarize([
+    hour(0, 2, { windSpeed: 0 }),
+    hour(3600, 2, { windSpeed: 20 }),
+    hour(7200, 2, { windSpeed: 100 }),
+  ], 1800, 7200);
+  assert.equal(result.averageWindSpeed, 20 * 3600 / 5400);
+  assert.equal(result.lowestWindSpeed, 0);
+  assert.equal(result.highestWindSpeed, 20);
+});
+
+test('outing wind excludes missing readings without treating calm wind as missing', () => {
+  const result = summarize([
+    hour(0, 2, { windSpeed: null }),
+    hour(3600, 2, { windSpeed: 0 }),
+  ], 0, 7200);
+  assert.equal(result.averageWindSpeed, 0);
+  assert.equal(result.lowestWindSpeed, 0);
+  assert.equal(result.highestWindSpeed, 0);
+
+  const missing = summarize([hour(0, 2, { windSpeed: null })], 0, 3600);
+  assert.equal(missing.averageWindSpeed, null);
+  assert.equal(missing.lowestWindSpeed, null);
+  assert.equal(missing.highestWindSpeed, null);
 });
 
 test('outing averages weight partial first and last hours by their overlap', () => {

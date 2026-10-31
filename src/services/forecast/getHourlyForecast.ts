@@ -12,6 +12,7 @@ type OpenMeteoForecastData = {
     precipitation_probability?: unknown[];
     precipitation?: unknown[];
     wind_speed_10m?: unknown[];
+    wind_gusts_10m?: unknown[];
   };
   current?: {
     time?: unknown;
@@ -21,6 +22,7 @@ type OpenMeteoForecastData = {
     cloud_cover?: unknown;
     precipitation?: unknown;
     wind_speed_10m?: unknown;
+    wind_gusts_10m?: unknown;
   };
 };
 
@@ -36,8 +38,8 @@ export async function getHourlyForecast(
   const params = new URLSearchParams({
     latitude: String(latitude),
     longitude: String(longitude),
-    current: 'uv_index,temperature_2m,cloud_cover,precipitation,wind_speed_10m',
-    hourly: 'uv_index,temperature_2m,cloud_cover,precipitation_probability,precipitation,wind_speed_10m',
+    current: 'uv_index,temperature_2m,cloud_cover,precipitation,wind_speed_10m,wind_gusts_10m',
+    hourly: 'uv_index,temperature_2m,cloud_cover,precipitation_probability,precipitation,wind_speed_10m,wind_gusts_10m',
     timezone: 'auto',
     timeformat: 'unixtime',
     past_days: '1',
@@ -62,6 +64,9 @@ export async function getHourlyForecast(
   const now = Date.now() / 1000;
   const currentIndex = times.findLastIndex((time) => isNumber(time) && time <= now);
   const current = data.current;
+  const currentWindGust = isNumber(current?.wind_gusts_10m) && current.wind_gusts_10m >= 0
+    ? current.wind_gusts_10m
+    : null;
   const currentPrecipitation = isNumber(current?.precipitation)
     ? current.precipitation
     : null;
@@ -87,6 +92,7 @@ export async function getHourlyForecast(
     const hourlyPrecipitationProbability = data.hourly.precipitation_probability?.[index];
     const hourlyPrecipitation = data.hourly.precipitation?.[index];
     const hourlyWindSpeed = data.hourly.wind_speed_10m?.[index];
+    const hourlyWindGust = data.hourly.wind_gusts_10m?.[index];
     const useCurrent = index === currentIndex &&
       currentConditionsTime !== null;
     const uv = useCurrent && isNumber(current?.uv_index) ? current.uv_index : hourlyUv;
@@ -116,6 +122,7 @@ export async function getHourlyForecast(
         : null,
       precipitation: isNumber(hourlyPrecipitation) ? hourlyPrecipitation : null,
       windSpeed,
+      windGust: isNumber(hourlyWindGust) && hourlyWindGust >= 0 ? hourlyWindGust : null,
       period: index < currentIndex ? 'past' : index === currentIndex ? 'now' : 'future',
     });
   }
@@ -137,6 +144,7 @@ export async function getHourlyForecast(
   return {
     timezone: data.timezone,
     currentConditionsTime,
+    currentWindGust,
     currentPrecipitation,
     currentPrecipitationInterval,
     currentPrecipitationTime,

@@ -1,10 +1,12 @@
-import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { uiColors } from '../../ui/visualStyle';
 
 type Props = {
   temperature: number;
   cloudCover: number | null;
+  windSpeed: number | null;
+  windGust: number | null;
   precipitation: number | null;
   precipitationInterval: number | null;
   precipitationTime: number | null;
@@ -14,6 +16,10 @@ type Props = {
 function formatPrecipitation(value: number | null): string {
   if (value === null) return '-';
   return `${value > 0 && value < 0.1 ? value.toFixed(2) : value.toFixed(1)} mm`;
+}
+
+function formatWind(value: number | null): string {
+  return value == null ? '-' : `${Math.round(value)} km/h`;
 }
 
 function formatInterval(interval: number | null): string {
@@ -33,11 +39,21 @@ function formatTime(time: number, timezone: string): string {
   }).format(new Date(time * 1000));
 }
 
-function Metric({ label, value, detail }: { label: string; value: string; detail?: string | null }) {
+function Metric({ label, value, secondaryValue, description, detail }: {
+  label: string;
+  value: string;
+  secondaryValue?: string;
+  description?: string;
+  detail?: string | null;
+}) {
   return (
     <View style={styles.metric}>
       <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text style={styles.value}>
+        {value}
+        {secondaryValue !== undefined && <Text style={styles.secondaryValue}> ({secondaryValue})</Text>}
+      </Text>
+      {description && <Text style={styles.detail}>{description}</Text>}
       {detail && <Text style={styles.detail}>{detail}</Text>}
     </View>
   );
@@ -46,13 +62,13 @@ function Metric({ label, value, detail }: { label: string; value: string; detail
 export function CurrentWeatherMetrics({
   temperature,
   cloudCover,
+  windSpeed,
+  windGust,
   precipitation,
   precipitationInterval,
   precipitationTime,
   timezone,
 }: Props) {
-  const { width } = useWindowDimensions();
-  const isWideWeb = Platform.OS === 'web' && width >= 760;
   const latestEstimate = precipitationTime === null
     ? null
     : formatTime(precipitationTime, timezone);
@@ -66,25 +82,37 @@ export function CurrentWeatherMetrics({
 
   return (
     <View>
-      <Text style={styles.heading}>Current Weather</Text>
-      <View style={[styles.row, isWideWeb && styles.webRow]}>
-        <Metric
-          label="TEMPERATURE"
-          value={`${Math.round(temperature)}°C`}
-          detail={latestEstimateDetail}
-        />
-        <View style={styles.divider} />
-        <Metric
-          label="CLOUD COVER"
-          value={cloudCover === null ? '-' : `${Math.round(cloudCover)}%`}
-          detail={latestEstimateDetail}
-        />
-        <View style={styles.divider} />
-        <Metric
-          label="PRECIPITATION"
-          value={formatPrecipitation(precipitation)}
-          detail={precipitationDetail}
-        />
+      <Text style={styles.heading}>Current weather</Text>
+      <View style={styles.grid}>
+        <View style={styles.row}>
+          <Metric
+            label="TEMPERATURE"
+            value={`${Math.round(temperature)}°C`}
+            detail={latestEstimateDetail}
+          />
+          <View style={styles.divider} />
+          <Metric
+            label="CLOUD COVER"
+            value={cloudCover === null ? '-' : `${Math.round(cloudCover)}%`}
+            detail={latestEstimateDetail}
+          />
+        </View>
+        <View style={styles.horizontalDivider} />
+        <View style={styles.row}>
+          <Metric
+            label="PRECIPITATION"
+            value={formatPrecipitation(precipitation)}
+            detail={precipitationDetail}
+          />
+          <View style={styles.divider} />
+          <Metric
+            label="WIND"
+            value={formatWind(windSpeed)}
+            secondaryValue={formatWind(windGust)}
+            description="Wind (gusts)"
+            detail={latestEstimateDetail}
+          />
+        </View>
       </View>
     </View>
   );
@@ -92,11 +120,13 @@ export function CurrentWeatherMetrics({
 
 const styles = StyleSheet.create({
   heading: { color: uiColors.ink, fontSize: 14, fontWeight: '600', marginTop: 16, textAlign: 'center' },
-  row: { alignItems: 'stretch', flexDirection: 'row', marginTop: 8 },
-  webRow: { alignSelf: 'center', maxWidth: 900, width: '100%' },
-  metric: { alignItems: 'center', flex: 1, justifyContent: 'flex-start', paddingHorizontal: 2 },
-  divider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginVertical: 4, width: 1 },
+  grid: { alignSelf: 'center', marginTop: 8, maxWidth: 900, width: '100%' },
+  row: { alignItems: 'stretch', flexDirection: 'row' },
+  metric: { alignItems: 'center', flex: 1, justifyContent: 'flex-start', paddingHorizontal: 4, paddingVertical: 7 },
+  divider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginHorizontal: 4, marginVertical: 4, width: 1 },
+  horizontalDivider: { backgroundColor: uiColors.line, height: 1, marginVertical: 6 },
   label: { color: uiColors.muted, fontSize: 9, letterSpacing: 0.4, textAlign: 'center' },
   value: { color: uiColors.ink, fontSize: 17, marginTop: 5, textAlign: 'center' },
+  secondaryValue: { fontSize: 15 },
   detail: { color: uiColors.muted, fontSize: 10, lineHeight: 14, marginTop: 3, textAlign: 'center' },
 });
