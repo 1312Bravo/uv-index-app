@@ -49,7 +49,7 @@ function WindMetric({ summary }: { summary: OutingForecastSummary }) {
     <View style={styles.metric}>
       <Text style={styles.label}>WIND</Text>
       <Text style={[styles.value, styles.windReading]}>
-        {averageWind} ({averageGust})
+        {averageWind}<Text style={styles.gustValue}> ({averageGust})</Text>
       </Text>
       <Text style={styles.description}>Average (hourly gust peak)</Text>
       <Text style={styles.detail}>
@@ -116,7 +116,7 @@ export function OutingWeatherSummary({ summary }: { summary: OutingForecastSumma
 
 const styles = StyleSheet.create({
   uvSummary: { alignItems: 'center', marginTop: 16, marginBottom: 14 },
-  uvLabel: { color: uiColors.accent, fontSize: 10, letterSpacing: 0.6, textAlign: 'center' },
+  uvLabel: { color: uiColors.ink, fontSize: 10, letterSpacing: 0.6, textAlign: 'center' },
   uvValue: { color: uiColors.accent, fontSize: 32, lineHeight: 38, textAlign: 'center' },
   uvCategory: { color: uiColors.accent, fontSize: 15, fontWeight: '500', textAlign: 'center' },
   uvAverage: { color: uiColors.secondary, fontSize: 13, marginTop: 4, textAlign: 'center' },
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
   label: { color: uiColors.secondary, fontSize: 9, letterSpacing: 0.4, minHeight: 26, textAlign: 'center' },
   value: { color: uiColors.ink, fontSize: 18, marginTop: 4, textAlign: 'center' },
   windReading: { lineHeight: 22 },
+  gustValue: { fontSize: 16 },
   description: { color: uiColors.secondary, fontSize: 11, lineHeight: 15, marginTop: 3, textAlign: 'center' },
   detail: { color: uiColors.secondary, fontSize: 11, lineHeight: 15, marginTop: 4, textAlign: 'center' },
 });

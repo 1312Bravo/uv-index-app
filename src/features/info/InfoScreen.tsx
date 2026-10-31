@@ -166,7 +166,7 @@ export function InfoScreen() {
       <Text style={styles.heading}>Understanding the forecast</Text>
       <View style={[styles.topics, isWideWeb && styles.webTopics]}>
         <InfoAccordion
-          title="UV Index levels"
+          title={<><Text style={styles.uvAccent}>UV</Text> Index levels</>}
           expanded={openTopic === 'uv'}
           onPress={() => toggleTopic('uv')}
         >
@@ -208,6 +208,7 @@ export function InfoScreen() {
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
   heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', textAlign: 'center' },
+  uvAccent: { color: uiColors.accent },
   topics: { alignSelf: 'center', marginTop: 16, maxWidth: 360, width: '90%' },
   webTopics: { maxWidth: 900, width: '100%' },
   description: { color: uiColors.body, fontSize: uiType.body, lineHeight: 21, marginTop: 8 },

@@ -25,7 +25,7 @@ re-verified that day.
 
 ### Current precipitation display (checked 2026-10-22)
 
-The UV Outlook's current-weather row requests Open-Meteo `current=precipitation`
+The UV Outlook's current-weather display requests Open-Meteo `current=precipitation`
 and reads `current.interval` and `current.time` alongside the amount. The UI
 labels the amount as an accumulation over the preceding interval and shows its
 duration and local start/end times (for example, `Previous 15 min: 3:30 PM to
@@ -35,7 +35,7 @@ without native 15-minute data, such values may be interpolated from hourly
 data. Therefore the label describes the provider's model interval, not a
 rain-gauge measurement or a guaranteed locally observed 15-minute total.
 
-Temperature and cloud cover in the same row are current-condition snapshots
+Temperature and cloud cover in the same grid are current-condition snapshots
 timestamped by `current.time`; they are not averages over the preceding
 precipitation interval. Each shows `Latest estimate: [time]` with that timestamp. The
 current precipitation amount is not paired with the
@@ -44,6 +44,25 @@ more than 0.1 mm during the preceding hour. Parsing is in
 `src/services/forecast/getHourlyForecast.ts`; interval metadata is carried by
 `src/domain/forecast/forecastTypes.ts` and rendered in
 `src/features/forecast/CurrentWeatherMetrics.tsx`.
+
+Display update 2026-10-31: Current weather uses a 2x2 grid, with temperature
+and cloud cover above precipitation and wind. Wind reuses the existing
+`current.wind_speed_10m` estimate from `getHourlyForecast.ts`, in km/h, with
+the current timestamp. Missing current wind falls back to the containing
+hourly reading in the service; a missing wind series displays a dash. The
+weather grid introduces no new provider or UV protection rule.
+
+Current gust addition 2026-10-31: The same forecast request now includes
+`current=wind_gusts_10m`. The [Open-Meteo current-weather documentation](https://open-meteo.com/en/docs)
+lists this variable and describes current conditions as model estimates based
+on 15-minute data (unversioned docs checked 2026-10-31). The service stores
+the returned gust estimate separately as `HourlyForecast.currentWindGust`.
+`HourlyUvChart.tsx` passes it to `CurrentWeatherMetrics.tsx`, which shows wind
+speed with gusts in parentheses, rounded to whole km/h. This current estimate
+is not the outing's average hourly gust peak. Missing, invalid, or negative
+current gusts display a dash; zero is valid. No hourly gust value substitutes
+for a missing current gust, and the original hourly maxima stay unchanged.
+Existing model-data, attribution, licence, and local-exposure limits apply.
 
 ### Selected-location local time (checked 2026-10-17)
 

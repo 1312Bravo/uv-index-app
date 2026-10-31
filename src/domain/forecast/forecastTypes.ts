@@ -18,6 +18,8 @@ export type ForecastHour = {
 export type HourlyForecast = {
   timezone: string;
   currentConditionsTime: number | null;
+  /** Current-condition gust estimate, separate from preceding-hour gust maxima. */
+  currentWindGust: number | null;
   currentPrecipitation: number | null;
   currentPrecipitationInterval: number | null;
   currentPrecipitationTime: number | null;

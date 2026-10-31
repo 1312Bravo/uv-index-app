@@ -45,7 +45,13 @@ returns `averageHourlyGustPeak`, `lowestHourlyGustPeak`, and
 `highestHourlyGustPeak`, separately from wind speed.
 
 `src/features/outing/OutingForecastMetrics.tsx` places the average gust peak in
-parentheses beside average wind, with both readings at the same size. Smaller
+parentheses beside average wind, with the gust value slightly smaller. Smaller
 labels below read Average (hourly gust peak). A smaller line pairs
 the wind range with the gust range in parentheses. This addition does not add gusts to
 the hourly charts.
+
+UV Outlook also requests the provider's separate current-condition gust
+estimate. It appears in parentheses beside current wind, labelled Wind
+(gusts), with the current timestamp. This is not an outing average or a
+substitute for the original hourly maxima. Missing current gusts remain
+unavailable. See `data-sources.md` for this additional field and its source.

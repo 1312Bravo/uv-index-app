@@ -183,7 +183,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
       )}
       {forecast && summary && (
         <>
-          <Text style={styles.sectionLabel}>UV summary</Text>
+          <Text style={styles.sectionLabel}><Text style={styles.uvAccent}>UV</Text> summary</Text>
           <OutingUvSummary summary={summary} />
           <View style={styles.uvSummaryDivider} />
           <OutingUvTimeline
@@ -193,7 +193,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
           {guidance && <View style={styles.guidanceDivider} />}
           {guidance && (
             <View style={[styles.guidance, isWideWeb && styles.webGuidance]}>
-              <Text style={styles.guidanceTitle}>UV guidance</Text>
+              <Text style={styles.guidanceTitle}><Text style={styles.uvAccent}>UV</Text> guidance</Text>
               {guidance.coverageMessage && (
                 <Text style={[styles.guidanceCoverage, isWideWeb && styles.webCenteredText]}>
                   {guidance.coverageMessage}
@@ -211,7 +211,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
                   ))}
                 </View>
                 <View style={styles.guidanceDetails}>
-                  <Text style={styles.guidanceGroupHeading}>UV breakdown</Text>
+                  <Text style={styles.guidanceGroupHeading}><Text style={styles.uvAccent}>UV</Text> breakdown</Text>
                   <View style={styles.insightList}>
                     {guidance.breakdown.map((text, index) => (
                       <PlainGuidanceBullet
@@ -250,7 +250,7 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
           <OutingWeatherSummary summary={summary} />
 
           <View style={styles.hourlyChartDivider} />
-          <Text style={styles.subheading}>UV &amp; weather by hour</Text>
+          <Text style={styles.subheading}><Text style={styles.uvAccent}>UV</Text> &amp; weather by hour</Text>
           <HourlyUvBarChart
             hours={forecast.hours}
             timezone={forecast.timezone}
@@ -284,6 +284,7 @@ const styles = StyleSheet.create({
   webBulletRow: { alignSelf: 'stretch', flexDirection: 'row', marginTop: 5 },
   webCenteredText: { alignSelf: 'center', textAlign: 'center' },
   sectionLabel: { color: uiColors.ink, fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 20, textAlign: 'center' },
+  uvAccent: { color: uiColors.accent },
   guidanceTitle: { color: uiColors.ink, fontSize: 14, fontWeight: '600', lineHeight: 19, textAlign: 'center' },
   guidanceGroupHeading: { color: uiColors.ink, fontSize: 14, fontWeight: '600', lineHeight: 19, marginTop: 14, textAlign: 'center' },
   guidanceCoverage: { color: uiColors.secondary, fontSize: 13, lineHeight: 19, marginTop: 10 },

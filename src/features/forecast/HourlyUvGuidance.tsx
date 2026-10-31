@@ -43,6 +43,8 @@ export function HourlyUvGuidance({
   currentWeather?: {
     temperature: number;
     cloudCover: number | null;
+    windSpeed: number | null;
+    windGust: number | null;
     precipitation: number | null;
     precipitationInterval: number | null;
     precipitationTime: number | null;
@@ -55,14 +57,16 @@ export function HourlyUvGuidance({
 
   return (
     <View style={styles.section}>
-      <Text style={styles.heading}>{isCurrent ? 'Current UV' : 'UV forecast'}</Text>
+      <Text style={styles.heading}>
+        {isCurrent ? <>Current <Text style={styles.uvAccent}>UV</Text></> : <><Text style={styles.uvAccent}>UV</Text> forecast</>}
+      </Text>
       {!isCurrent && (
         <Text style={styles.estimateTime}>
           {isInterpolated ? 'Approx. UV for ' : 'Forecast for '}{formatForecastTime(forecastHourTime, timezone)}
         </Text>
       )}
-      <View style={[styles.reading, isWideWeb && styles.webReading]}>
-        <View style={[styles.uvBlock, isWideWeb && styles.webUvBlock]}>
+      <View style={styles.reading}>
+        <View style={styles.uvBlock}>
           <Text style={[styles.readingLabel, styles.uvIndexLabel]}>UV INDEX</Text>
           <Text style={styles.uvValue}>{guidance.uv.toFixed(1)}</Text>
           <Text style={styles.category}>{guidance.category}</Text>
@@ -72,40 +76,30 @@ export function HourlyUvGuidance({
             </Text>
           )}
         </View>
-        <View style={[styles.divider, isWideWeb && styles.webDivider]} />
-        <View style={[styles.protection, isWideWeb && styles.webProtection]}>
-          <Text style={[styles.readingLabel, styles.guidanceLabel]}>GUIDANCE</Text>
+        <View style={styles.divider} />
+        <View style={styles.protection}>
+          <Text style={styles.guidanceLabel}><Text style={styles.uvAccent}>UV</Text> guidance</Text>
           <View style={[styles.actions, isWideWeb && styles.webActions]}>
-            {guidancePoints.map((point, index) => isWideWeb ? (
-              <View key={index} style={styles.webActionRow}>
-                <Text style={styles.marker}>-</Text>
-                <Text style={[styles.actionText, styles.webActionCopy]}>{point}</Text>
-              </View>
-            ) : (
+            {guidancePoints.map((point, index) => (
               <View key={index} style={styles.actionRow}>
                 <Text style={styles.marker}>-</Text>
                 <Text style={styles.actionText}>{point}</Text>
               </View>
             ))}
+            {guidance.cloudNote && (
+              <View style={styles.actionRow}>
+                <Text style={styles.marker}>-</Text>
+                <Text style={styles.note}>{guidance.cloudNote}</Text>
+              </View>
+            )}
           </View>
-          {guidance.cloudNote && (
-            isWideWeb
-              ? (
-                <View style={styles.webNoteRow}>
-                  <Text style={styles.marker}>-</Text>
-                  <Text style={[styles.note, styles.webActionCopy]}>{guidance.cloudNote}</Text>
-                </View>
-              )
-              : (
-                <View style={styles.noteRow}>
-                  <Text style={styles.marker}>-</Text>
-                  <Text style={styles.note}>{guidance.cloudNote}</Text>
-                </View>
-              )
-          )}
         </View>
       </View>
-      {isCurrent && currentWeather && <CurrentWeatherMetrics {...currentWeather} />}
+      {isCurrent && currentWeather && (
+        <View style={styles.weatherSection}>
+          <CurrentWeatherMetrics {...currentWeather} />
+        </View>
+      )}
     </View>
   );
 }
@@ -115,44 +109,26 @@ const styles = StyleSheet.create({
   heading: { color: uiColors.ink, fontSize: 16, fontWeight: '600', textAlign: 'center' },
   estimateTime: { color: uiColors.muted, fontSize: 12, marginTop: 5, textAlign: 'center' },
   currentEstimateTime: { color: uiColors.muted, fontSize: 11, marginTop: 5, textAlign: 'center' },
-  reading: { alignItems: 'stretch', flexDirection: 'row', marginTop: 16 },
-  webReading: {
+  reading: {
     alignSelf: 'center',
-    flexDirection: 'column',
+    marginTop: 16,
     maxWidth: 900,
     width: '100%',
   },
-  uvBlock: { alignItems: 'center', flex: 0.85, justifyContent: 'flex-start', paddingHorizontal: 8 },
-  webUvBlock: { flexBasis: 'auto', flexGrow: 0, flexShrink: 0, width: '100%' },
+  uvBlock: { alignItems: 'center', paddingHorizontal: 8 },
   uvValue: { color: uiColors.accent, fontSize: 32, lineHeight: 38, textAlign: 'center' },
   readingLabel: { color: uiColors.muted, fontSize: 10, letterSpacing: 0.6 },
-  uvIndexLabel: { color: uiColors.accent },
-  guidanceLabel: { textAlign: 'center' },
-  divider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginVertical: 4, width: 1 },
-  webDivider: { height: 1, marginVertical: 14, width: '100%' },
+  uvIndexLabel: { color: uiColors.ink },
+  guidanceLabel: { color: uiColors.ink, fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  uvAccent: { color: uiColors.accent },
+  divider: { alignSelf: 'center', backgroundColor: uiColors.line, height: 1, marginVertical: 14, width: 96 },
+  weatherSection: { borderTopColor: uiColors.line, borderTopWidth: 1, marginTop: 16 },
   category: { color: uiColors.accent, fontSize: 15, fontWeight: '500' },
-  protection: { flex: 1.4, paddingLeft: 12 },
-  webProtection: {
-    flexBasis: 'auto',
-    flexGrow: 0,
-    flexShrink: 0,
-    paddingLeft: 0,
-    width: '100%',
-  },
+  protection: { alignSelf: 'center', maxWidth: 700, width: '100%' },
   actions: { marginTop: 7, rowGap: 5 },
   // Web-only intrinsic sizing keeps the list left-aligned while centering its widest line.
   webActions: { alignSelf: 'center', maxWidth: '100%', width: 'max-content' as any },
-  webActionRow: { alignSelf: 'stretch', flexDirection: 'row' },
-  webActionCopy: { flex: 1, textAlign: 'left' },
-  webNoteRow: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    marginTop: 5,
-    maxWidth: '100%',
-    width: 'max-content' as any,
-  },
-  noteRow: { alignItems: 'flex-start', flexDirection: 'row', marginTop: 5 },
-  actionRow: { alignItems: 'flex-start', flexDirection: 'row' },
+  actionRow: { alignItems: 'flex-start', alignSelf: 'stretch', flexDirection: 'row' },
   marker: { color: uiColors.secondary, fontSize: 12, lineHeight: 16, marginRight: 5, width: 8 },
   actionText: { color: uiColors.body, flex: 1, fontSize: 13, lineHeight: 19 },
   note: { color: uiColors.muted, flex: 1, fontSize: 12, lineHeight: 17 },

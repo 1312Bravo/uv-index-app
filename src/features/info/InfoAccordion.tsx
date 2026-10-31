@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { uiColors } from '../../ui/visualStyle';
 
 type Props = {
-  title: string;
+  title: ReactNode;
   expanded: boolean;
   onPress: () => void;
   children: ReactNode;

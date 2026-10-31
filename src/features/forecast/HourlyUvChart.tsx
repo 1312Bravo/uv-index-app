@@ -110,6 +110,8 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
               currentWeather={timeMode === 'now' ? {
                 temperature: selectedHour.temperature,
                 cloudCover: selectedHour.cloudCover,
+                windSpeed: selectedHour.windSpeed,
+                windGust: forecast.currentWindGust ?? null,
                 precipitation: forecast.currentPrecipitation,
                 precipitationInterval: forecast.currentPrecipitationInterval,
                 precipitationTime: forecast.currentPrecipitationTime,
@@ -118,7 +120,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
             />
           )}
           {!hourlyGuidance && <Text style={styles.message}>UV estimate unavailable.</Text>}
-          <Text style={styles.heading}>UV &amp; weather by hour</Text>
+          <Text style={styles.heading}><Text style={{ color: uiColors.accent }}>UV</Text> &amp; weather by hour</Text>
           <HourlyUvBarChart
             hours={forecast.hours}
             timezone={forecast.timezone}
