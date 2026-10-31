@@ -15,6 +15,7 @@ type Props = {
   sunTime: number;
   initialScrollHours?: number;
   selectedRange?: SelectedRange;
+  uvSelectedRange?: SelectedRange;
   showFullOutlook?: boolean;
   useHourlyForecast?: boolean;
   selectedHourTime?: number;
@@ -52,6 +53,7 @@ function getChartHours(hours: ForecastHour[], selectedRange?: SelectedRange, sho
 
 export function HourlyUvBarChart({
   hours, timezone, daylight, sunTime, initialScrollHours = 0, selectedRange,
+  uvSelectedRange,
   showFullOutlook = false, useHourlyForecast = false, selectedHourTime, scrollTarget,
 }: Props) {
   const { width } = useWindowDimensions();
@@ -62,14 +64,9 @@ export function HourlyUvBarChart({
     () => getChartHours(hours, selectedRange, showFullOutlook),
     [hours, selectedRange, showFullOutlook],
   );
-  // Outing columns represent forward hours, so take UV from that interval's endpoint.
-  const uvValues = chartHours.map((hour, index) => {
-    const nextHour = chartHours[index + 1];
-    if (selectedRange && nextHour?.time === hour.time + 3600) {
-      return nextHour.hourlyUv ?? nextHour.uv;
-    }
-    return useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv;
-  });
+  const uvValues = chartHours.map((hour) =>
+    useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv,
+  );
   const scale = Math.max(8, ...uvValues);
   const highestValueGroupTop = chartHours.length === 0 ? 0 : Math.min(...chartHours.map((_, index) =>
     getValueGroupTop(uvValues[index], scale, layout),
@@ -128,9 +125,9 @@ export function HourlyUvBarChart({
                   isFirstSelected={hour.time === firstSelectedTime}
                   isLastSelected={hour.time === lastSelectedHour?.time}
                   selectedRange={selectedRange}
+                  uvSelectedRange={uvSelectedRange}
                   selectedHourTime={selectedHourTime}
                   useHourlyForecast={useHourlyForecast}
-                  uvValue={uvValues[index]}
                 />
               );
             })}

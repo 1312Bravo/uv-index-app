@@ -260,6 +260,11 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
               start: plan.start.getTime() / 1000,
               end: plan.end.getTime() / 1000,
             }}
+            uvSelectedRange={{
+              start: plan.start.getTime() / 1000,
+              end: plan.end.getTime() / 1000,
+            }}
+            useHourlyForecast
           />
           <SourceAttribution label="Forecast data by Open-Meteo" url="https://open-meteo.com/" />
         </>

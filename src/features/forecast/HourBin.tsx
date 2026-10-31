@@ -23,9 +23,9 @@ type Props = {
   isFirstSelected?: boolean;
   isLastSelected?: boolean;
   selectedRange?: SelectedRange;
+  uvSelectedRange?: SelectedRange;
   selectedHourTime?: number;
   useHourlyForecast?: boolean;
-  uvValue?: number;
   layout: HourlyChartLayout;
 };
 
@@ -57,19 +57,25 @@ function formatPrecipitationProbability(value: number | null | undefined): strin
 
 export function HourBin({
   hour, timezone, scale, valueGroupTop, showDay, isEndBoundary = false, isFirstSelected = false,
-  isLastSelected = false, selectedRange, selectedHourTime, useHourlyForecast = false, uvValue, layout,
+  isLastSelected = false, selectedRange, uvSelectedRange, selectedHourTime,
+  useHourlyForecast = false, layout,
 }: Props) {
   const { binWidth, barWidth, maxBarHeight, valueGroupHeight } = layout;
   const isDesktop = binWidth > 42;
   const barAreaHeight = maxBarHeight + valueGroupHeight + VALUE_BAR_GAP + TOP_PADDING;
   const columnWidth = { width: binWidth };
-  const uv = uvValue ?? (useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv);
+  const uv = useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv;
   const cloudCover = useHourlyForecast ? hour.hourlyCloudCover ?? hour.cloudCover : hour.cloudCover;
   const height = Math.max(0, uv / scale * maxBarHeight);
   const selectedBackgroundTop = Math.max(0, valueGroupTop - 5);
   const isSelected = selectedRange !== undefined &&
     hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start;
   const isContext = selectedRange !== undefined && !isSelected;
+  // Open-Meteo timestamps UV at the end of its preceding-hour mean interval.
+  const isUvSelected = uvSelectedRange === undefined
+    ? isSelected
+    : hour.time > uvSelectedRange.start && hour.time - 3600 < uvSelectedRange.end;
+  const isUvContext = (selectedRange !== undefined || uvSelectedRange !== undefined) && !isUvSelected;
   const isFocused = selectedHourTime === hour.time;
   const showFocusedBackground = selectedRange === undefined && isFocused;
   const cloudCoverDescription = cloudCover === null
@@ -116,15 +122,15 @@ export function HourBin({
           <Text numberOfLines={1} style={[styles.temperature, columnWidth, isDesktop && styles.desktopTemperature, isContext && styles.contextText]}>
             {Math.round(hour.temperature)}°
           </Text>
-          <Text numberOfLines={1} style={[styles.uv, columnWidth, isDesktop && styles.desktopUv, isContext && styles.contextText]}>
+          <Text numberOfLines={1} style={[styles.uv, columnWidth, isDesktop && styles.desktopUv, isUvContext && styles.contextText]}>
             {uv.toFixed(1)}
           </Text>
         </View>
         <View style={[
           styles.bar,
           { height, width: barWidth },
-          selectedRange
-            ? isSelected ? styles.selectedBar : styles.contextBar
+          selectedRange || uvSelectedRange
+            ? isUvSelected ? styles.selectedBar : styles.contextBar
             : selectedHourTime !== undefined
               ? isFocused ? styles.currentBar : hour.period === 'past' ? styles.pastBar : null
               : hour.period === 'past' ? styles.pastBar : hour.period === 'now' ? styles.currentBar : null,
