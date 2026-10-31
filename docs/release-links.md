@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--pwvllvkv3l.expo.app>
+- Latest deployment: <https://uvscout--5206ty4zfo.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -16,13 +16,13 @@ The production URL is the stable link to share with anyone. See
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Restored solid-background logo build (queued, version code 2): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/a1b42ce1-9d64-483b-9936-6c0bba94ca33>
 - APK download: available on the build page when this build finishes
-- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/00a52c35-44d6-4116-a31a-34bce75161f1>
+- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/af26cd08-3308-4ff8-95bd-f40d056d37b4>
 
-The guidance and selector changes were published 29 October 2026 from source
-commit `7ed11df`. The web app and Android UI update include clearer below-3
-UV Outlook wording, removal of
-its category-rounding note, and matching scrollable start/end time selectors.
-The Android update uses channel `preview`, runtime `1.0.0`.
+The latest web and Android updates were published 31 October 2026 from source
+commit `3b8235c`. They include the centered Current UV display, stacked UV
+guidance, a 2x2 current-weather grid with gusts, more compact outing wind
+values, and orange emphasis on prominent UV headings. The Android update uses
+channel `preview`, runtime `1.0.0`.
 
 The website branding was then restored from source commit `240037e`: the
 loading logo and PWA icons again use the original solid stone background.
