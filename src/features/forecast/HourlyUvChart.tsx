@@ -118,6 +118,16 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
                 precipitationTime: forecast.currentPrecipitationTime,
                 timezone: forecast.timezone,
               } : undefined}
+              forecastWeather={timeMode === 'custom' && selectedCustomTime !== null ? {
+                time: selectedCustomTime,
+                temperature: selectedHour.temperature,
+                cloudCover: selectedHour.hourlyCloudCover ?? selectedHour.cloudCover,
+                precipitationProbability: selectedHour.precipitationProbability,
+                precipitation: selectedHour.precipitation,
+                windSpeed: selectedHour.windSpeed,
+                windGust: selectedHour.windGust,
+                timezone: forecast.timezone,
+              } : undefined}
             />
           )}
           {!hourlyGuidance && <Text style={styles.message}>UV estimate unavailable.</Text>}

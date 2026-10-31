@@ -2,7 +2,7 @@ import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-nat
 
 import type { HourlyUvGuidance as HourlyUvGuidanceResult } from '../../domain/guidance/getHourlyUvGuidance';
 import { uiColors } from '../../ui/visualStyle';
-import { CurrentWeatherMetrics } from './CurrentWeatherMetrics';
+import { WeatherMetrics } from './WeatherMetrics';
 
 function formatEstimateTime(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
@@ -33,6 +33,7 @@ export function HourlyUvGuidance({
   isInterpolated,
   timezone,
   currentWeather,
+  forecastWeather,
 }: {
   guidance: HourlyUvGuidanceResult;
   estimateTime: number | null;
@@ -48,6 +49,16 @@ export function HourlyUvGuidance({
     precipitation: number | null;
     precipitationInterval: number | null;
     precipitationTime: number | null;
+    timezone: string;
+  };
+  forecastWeather?: {
+    time: number;
+    temperature: number;
+    cloudCover: number | null;
+    precipitationProbability: number | null;
+    precipitation: number | null;
+    windSpeed: number | null;
+    windGust: number | null;
     timezone: string;
   };
 }) {
@@ -97,7 +108,22 @@ export function HourlyUvGuidance({
       </View>
       {isCurrent && currentWeather && (
         <View style={styles.weatherSection}>
-          <CurrentWeatherMetrics {...currentWeather} />
+          <WeatherMetrics mode="current" {...currentWeather} />
+        </View>
+      )}
+      {!isCurrent && forecastWeather && (
+        <View style={styles.weatherSection}>
+          <WeatherMetrics
+            mode="forecast"
+            forecastTime={forecastWeather.time}
+            temperature={forecastWeather.temperature}
+            cloudCover={forecastWeather.cloudCover}
+            precipitationProbability={forecastWeather.precipitationProbability}
+            precipitation={forecastWeather.precipitation}
+            windSpeed={forecastWeather.windSpeed}
+            windGust={forecastWeather.windGust}
+            timezone={forecastWeather.timezone}
+          />
         </View>
       )}
     </View>
