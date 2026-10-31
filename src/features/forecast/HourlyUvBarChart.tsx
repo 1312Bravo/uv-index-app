@@ -62,11 +62,17 @@ export function HourlyUvBarChart({
     () => getChartHours(hours, selectedRange, showFullOutlook),
     [hours, selectedRange, showFullOutlook],
   );
-  const scale = Math.max(8, ...chartHours.map((hour) =>
-    useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv,
-  ));
-  const highestValueGroupTop = chartHours.length === 0 ? 0 : Math.min(...chartHours.map((hour) =>
-    getValueGroupTop(useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv, scale, layout),
+  // Outing columns represent forward hours, so take UV from that interval's endpoint.
+  const uvValues = chartHours.map((hour, index) => {
+    const nextHour = chartHours[index + 1];
+    if (selectedRange && nextHour?.time === hour.time + 3600) {
+      return nextHour.hourlyUv ?? nextHour.uv;
+    }
+    return useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv;
+  });
+  const scale = Math.max(8, ...uvValues);
+  const highestValueGroupTop = chartHours.length === 0 ? 0 : Math.min(...chartHours.map((_, index) =>
+    getValueGroupTop(uvValues[index], scale, layout),
   ));
   const topLegendTop = CHART_TOP_MARGIN + DAYLIGHT_TRACK_HEIGHT + LEGEND_SPACE_HEIGHT +
     highestValueGroupTop - TOP_LEGEND_LINE_HEIGHT - TOP_LEGEND_VALUE_GAP;
@@ -124,6 +130,7 @@ export function HourlyUvBarChart({
                   selectedRange={selectedRange}
                   selectedHourTime={selectedHourTime}
                   useHourlyForecast={useHourlyForecast}
+                  uvValue={uvValues[index]}
                 />
               );
             })}

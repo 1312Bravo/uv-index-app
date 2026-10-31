@@ -61,6 +61,14 @@ displays original hourly means, and uses equal opacity for every bar. The maximu
 label says highest hourly UV Index to distinguish it from an instantaneous
 peak. WHO thresholds and protection actions are unchanged.
 
+The full outing chart retains forward-hour columns for its weather values and
+selection shading. For each such column, its UV bar now uses the following
+source timestamp's preceding-hour mean, so the UV value represents the same
+forward hour as the column. This includes the final selected hour while keeping
+the weather values and selection interval unchanged. The last chart column has
+no following endpoint and retains its own source value; it is forecast context,
+not a covered outing interval when the forecast lacks a later UV endpoint.
+
 UV Outlook custom-time smoothing remains a separate issue for review. Its
 comment now records the correct source meaning, but its behavior was not
 changed in this outing fix.

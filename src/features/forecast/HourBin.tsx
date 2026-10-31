@@ -25,6 +25,7 @@ type Props = {
   selectedRange?: SelectedRange;
   selectedHourTime?: number;
   useHourlyForecast?: boolean;
+  uvValue?: number;
   layout: HourlyChartLayout;
 };
 
@@ -56,13 +57,13 @@ function formatPrecipitationProbability(value: number | null | undefined): strin
 
 export function HourBin({
   hour, timezone, scale, valueGroupTop, showDay, isEndBoundary = false, isFirstSelected = false,
-  isLastSelected = false, selectedRange, selectedHourTime, useHourlyForecast = false, layout,
+  isLastSelected = false, selectedRange, selectedHourTime, useHourlyForecast = false, uvValue, layout,
 }: Props) {
   const { binWidth, barWidth, maxBarHeight, valueGroupHeight } = layout;
   const isDesktop = binWidth > 42;
   const barAreaHeight = maxBarHeight + valueGroupHeight + VALUE_BAR_GAP + TOP_PADDING;
   const columnWidth = { width: binWidth };
-  const uv = useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv;
+  const uv = uvValue ?? (useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv);
   const cloudCover = useHourlyForecast ? hour.hourlyCloudCover ?? hour.cloudCover : hour.cloudCover;
   const height = Math.max(0, uv / scale * maxBarHeight);
   const selectedBackgroundTop = Math.max(0, valueGroupTop - 5);
