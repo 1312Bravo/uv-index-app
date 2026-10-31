@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--zo3s2zq8p9.expo.app>
+- Latest deployment: <https://uvscout--qzotmu0i7l.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -16,12 +16,13 @@ The production URL is the stable link to share with anyone. See
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Restored solid-background logo build (queued, version code 2): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/a1b42ce1-9d64-483b-9936-6c0bba94ca33>
 - APK download: available on the build page when this build finishes
-- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/acb711dc-9fe9-4382-9277-e8a2bde5983e>
+- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/ec4a657a-ff03-4b6e-b375-58f60e08a340>
 
 The latest web and Android updates were published 31 October 2026 from source
-commit `928abfd`. They include the outing chart fix that aligns each UV bar
-with the correct preceding-hour source value, including the outing's final
-hour. The Android update uses channel `preview`, runtime `1.0.0`.
+commit `ad7fe47`. The outing charts keep UV values on Open-Meteo's source
+timestamps, and the full chart marks UV bars according to overlap of their
+preceding-hour intervals. The Android update uses channel `preview`, runtime
+`1.0.0`.
 
 The website branding was then restored from source commit `240037e`: the
 loading logo and PWA icons again use the original solid stone background.
