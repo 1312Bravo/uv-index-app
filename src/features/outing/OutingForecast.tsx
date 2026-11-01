@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { getUvScoutInsight, type UvScoutInsightItem } from '../../domain/guidance/getUvScoutInsight';
@@ -13,11 +13,18 @@ import { uiColors, uiType } from '../../ui/visualStyle';
 import { OutingUvTimeline } from './OutingUvTimeline';
 import { OutingUvSummary, OutingWeatherSummary } from './OutingForecastMetrics';
 
+type PendingChartStart = {
+  hourTime: number;
+  startsNow: boolean;
+};
+
 type Props = {
   latitude: number;
   longitude: number;
   onTimezoneChange: (timeZone: string) => void;
   plan: TimePlan;
+  pendingChartStart: PendingChartStart | null;
+  onChartHourSelect: (time: number, isCurrentHour: boolean) => void;
 };
 
 function formatTime(time: number, timezone: string): string {
@@ -142,7 +149,9 @@ function ContextNote({ item, centeredBlock = false }: {
   );
 }
 
-export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: Props) {
+export function OutingForecast({
+  latitude, longitude, onTimezoneChange, plan, pendingChartStart, onChartHourSelect,
+}: Props) {
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [currentTime, setCurrentTime] = useState(() => Date.now());
@@ -166,6 +175,20 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
   const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;
   const forecastLimitMessage = forecast ? getForecastLimitMessage(forecast, plan.end) : null;
+  const selectableHourTimes = useMemo(() => {
+    if (!forecast) return new Set<number>();
+    const availableHours = forecast.hours.filter((hour) => hour.period !== 'past');
+    if (!pendingChartStart) {
+      return new Set(availableHours.slice(0, -1).map((hour) => hour.time));
+    }
+
+    const pendingStartTime = pendingChartStart.startsNow
+      ? currentTime / 1000
+      : pendingChartStart.hourTime;
+    return new Set(availableHours
+      .filter((hour) => hour.time === pendingChartStart.hourTime || hour.time > pendingStartTime)
+      .map((hour) => hour.time));
+  }, [currentTime, forecast, pendingChartStart]);
 
   return (
     <View style={styles.section}>
@@ -251,6 +274,13 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
 
           <View style={styles.hourlyChartDivider} />
           <Text style={styles.subheading}><Text style={styles.uvAccent}>UV</Text> &amp; weather by hour</Text>
+          <Text style={styles.chartSelectionHint}>
+            {pendingChartStart
+              ? `Start: ${pendingChartStart.startsNow
+                ? 'Now'
+                : `${formatDate(pendingChartStart.hourTime, forecast.timezone)}, ${formatTime(pendingChartStart.hourTime, forecast.timezone)}`}. Tap a later hour to set the end, or tap the start again to cancel.`
+              : 'Tap a start hour, then a later hour for the end.'}
+          </Text>
           <HourlyUvBarChart
             hours={forecast.hours}
             timezone={forecast.timezone}
@@ -265,6 +295,16 @@ export function OutingForecast({ latitude, longitude, onTimezoneChange, plan }: 
               end: plan.end.getTime() / 1000,
             }}
             useHourlyForecast
+            includeAllFutureHours
+            selectableHourTimes={selectableHourTimes}
+            pendingSelectionTime={pendingChartStart?.hourTime}
+            selectionHint={pendingChartStart
+              ? 'Set this as the outing end hour. Tap the selected start again to cancel.'
+              : 'Select this as the outing start hour.'}
+            onSelectHour={(time) => {
+              const selectedHour = forecast.hours.find((hour) => hour.time === time);
+              if (selectedHour) onChartHourSelect(time, selectedHour.period === 'now');
+            }}
           />
           <SourceAttribution label="Forecast data by Open-Meteo" url="https://open-meteo.com/" />
         </>
@@ -312,4 +352,5 @@ const styles = StyleSheet.create({
   guidanceBulletTitle: { color: uiColors.body, fontWeight: '600' },
   hourlyChartDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, height: 1, marginTop: 20 },
   subheading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', marginTop: 12, textAlign: 'center' },
+  chartSelectionHint: { color: uiColors.muted, fontSize: 11, lineHeight: 16, marginTop: 5, textAlign: 'center' },
 });

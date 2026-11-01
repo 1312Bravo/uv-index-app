@@ -13,9 +13,14 @@ import { LocationPicker } from '../features/location/LocationPicker';
 import { LocationSummary } from '../features/location/LocationSummary';
 import { useLocationTimeZone } from '../features/location/useLocationTimeZone';
 import { OutingForecast } from '../features/outing/OutingForecast';
-import { TimePlanner } from '../features/planning/TimePlanner';
+import { TimePlanner, type ChartSelectedTimeRange } from '../features/planning/TimePlanner';
 import { uiColors } from '../ui/visualStyle';
 import { TopTabs, type AppPage } from './TopTabs';
+
+type PendingOutingChartStart = {
+  hourTime: number;
+  startsNow: boolean;
+};
 
 export function UvScoutApp() {
   const [fontsLoaded] = useFonts({ Fruktur_400Regular, Almendra_400Regular });
@@ -24,6 +29,8 @@ export function UvScoutApp() {
   const [location, setLocation] = useState<SelectedLocation | null>(null);
   const [isMapInteracting, setIsMapInteracting] = useState(false);
   const [timePlan, setTimePlan] = useState<TimePlan | null>(null);
+  const [chartSelection, setChartSelection] = useState<ChartSelectedTimeRange | null>(null);
+  const [pendingChartStart, setPendingChartStart] = useState<PendingOutingChartStart | null>(null);
   const [page, setPage] = useState<AppPage>('location');
   const coordinates = location ? getLocationCoordinates(location) : null;
   const latitude = coordinates?.latitude;
@@ -33,6 +40,36 @@ export function UvScoutApp() {
     unavailable: timeZoneUnavailable,
     updateFromForecast: updateLocationTimeZone,
   } = useLocationTimeZone(latitude, longitude);
+
+  function handleOutingChartHour(time: number, isCurrentHour: boolean) {
+    if (!pendingChartStart) {
+      setPendingChartStart({ hourTime: time, startsNow: isCurrentHour });
+      return;
+    }
+
+    if (time === pendingChartStart.hourTime) {
+      setPendingChartStart(null);
+      return;
+    }
+
+    if (isCurrentHour) return;
+
+    const startTime = pendingChartStart.startsNow
+      ? Date.now() / 1000
+      : pendingChartStart.hourTime;
+    if (time <= startTime) return;
+
+    setChartSelection({
+      start: pendingChartStart.startsNow ? null : new Date(startTime * 1000),
+      end: new Date(time * 1000),
+    });
+    setPendingChartStart(null);
+  }
+
+  function resetChartSelection() {
+    setChartSelection(null);
+    setPendingChartStart(null);
+  }
 
   return (
     <View style={styles.screen}>
@@ -69,7 +106,11 @@ export function UvScoutApp() {
         >
           <LocationPicker
             onMapInteractionChange={setIsMapInteracting}
-            onSelect={setLocation}
+            onSelect={(selectedLocation) => {
+              setLocation(selectedLocation);
+              setChartSelection(null);
+              setPendingChartStart(null);
+            }}
           />
         </View>
 
@@ -83,7 +124,12 @@ export function UvScoutApp() {
         )}
         <View style={page === 'plan' ? undefined : styles.hidden}>
           <View style={isWideWeb ? styles.webPlanner : undefined}>
-            <TimePlanner onChange={setTimePlan} timeZone={locationTimeZone} />
+            <TimePlanner
+              chartSelection={chartSelection}
+              onChange={setTimePlan}
+              onReset={resetChartSelection}
+              timeZone={locationTimeZone}
+            />
           </View>
           {page === 'plan' && timePlan && latitude !== undefined && longitude !== undefined && (
             <View style={isWideWeb ? styles.webOuting : undefined}>
@@ -92,6 +138,8 @@ export function UvScoutApp() {
                 longitude={longitude}
                 onTimezoneChange={updateLocationTimeZone}
                 plan={timePlan}
+                pendingChartStart={pendingChartStart}
+                onChartHourSelect={handleOutingChartHour}
               />
             </View>
           )}

@@ -22,6 +22,9 @@ type Props = {
   scrollTarget?: { time: number };
   selectableHourTimes?: Set<number>;
   onSelectHour?: (time: number) => void;
+  pendingSelectionTime?: number;
+  selectionHint?: string;
+  includeAllFutureHours?: boolean;
 };
 
 const BIN_GAP = 0;
@@ -42,6 +45,7 @@ function getChartHours(
   selectedRange?: SelectedRange,
   uvSelectedRange?: SelectedRange,
   showFullOutlook = false,
+  includeAllFutureHours = false,
 ): ForecastHour[] {
   if (!selectedRange) {
     const currentIndex = hours.findIndex((hour) => hour.period === 'now');
@@ -51,6 +55,11 @@ function getChartHours(
       Math.max(0, currentIndex - OUTLOOK_PAST_HOURS),
       Math.min(hours.length, currentIndex + OUTLOOK_FUTURE_HOURS + 1),
     );
+  }
+
+  if (includeAllFutureHours) {
+    const currentIndex = hours.findIndex((hour) => hour.period === 'now');
+    return hours.slice(Math.max(0, currentIndex - OUTLOOK_PAST_HOURS));
   }
 
   const selectedIndices = hours.flatMap((hour, index) =>
@@ -68,15 +77,16 @@ export function HourlyUvBarChart({
   hours, timezone, daylight, sunTime, initialScrollHours = 0, selectedRange,
   uvSelectedRange,
   showFullOutlook = false, useHourlyForecast = false, selectedHourTime, scrollTarget,
-  selectableHourTimes, onSelectHour,
+  selectableHourTimes, onSelectHour, pendingSelectionTime, selectionHint,
+  includeAllFutureHours,
 }: Props) {
   const { width } = useWindowDimensions();
   const layout = Platform.OS === 'web' && width >= 760 ? DESKTOP_CHART_LAYOUT : PHONE_CHART_LAYOUT;
   const { binWidth } = layout;
   const chartRef = useRef<ScrollViewInstance | null>(null);
   const chartHours = useMemo(
-    () => getChartHours(hours, selectedRange, uvSelectedRange, showFullOutlook),
-    [hours, selectedRange, uvSelectedRange, showFullOutlook],
+    () => getChartHours(hours, selectedRange, uvSelectedRange, showFullOutlook, includeAllFutureHours),
+    [hours, selectedRange, uvSelectedRange, showFullOutlook, includeAllFutureHours],
   );
   const uvValues = chartHours.map((hour) =>
     useHourlyForecast ? hour.hourlyUv ?? hour.uv : hour.uv,
@@ -145,8 +155,10 @@ export function HourlyUvBarChart({
                   selectedRange={selectedRange}
                   uvSelectedRange={uvSelectedRange}
                   selectedHourTime={selectedHourTime}
+                  pendingSelectionTime={pendingSelectionTime}
                   useHourlyForecast={useHourlyForecast}
                   onSelectHour={selectableHourTimes?.has(hour.time) ? onSelectHour : undefined}
+                  selectionHint={selectionHint}
                 />
               );
             })}

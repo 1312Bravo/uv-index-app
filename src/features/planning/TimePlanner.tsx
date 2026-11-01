@@ -9,7 +9,14 @@ import { uiColors, uiType } from '../../ui/visualStyle';
 
 type Props = {
   onChange: (plan: TimePlan | null) => void;
+  chartSelection: ChartSelectedTimeRange | null;
+  onReset: () => void;
   timeZone: string | null;
+};
+
+export type ChartSelectedTimeRange = {
+  start: Date | null;
+  end: Date;
 };
 
 type StartMode = 'now' | 'scheduled';
@@ -74,7 +81,7 @@ function SelectorRow({
   );
 }
 
-export function TimePlanner({ onChange, timeZone }: Props) {
+export function TimePlanner({ onChange, chartSelection, onReset, timeZone }: Props) {
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [startMode, setStartMode] = useState<StartMode>('now');
@@ -115,6 +122,17 @@ export function TimePlanner({ onChange, timeZone }: Props) {
       if (timeZone) setScheduledStart(getNextHourInTimeZone(currentTime, timeZone));
     }
   }, [currentTime, scheduledStart, startMode, timeZone]);
+
+  useEffect(() => {
+    if (!chartSelection) return;
+
+    setStartMode(chartSelection.start === null ? 'now' : 'scheduled');
+    setScheduledStart(chartSelection.start);
+    setEndMode('end-time');
+    setEndTime(chartSelection.end);
+    setOpenSection(null);
+    setError(null);
+  }, [chartSelection]);
 
   useEffect(() => {
     if (startMode === 'scheduled' && !timeZone) {
@@ -196,6 +214,7 @@ export function TimePlanner({ onChange, timeZone }: Props) {
     setEndTime(null);
     setError(null);
     setOpenSection(null);
+    onReset();
   }
 
   return (

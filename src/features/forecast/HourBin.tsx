@@ -25,8 +25,10 @@ type Props = {
   selectedRange?: SelectedRange;
   uvSelectedRange?: SelectedRange;
   selectedHourTime?: number;
+  pendingSelectionTime?: number;
   useHourlyForecast?: boolean;
   onSelectHour?: (time: number) => void;
+  selectionHint?: string;
   layout: HourlyChartLayout;
 };
 
@@ -59,7 +61,8 @@ function formatPrecipitationProbability(value: number | null | undefined): strin
 export function HourBin({
   hour, timezone, scale, valueGroupTop, showDay, isEndBoundary = false, isFirstSelected = false,
   isLastSelected = false, selectedRange, uvSelectedRange, selectedHourTime,
-  useHourlyForecast = false, onSelectHour, layout,
+  pendingSelectionTime, useHourlyForecast = false, onSelectHour,
+  selectionHint = 'Switch to this hour in Custom time', layout,
 }: Props) {
   const { binWidth, barWidth, maxBarHeight, valueGroupHeight } = layout;
   const isDesktop = binWidth > 42;
@@ -80,6 +83,7 @@ export function HourBin({
   const isWeatherContext = selectedRange !== undefined &&
     !(hour.time >= selectedRange.start && hour.time < selectedRange.end);
   const isFocused = selectedHourTime === hour.time;
+  const isPendingSelection = pendingSelectionTime === hour.time;
   const showFocusedBackground = selectedRange === undefined && isFocused;
   const cloudCoverDescription = cloudCover === null
     ? 'unavailable'
@@ -100,7 +104,7 @@ export function HourBin({
   const accessibilityLabel = `${formatChartDay(hour.time, timezone)}, ${formatHour(hour.time, timezone)}. UV Index ${uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour. Wind speed ${windSpeedDescription}${outingDescription}.`;
   const content = (
     <>
-      {(isSelected || showFocusedBackground) && (
+      {(isSelected || showFocusedBackground || isPendingSelection) && (
         <View
           pointerEvents="none"
           style={[
@@ -109,6 +113,7 @@ export function HourBin({
             isFirstSelected && styles.selectedRangeStart,
             isLastSelected && styles.selectedRangeEnd,
             showFocusedBackground && styles.focusedHourBackground,
+            isPendingSelection && styles.pendingSelectionBackground,
           ]}
         />
       )}
@@ -159,11 +164,11 @@ export function HourBin({
     return (
       <Pressable
         accessible
-        accessibilityHint="Switch to this hour in Custom time"
+        accessibilityHint={selectionHint}
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
         onPress={() => onSelectHour(hour.time)}
-        style={({ pressed }) => [styles.bin, columnWidth, pressed && styles.pressedBin]}
+        style={({ pressed }) => [styles.bin, styles.clickableBin, columnWidth, pressed && styles.pressedBin]}
       >
         {content}
       </Pressable>
@@ -179,11 +184,13 @@ export function HourBin({
 
 const styles = StyleSheet.create({
   bin: { alignItems: 'center', paddingHorizontal: 1, position: 'relative' },
+  clickableBin: { cursor: 'pointer' },
   pressedBin: { opacity: 0.7 },
   selectedRangeBackground: {
     backgroundColor: uiColors.soft, bottom: -8, left: 0, position: 'absolute', right: 0,
   },
   focusedHourBackground: { borderRadius: 8 },
+  pendingSelectionBackground: { borderColor: uiColors.accent, borderRadius: 8, borderWidth: 1 },
   selectedRangeStart: { borderBottomLeftRadius: 8, borderTopLeftRadius: 8 },
   selectedRangeEnd: { borderBottomRightRadius: 8, borderTopRightRadius: 8 },
   valueGroup: {

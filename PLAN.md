@@ -337,6 +337,9 @@ calculation, supported platform versions, and the final visual polish.
 - [x] Add Now/Custom time controls above UV Outlook's reading. Custom time
   offers future half-hour choices across local days, updates the UV value and
   guidance, and highlights the containing chart bin. Keep past bins as context only.
+- [x] Let Plan an Outing select an hourly start and end from the UV and weather
+  chart, synchronize the planner selectors, and preserve the half-hour selectors
+  for refinement.
 
 ## Decisions
 
