@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   bar: { backgroundColor: uiColors.bar, borderRadius: 3 },
   pastBar: { backgroundColor: uiColors.contextBar },
-  currentBar: { backgroundColor: uiColors.ink },
+  currentBar: { backgroundColor: uiColors.bar },
   contextText: { color: uiColors.faint },
   activeText: { color: uiColors.ink },
   hour: { color: uiColors.secondary, fontSize: 11, marginTop: 4, textAlign: 'center' },
