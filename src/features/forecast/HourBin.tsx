@@ -135,7 +135,9 @@ export function HourBin({
           styles.bar,
           { height, width: barWidth },
           selectedRange || uvSelectedRange
-            ? isUvSelected ? styles.selectedBar : styles.contextBar
+            ? useHourlyForecast
+              ? hour.period === 'past' ? styles.pastBar : styles.selectedBar
+              : isUvSelected ? styles.selectedBar : styles.contextBar
             : selectedHourTime !== undefined
               ? isFocused ? styles.currentBar : hour.period === 'past' ? styles.pastBar : null
               : hour.period === 'past' ? styles.pastBar : hour.period === 'now' ? styles.currentBar : null,
