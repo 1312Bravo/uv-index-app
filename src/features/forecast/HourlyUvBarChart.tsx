@@ -103,6 +103,12 @@ export function HourlyUvBarChart({
       : hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start)
     : [];
   const firstSelectedTime = selectedHours[0]?.time;
+  const rangeStartTime = (uvSelectedRange ?? selectedRange)?.start;
+  // Keep the visual range edge on the selected boundary, even when that labeled
+  // UV sample represents the hour immediately before the outing begins.
+  const firstBackgroundTime = rangeStartTime !== undefined && chartHours.some((hour) => hour.time === rangeStartTime)
+    ? rangeStartTime
+    : firstSelectedTime;
   const lastSelectedHour = selectedHours.at(-1);
   const endBoundaryTime = lastSelectedHour
     ? uvSelectedRange ? lastSelectedHour.time : lastSelectedHour.time + 3600
@@ -150,7 +156,7 @@ export function HourlyUvBarChart({
                   scale={scale}
                   showDay={index === 0 || day !== previousDay}
                   isEndBoundary={selectedRange !== undefined && hour.time === endBoundaryTime}
-                  isFirstSelected={hour.time === firstSelectedTime}
+                  isFirstSelected={hour.time === firstBackgroundTime}
                   isLastSelected={hour.time === lastSelectedHour?.time}
                   selectedRange={selectedRange}
                   uvSelectedRange={uvSelectedRange}

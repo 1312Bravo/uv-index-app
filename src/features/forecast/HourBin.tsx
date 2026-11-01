@@ -104,7 +104,7 @@ export function HourBin({
   const accessibilityLabel = `${formatChartDay(hour.time, timezone)}, ${formatHour(hour.time, timezone)}. UV Index ${uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour. Wind speed ${windSpeedDescription}${outingDescription}.`;
   const content = (
     <>
-      {(isSelected || showFocusedBackground || isPendingSelection) && (
+      {(isSelected || isFirstSelected || showFocusedBackground || isPendingSelection) && (
         <View
           pointerEvents="none"
           style={[
