@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--xhmy1xdykf.expo.app>
+- Latest deployment: <https://uvscout--uwkm5gg95a.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -16,12 +16,11 @@ The production URL is the stable link to share with anyone. See
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Restored solid-background logo build (queued, version code 2): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/a1b42ce1-9d64-483b-9936-6c0bba94ca33>
 - APK download: available on the build page when this build finishes
-- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/d28527b8-50eb-40ba-8669-cabb2b0dbc1b>
+- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/cfb03950-d866-435a-802d-855dfe0cc2f0>
 
-The latest custom-time weather forecast display was published 31 October 2026
-from source commit `396806b`. Selecting a custom UV forecast time now also shows
-the corresponding hourly temperature, cloud cover, precipitation, and wind
-forecast. The Android update uses channel `preview`, runtime `1.0.0`.
+The latest UV Outlook chart interaction was published 1 November 2026 from
+source commit `88a19c1`. Tapping an available hourly bar selects that time in
+the Custom time view. The Android update uses channel `preview`, runtime `1.0.0`.
 
 The website branding was then restored from source commit `240037e`: the
 loading logo and PWA icons again use the original solid stone background.
