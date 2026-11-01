@@ -143,6 +143,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
             sunTime={timeMode === 'now'
               ? currentTime / 1000
               : selectedCustomTime ?? (selectedHour?.time ?? currentTime / 1000) + 1800}
+            currentTime={currentTime}
             initialScrollHours={INITIAL_SCROLL_HOURS}
             showFullOutlook
             useHourlyForecast

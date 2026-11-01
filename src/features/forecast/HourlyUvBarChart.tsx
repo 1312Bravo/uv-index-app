@@ -13,6 +13,7 @@ type Props = {
   timezone: string;
   daylight: DaylightEvents[];
   sunTime: number;
+  currentTime: number;
   initialScrollHours?: number;
   selectedRange?: SelectedRange;
   uvSelectedRange?: SelectedRange;
@@ -74,7 +75,7 @@ function getChartHours(
 }
 
 export function HourlyUvBarChart({
-  hours, timezone, daylight, sunTime, initialScrollHours = 0, selectedRange,
+  hours, timezone, daylight, sunTime, currentTime, initialScrollHours = 0, selectedRange,
   uvSelectedRange,
   showFullOutlook = false, useHourlyForecast = false, selectedHourTime, scrollTarget,
   selectableHourTimes, onSelectHour, pendingSelectionTime, selectionHint,
@@ -110,9 +111,6 @@ export function HourlyUvBarChart({
     ? rangeStartTime
     : firstSelectedTime;
   const lastSelectedHour = selectedHours.at(-1);
-  const endBoundaryTime = lastSelectedHour
-    ? uvSelectedRange ? lastSelectedHour.time : lastSelectedHour.time + 3600
-    : null;
 
   useEffect(() => {
     if (scrollTarget === undefined) return;
@@ -155,9 +153,9 @@ export function HourlyUvBarChart({
                   timezone={timezone}
                   scale={scale}
                   showDay={index === 0 || day !== previousDay}
-                  isEndBoundary={selectedRange !== undefined && hour.time === endBoundaryTime}
                   isFirstSelected={hour.time === firstBackgroundTime}
                   isLastSelected={hour.time === lastSelectedHour?.time}
+                  isHistorical={hour.time * 1000 < currentTime}
                   selectedRange={selectedRange}
                   uvSelectedRange={uvSelectedRange}
                   selectedHourTime={selectedHourTime}

@@ -19,12 +19,12 @@ type Props = {
   scale: number;
   valueGroupTop: number;
   showDay: boolean;
-  isEndBoundary?: boolean;
   isFirstSelected?: boolean;
   isLastSelected?: boolean;
   selectedRange?: SelectedRange;
   uvSelectedRange?: SelectedRange;
   selectedHourTime?: number;
+  isHistorical: boolean;
   pendingSelectionTime?: number;
   useHourlyForecast?: boolean;
   onSelectHour?: (time: number) => void;
@@ -59,9 +59,9 @@ function formatPrecipitationProbability(value: number | null | undefined): strin
 }
 
 export function HourBin({
-  hour, timezone, scale, valueGroupTop, showDay, isEndBoundary = false, isFirstSelected = false,
+  hour, timezone, scale, valueGroupTop, showDay, isFirstSelected = false,
   isLastSelected = false, selectedRange, uvSelectedRange, selectedHourTime,
-  pendingSelectionTime, useHourlyForecast = false, onSelectHour,
+  isHistorical, pendingSelectionTime, useHourlyForecast = false, onSelectHour,
   selectionHint = 'Switch to this hour in Custom time', layout,
 }: Props) {
   const { binWidth, barWidth, maxBarHeight, valueGroupHeight } = layout;
@@ -78,11 +78,6 @@ export function HourBin({
     (uvSelectedRange
       ? isStartBoundarySelected || (hour.time > uvSelectedRange.start && hour.time - 3600 < uvSelectedRange.end)
       : hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start);
-  const isContext = selectedRange !== undefined && !isSelected;
-  // The start-boundary column is visually selected; interval-based UV calculations remain unchanged.
-  const isUvSelected = isSelected;
-  const isWeatherContext = selectedRange !== undefined &&
-    !(hour.time >= selectedRange.start && hour.time < selectedRange.end);
   const isFocused = selectedHourTime === hour.time;
   const isPendingSelection = pendingSelectionTime === hour.time;
   const showFocusedBackground = selectedRange === undefined && isFocused;
@@ -120,44 +115,38 @@ export function HourBin({
       )}
       <View style={[styles.barArea, { height: barAreaHeight, width: barWidth }]}>
         <View style={[styles.valueGroup, { height: valueGroupHeight, left: (barWidth - binWidth) / 2, top: valueGroupTop, width: binWidth }]}>
-          <Text numberOfLines={1} style={[styles.cloudCover, columnWidth, isDesktop && styles.desktopCloudCover, isWeatherContext && styles.contextText]}>
+          <Text numberOfLines={1} style={[styles.cloudCover, columnWidth, isDesktop && styles.desktopCloudCover, isHistorical ? styles.contextText : styles.activeText]}>
             {cloudCover === null ? '-' : `${Math.round(cloudCover)}%`}
           </Text>
-          <Text numberOfLines={1} style={[styles.temperature, columnWidth, isDesktop && styles.desktopTemperature, isWeatherContext && styles.contextText]}>
+          <Text numberOfLines={1} style={[styles.temperature, columnWidth, isDesktop && styles.desktopTemperature, isHistorical ? styles.contextText : styles.activeText]}>
             {Math.round(hour.temperature)}°
           </Text>
-          <Text numberOfLines={1} style={[styles.uv, columnWidth, isDesktop && styles.desktopUv]}>
+          <Text numberOfLines={1} style={[styles.uv, columnWidth, isDesktop && styles.desktopUv, isHistorical && styles.contextText]}>
             {uv.toFixed(1)}
           </Text>
         </View>
         <View style={[
           styles.bar,
           { height, width: barWidth },
-          selectedRange || uvSelectedRange
-            ? useHourlyForecast
-              ? hour.period === 'past' ? styles.pastBar : styles.selectedBar
-              : isUvSelected ? styles.selectedBar : styles.contextBar
-            : selectedHourTime !== undefined
-              ? isFocused ? styles.currentBar : hour.period === 'past' ? styles.pastBar : null
-              : hour.period === 'past' ? styles.pastBar : hour.period === 'now' ? styles.currentBar : null,
+          isHistorical ? styles.pastBar : styles.currentBar,
         ]} />
       </View>
       <Text
         numberOfLines={1}
-        style={[styles.hour, columnWidth, isDesktop && styles.desktopHour, !selectedRange && (selectedHourTime !== undefined ? isFocused : hour.period === 'now') && styles.currentText, isContext && !isEndBoundary && styles.contextText]}
+        style={[styles.hour, columnWidth, isDesktop && styles.desktopHour, isHistorical ? styles.contextText : styles.currentText]}
       >
         {hour.period === 'now' && !useHourlyForecast ? 'Now' : formatHour(hour.time, timezone)}
       </Text>
-      <Text numberOfLines={1} style={[styles.day, columnWidth, isContext && styles.contextText]}>
+      <Text numberOfLines={1} style={[styles.day, columnWidth, isHistorical ? styles.contextText : styles.currentText]}>
         {showDay ? formatChartDay(hour.time, timezone) : ' '}
       </Text>
-      <Text numberOfLines={1} style={[styles.precipitationProbability, columnWidth, isDesktop && styles.desktopWeatherValue, isWeatherContext && styles.contextText]}>
+      <Text numberOfLines={1} style={[styles.precipitationProbability, columnWidth, isDesktop && styles.desktopWeatherValue, isHistorical ? styles.contextText : styles.activeText]}>
         {formatPrecipitationProbability(hour.precipitationProbability)}
       </Text>
-      <Text numberOfLines={1} style={[styles.precipitation, columnWidth, isDesktop && styles.desktopWeatherValue, isWeatherContext && styles.contextText]}>
+      <Text numberOfLines={1} style={[styles.precipitation, columnWidth, isDesktop && styles.desktopWeatherValue, isHistorical ? styles.contextText : styles.activeText]}>
         {formatPrecipitation(hour.precipitation)}
       </Text>
-      <Text numberOfLines={1} style={[styles.windSpeed, columnWidth, isDesktop && styles.desktopWeatherValue, isWeatherContext && styles.contextText]}>
+      <Text numberOfLines={1} style={[styles.windSpeed, columnWidth, isDesktop && styles.desktopWeatherValue, isHistorical ? styles.contextText : styles.activeText]}>
         {hour.windSpeed === null ? '-' : Math.round(hour.windSpeed)}
       </Text>
     </>
@@ -210,10 +199,9 @@ const styles = StyleSheet.create({
   },
   bar: { backgroundColor: uiColors.bar, borderRadius: 3 },
   pastBar: { backgroundColor: uiColors.contextBar },
-  currentBar: { backgroundColor: uiColors.bar },
-  selectedBar: { backgroundColor: uiColors.bar },
-  contextBar: { backgroundColor: uiColors.contextBar },
+  currentBar: { backgroundColor: uiColors.ink },
   contextText: { color: uiColors.faint },
+  activeText: { color: uiColors.ink },
   hour: { color: uiColors.secondary, fontSize: 11, marginTop: 4, textAlign: 'center' },
   desktopHour: { fontSize: 12 },
   currentText: { color: uiColors.ink },

@@ -286,6 +286,7 @@ export function OutingForecast({
             timezone={forecast.timezone}
             daylight={forecast.daylight}
             sunTime={plan.start.getTime() / 1000}
+            currentTime={currentTime}
             selectedRange={{
               start: plan.start.getTime() / 1000,
               end: plan.end.getTime() / 1000,
