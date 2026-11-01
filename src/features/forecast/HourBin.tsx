@@ -72,12 +72,14 @@ export function HourBin({
   const cloudCover = useHourlyForecast ? hour.hourlyCloudCover ?? hour.cloudCover : hour.cloudCover;
   const height = Math.max(0, uv / scale * maxBarHeight);
   const selectedBackgroundTop = Math.max(0, valueGroupTop - 5);
+  const isStartBoundarySelected = selectedRange !== undefined && uvSelectedRange !== undefined &&
+    hour.time === uvSelectedRange.start;
   const isSelected = selectedRange !== undefined &&
     (uvSelectedRange
-      ? hour.time > uvSelectedRange.start && hour.time - 3600 < uvSelectedRange.end
+      ? isStartBoundarySelected || (hour.time > uvSelectedRange.start && hour.time - 3600 < uvSelectedRange.end)
       : hour.time < selectedRange.end && hour.time + 3600 > selectedRange.start);
   const isContext = selectedRange !== undefined && !isSelected;
-  // Open-Meteo timestamps UV at the end of its preceding-hour mean interval.
+  // The start-boundary column is visually selected; interval-based UV calculations remain unchanged.
   const isUvSelected = isSelected;
   const isUvContext = selectedRange !== undefined && !isUvSelected;
   const isWeatherContext = selectedRange !== undefined &&
@@ -213,7 +215,7 @@ const styles = StyleSheet.create({
   contextText: { color: uiColors.faint },
   hour: { color: uiColors.secondary, fontSize: 11, marginTop: 4, textAlign: 'center' },
   desktopHour: { fontSize: 12 },
-  currentText: { color: uiColors.ink, fontWeight: '600' },
+  currentText: { color: uiColors.ink },
   day: { color: uiColors.muted, fontSize: 10, marginTop: 2, minHeight: 15, textAlign: 'center' },
   precipitationProbability: { color: uiColors.secondary, fontSize: 10, marginTop: 5, textAlign: 'center' },
   precipitation: { color: uiColors.secondary, fontSize: 10, marginTop: 1, textAlign: 'center' },
