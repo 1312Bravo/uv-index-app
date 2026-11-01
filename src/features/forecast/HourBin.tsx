@@ -81,7 +81,6 @@ export function HourBin({
   const isContext = selectedRange !== undefined && !isSelected;
   // The start-boundary column is visually selected; interval-based UV calculations remain unchanged.
   const isUvSelected = isSelected;
-  const isUvContext = selectedRange !== undefined && !isUvSelected;
   const isWeatherContext = selectedRange !== undefined &&
     !(hour.time >= selectedRange.start && hour.time < selectedRange.end);
   const isFocused = selectedHourTime === hour.time;
@@ -127,7 +126,7 @@ export function HourBin({
           <Text numberOfLines={1} style={[styles.temperature, columnWidth, isDesktop && styles.desktopTemperature, isWeatherContext && styles.contextText]}>
             {Math.round(hour.temperature)}°
           </Text>
-          <Text numberOfLines={1} style={[styles.uv, columnWidth, isDesktop && styles.desktopUv, isUvContext && styles.contextText]}>
+          <Text numberOfLines={1} style={[styles.uv, columnWidth, isDesktop && styles.desktopUv]}>
             {uv.toFixed(1)}
           </Text>
         </View>
