@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--1ml4f3jggs.expo.app>
+- Latest deployment: <https://uvscout--g2xjrzanjp.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -16,11 +16,11 @@ The production URL is the stable link to share with anyone. See
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Restored solid-background logo build (queued, version code 2): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/a1b42ce1-9d64-483b-9936-6c0bba94ca33>
 - APK download: available on the build page when this build finishes
-- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/fca9b687-ca57-4a2b-aeb6-98b45002898a>
+- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/951959b3-78da-4fbe-b971-b66cd4ec3bc0>
 
-The latest outing chart update was published 1 November 2026 from source commit
-`c9c3348`. The range shading now begins at the selected outing start boundary;
-UV samples still follow their Open-Meteo hour intervals. The Android update
+The latest chart styling update was published 1 November 2026 from source
+commit `fef84b7`. The outing start-boundary column uses the selected styling,
+and the UV Outlook focused-hour label is no longer bold. The Android update
 uses channel `preview`, runtime `1.0.0`.
 
 The website branding was then restored from source commit `240037e`: the
