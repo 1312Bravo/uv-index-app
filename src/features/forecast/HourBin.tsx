@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ForecastHour } from '../../domain/forecast/forecastTypes';
 import type { HourlyChartLayout, SelectedRange } from './hourlyChartLayout';
@@ -26,6 +26,7 @@ type Props = {
   uvSelectedRange?: SelectedRange;
   selectedHourTime?: number;
   useHourlyForecast?: boolean;
+  onSelectHour?: (time: number) => void;
   layout: HourlyChartLayout;
 };
 
@@ -58,7 +59,7 @@ function formatPrecipitationProbability(value: number | null | undefined): strin
 export function HourBin({
   hour, timezone, scale, valueGroupTop, showDay, isEndBoundary = false, isFirstSelected = false,
   isLastSelected = false, selectedRange, uvSelectedRange, selectedHourTime,
-  useHourlyForecast = false, layout,
+  useHourlyForecast = false, onSelectHour, layout,
 }: Props) {
   const { binWidth, barWidth, maxBarHeight, valueGroupHeight } = layout;
   const isDesktop = binWidth > 42;
@@ -97,13 +98,8 @@ export function HourBin({
     : '';
 
   const accessibilityLabel = `${formatChartDay(hour.time, timezone)}, ${formatHour(hour.time, timezone)}. UV Index ${uv.toFixed(1)}. Temperature ${Math.round(hour.temperature)} degrees Celsius. Cloud cover ${cloudCoverDescription}. Precipitation chance ${precipitationProbabilityDescription} for the preceding hour. Precipitation amount ${precipitationDescription} for the preceding hour. Wind speed ${windSpeedDescription}${outingDescription}.`;
-  return (
-    <View
-      accessible
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole="text"
-      style={[styles.bin, columnWidth]}
-    >
+  const content = (
+    <>
       {(isSelected || showFocusedBackground) && (
         <View
           pointerEvents="none"
@@ -156,12 +152,34 @@ export function HourBin({
       <Text numberOfLines={1} style={[styles.windSpeed, columnWidth, isDesktop && styles.desktopWeatherValue, isWeatherContext && styles.contextText]}>
         {hour.windSpeed === null ? '-' : Math.round(hour.windSpeed)}
       </Text>
+    </>
+  );
+
+  if (onSelectHour) {
+    return (
+      <Pressable
+        accessible
+        accessibilityHint="Switch to this hour in Custom time"
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="button"
+        onPress={() => onSelectHour(hour.time)}
+        style={({ pressed }) => [styles.bin, columnWidth, pressed && styles.pressedBin]}
+      >
+        {content}
+      </Pressable>
+    );
+  }
+
+  return (
+    <View accessible accessibilityLabel={accessibilityLabel} accessibilityRole="text" style={[styles.bin, columnWidth]}>
+      {content}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   bin: { alignItems: 'center', paddingHorizontal: 1, position: 'relative' },
+  pressedBin: { opacity: 0.7 },
   selectedRangeBackground: {
     backgroundColor: uiColors.soft, bottom: -8, left: 0, position: 'absolute', right: 0,
   },

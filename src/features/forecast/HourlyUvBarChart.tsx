@@ -20,6 +20,8 @@ type Props = {
   useHourlyForecast?: boolean;
   selectedHourTime?: number;
   scrollTarget?: { time: number };
+  selectableHourTimes?: Set<number>;
+  onSelectHour?: (time: number) => void;
 };
 
 const BIN_GAP = 0;
@@ -66,6 +68,7 @@ export function HourlyUvBarChart({
   hours, timezone, daylight, sunTime, initialScrollHours = 0, selectedRange,
   uvSelectedRange,
   showFullOutlook = false, useHourlyForecast = false, selectedHourTime, scrollTarget,
+  selectableHourTimes, onSelectHour,
 }: Props) {
   const { width } = useWindowDimensions();
   const layout = Platform.OS === 'web' && width >= 760 ? DESKTOP_CHART_LAYOUT : PHONE_CHART_LAYOUT;
@@ -143,6 +146,7 @@ export function HourlyUvBarChart({
                   uvSelectedRange={uvSelectedRange}
                   selectedHourTime={selectedHourTime}
                   useHourlyForecast={useHourlyForecast}
+                  onSelectHour={selectableHourTimes?.has(hour.time) ? onSelectHour : undefined}
                 />
               );
             })}
