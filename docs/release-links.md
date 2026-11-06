@@ -5,11 +5,14 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--fe19gs87k0.expo.app>
+- Latest deployment: <https://uvscout--io0i0kne86.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
 [`web-release.md`](web-release.md) for deployment instructions.
+
+The website background was updated 6 November 2026 from source commit
+`d416720` to match the app and icon background (`#F5F2EC`).
 
 ## Android app
 
