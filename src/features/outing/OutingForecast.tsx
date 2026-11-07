@@ -8,6 +8,7 @@ import { useHourlyForecast } from '../forecast/useHourlyForecast';
 import { summarizeOutingForecast } from '../../domain/outing/calculateOutingForecast';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
+import type { LocationCoordinates } from '../../domain/location/locationTypes';
 import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors, uiType } from '../../ui/visualStyle';
 import { OutingUvTimeline } from './OutingUvTimeline';
@@ -22,6 +23,7 @@ type Props = {
   latitude: number;
   longitude: number;
   onTimezoneChange: (timeZone: string) => void;
+  onForecastPointChange: (point: LocationCoordinates | null) => void;
   plan: TimePlan;
   pendingChartStart: PendingChartStart | null;
   onChartHourSelect: (time: number, isCurrentHour: boolean) => void;
@@ -150,7 +152,7 @@ function ContextNote({ item, centeredBlock = false }: {
 }
 
 export function OutingForecast({
-  latitude, longitude, onTimezoneChange, plan, pendingChartStart, onChartHourSelect,
+  latitude, longitude, onTimezoneChange, onForecastPointChange, plan, pendingChartStart, onChartHourSelect,
 }: Props) {
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 760;
@@ -169,8 +171,10 @@ export function OutingForecast({
   }, []);
 
   useEffect(() => {
-    if (forecast) onTimezoneChange(forecast.timezone);
-  }, [forecast, onTimezoneChange]);
+    if (!forecast) return;
+    onTimezoneChange(forecast.timezone);
+    onForecastPointChange(forecast.forecastPoint);
+  }, [forecast, onForecastPointChange, onTimezoneChange]);
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
   const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;

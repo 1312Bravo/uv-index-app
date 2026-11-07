@@ -33,12 +33,18 @@ export function SourcesExplanation() {
         ]}
       />
       <SourceItem
-        text="Your device supplies coordinates if you use its location. Place search uses Open-Meteo data based on GeoNames. BigDataCloud supplies an approximate place name for a device or map location."
+        text="Your device supplies coordinates if you use its location. Place search uses Open-Meteo data based on GeoNames. BigDataCloud supplies an approximate place name for device coordinates. Photon uses OpenStreetMap data to find nearby place names for map selections and forecast points."
         links={[
           { label: 'Open-Meteo place search', url: 'https://open-meteo.com/en/docs/geocoding-api' },
           { label: 'GeoNames place data', url: 'https://www.geonames.org/' },
           { label: 'BigDataCloud place names', url: 'https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api' },
+          { label: 'Photon reverse geocoding', url: 'https://github.com/komoot/photon/blob/master/docs/api-v1.md' },
+          { label: 'OpenStreetMap contributors', url: 'https://www.openstreetmap.org/copyright' },
         ]}
+      />
+      <SourceItem
+        text="Open-Meteo returns the center coordinates of the forecast grid cell used. When Photon can find a nearby mapped place, UV Scout shows that place and the approximate distance from your selected location to the forecast point. This distance is not a forecast coverage radius. If the place lookup is unavailable, this note is not shown."
+        links={[{ label: 'Open-Meteo forecast documentation', url: 'https://open-meteo.com/en/docs' }]}
       />
       <SourceItem
         text="The location map uses OpenStreetMap. Map attribution also appears on the map."

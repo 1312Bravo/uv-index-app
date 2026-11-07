@@ -18,6 +18,7 @@ import {
   getBrowserLocationPermission,
 } from '../../services/location/browserGeolocation';
 import { reverseGeocodePlace } from '../../services/location/reverseGeocode';
+import { reverseGeocodeOsmPoint } from '../../services/location/reverseGeocodeOsmPoint';
 import { searchPlaces } from '../../services/location/searchPlaces';
 import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors, uiType } from '../../ui/visualStyle';
@@ -275,9 +276,9 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
     setError(null);
 
     try {
-      const placeName = await reverseGeocodePlace(latitude, longitude);
-      if (requestId === locationRequest.current && placeName) {
-        const resolvedLocation: SelectedLocation = { ...location, placeName };
+      const place = await reverseGeocodeOsmPoint({ latitude, longitude });
+      if (requestId === locationRequest.current && place) {
+        const resolvedLocation: SelectedLocation = { ...location, placeName: place.fullName };
         setSelected(resolvedLocation);
         onSelect(resolvedLocation);
       }

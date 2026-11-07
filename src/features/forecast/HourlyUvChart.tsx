@@ -11,17 +11,19 @@ import { OutlookTimeSelector } from './OutlookTimeSelector';
 import { getForecastHourForTime, getOutlookTimeSlots } from './getOutlookTimeSlots';
 import { useHourlyForecast } from './useHourlyForecast';
 import { HourlyUvBarChart } from './HourlyUvBarChart';
+import type { LocationCoordinates } from '../../domain/location/locationTypes';
 
 type Props = {
   latitude: number;
   longitude: number;
   onTimezoneChange: (timeZone: string) => void;
+  onForecastPointChange: (point: LocationCoordinates | null) => void;
 };
 
 const INITIAL_SCROLL_HOURS = 2;
 type OutlookTimeMode = 'now' | 'custom';
 
-export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) {
+export function HourlyUvChart({ latitude, longitude, onTimezoneChange, onForecastPointChange }: Props) {
   const [currentTime, setCurrentTime] = useState(() => Date.now());
   const [timeMode, setTimeMode] = useState<OutlookTimeMode>('now');
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
@@ -67,8 +69,10 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
   }, []);
 
   useEffect(() => {
-    if (forecast) onTimezoneChange(forecast.timezone);
-  }, [forecast, onTimezoneChange]);
+    if (!forecast) return;
+    onTimezoneChange(forecast.timezone);
+    onForecastPointChange(forecast.forecastPoint);
+  }, [forecast, onForecastPointChange, onTimezoneChange]);
 
   return (
     <View style={styles.section}>

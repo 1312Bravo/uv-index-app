@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { SelectedLocation } from '../../domain/location/locationTypes';
+import type { LocationCoordinates } from '../../domain/location/locationTypes';
+import { getDistanceKilometers } from '../../domain/location/getDistanceKilometers';
+import { getLocationCoordinates } from '../../domain/location/getLocationCoordinates';
+import { reverseGeocodeOsmPoint } from '../../services/location/reverseGeocodeOsmPoint';
 import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors } from '../../ui/visualStyle';
 import { formatLocationCoordinates, getLocationName } from './formatLocation';
@@ -10,15 +14,34 @@ type Props = {
   location: SelectedLocation | null;
   timeZone: string | null;
   timeZoneUnavailable: boolean;
+  forecastPoint: LocationCoordinates | null;
 };
 
-export function LocationSummary({ location, timeZone, timeZoneUnavailable }: Props) {
+function formatForecastOffset(distanceKilometers: number): string {
+  if (distanceKilometers < 0.5) return 'less than 1 km';
+  return `about ${Math.round(distanceKilometers)} km`;
+}
+
+export function LocationSummary({ location, timeZone, timeZoneUnavailable, forecastPoint }: Props) {
   const [now, setNow] = useState(() => Date.now());
+  const [forecastPointName, setForecastPointName] = useState<string | null>(null);
+  const selectedCoordinates = location ? getLocationCoordinates(location) : null;
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    let isCurrent = true;
+    setForecastPointName(null);
+    if (!forecastPoint) return () => { isCurrent = false; };
+
+    void reverseGeocodeOsmPoint(forecastPoint).then((place) => {
+      if (isCurrent) setForecastPointName(place?.locality ?? null);
+    });
+    return () => { isCurrent = false; };
+  }, [forecastPoint?.latitude, forecastPoint?.longitude]);
 
   const localDateTime = location && !timeZone
     ? null
@@ -45,6 +68,18 @@ export function LocationSummary({ location, timeZone, timeZoneUnavailable }: Pro
           {location.source === 'place' && (
             <SourceAttribution label="Place data by Open-Meteo / GeoNames" url="https://open-meteo.com/en/docs/geocoding-api" />
           )}
+          {forecastPoint && selectedCoordinates && forecastPointName && (
+            <Text style={styles.forecastPoint}>
+              Forecast point {formatForecastOffset(getDistanceKilometers(selectedCoordinates, forecastPoint))}
+              {' from selected location ('}{forecastPointName}{')'}
+            </Text>
+          )}
+          {(location.source === 'map' || (forecastPoint && forecastPointName)) && (
+            <SourceAttribution
+              label="© OpenStreetMap contributors"
+              url="https://www.openstreetmap.org/copyright"
+            />
+          )}
         </>
       )}
     </View>
@@ -69,6 +104,13 @@ const styles = StyleSheet.create({
     color: uiColors.muted,
     fontSize: 12,
     marginTop: 3,
+    textAlign: 'center',
+  },
+  forecastPoint: {
+    color: uiColors.muted,
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: 5,
     textAlign: 'center',
   },
   dateTime: {

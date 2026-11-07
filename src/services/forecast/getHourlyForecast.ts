@@ -1,8 +1,11 @@
 import type { ForecastHour, HourlyForecast } from '../../domain/forecast/forecastTypes';
+import type { LocationCoordinates } from '../../domain/location/locationTypes';
 import { getDaylightEvents, getLocalDateKey } from '../../domain/daylight/getDaylightEvents';
 import { fetchForecastJson } from './fetchForecastJson';
 
 type OpenMeteoForecastData = {
+  latitude?: unknown;
+  longitude?: unknown;
   timezone: string;
   hourly: {
     time: unknown[];
@@ -142,6 +145,10 @@ export async function getHourlyForecast(
   const daylight = dates.map((date) => getDaylightEvents(date, latitude, longitude));
 
   return {
+    forecastPoint: isNumber(data.latitude) && data.latitude >= -90 && data.latitude <= 90 &&
+      isNumber(data.longitude) && data.longitude >= -180 && data.longitude <= 180
+      ? { latitude: data.latitude, longitude: data.longitude } satisfies LocationCoordinates
+      : null,
     timezone: data.timezone,
     currentConditionsTime,
     currentWindGust,

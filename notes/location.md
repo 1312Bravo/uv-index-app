@@ -38,15 +38,29 @@ licensing details.
   the user chooses a result from the list.
 - Place results come from GeoNames via Open-Meteo and receive in-app attribution.
 - The free geocoding endpoint is not suitable for commercial release without a licence change.
-- When device or map location is selected, use the keyless BigDataCloud client-side
-  reverse-geocoding endpoint for a best-effort locality label. Keep the exact
-  coordinates visible and fall back to `Current location` if the lookup fails.
-- BigDataCloud's client endpoint is governed by its current-device, consent, and
-  direct-client-call fair-use policy. Its documentation says it receives the
-  location alongside request/network signals and uses anonymous pairings to
-  improve IP-geolocation data; include this in future privacy disclosures.
+- When device location is selected, use the keyless BigDataCloud client-side
+  reverse-geocoding endpoint for a best-effort locality label. Its fair-use terms
+  only allow coordinates from the calling device's current location obtained
+  with permission. Keep the exact coordinates visible and fall back to
+  `Current location` if lookup fails.
+- For a map-selected point, use Komoot Photon with OpenStreetMap data for a
+  best-effort locality label. Photon may return a nearby mapped place rather
+  than a name exactly at the selected point. If lookup fails, retain the
+  coordinates and omit the optional name. See the source register for Photon
+  public-instance usage limits and attribution.
 - Selected coordinates feed the Open-Meteo UV and temperature forecast. The app
   does not persist them.
+- Open-Meteo returns the center coordinates of the forecast grid cell used for
+  its forecast, which may be a few kilometres from the selected point. The app
+  calculates the great-circle distance between those coordinates and the
+  selected coordinates, then uses Photon to find a nearby locality name. The
+  shared location summary shows `Forecast point about [distance] from selected
+  location ([locality])` only when both coordinates and the locality lookup are
+  available. This distance is only the offset to the grid-cell center, not a
+  forecast coverage radius. Photon is an optional client-side lookup cached by
+  coordinate for the app session; on failure, the note is omitted. OpenStreetMap
+  attribution is linked below the note. See the source register for provider
+  details, limitations, and checked dates.
 - The shared location summary on Location, UV Outlook, and Plan an Outing shows
   the place, coordinates, and a live local date and time. Open-Meteo resolves
   the time zone from selected coordinates as soon as a location is chosen; the

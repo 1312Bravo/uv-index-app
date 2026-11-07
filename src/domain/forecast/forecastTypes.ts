@@ -1,4 +1,5 @@
 import type { DaylightEvents } from '../daylight/daylightTypes';
+import type { LocationCoordinates } from '../location/locationTypes';
 
 export type ForecastHour = {
   time: number;
@@ -16,6 +17,8 @@ export type ForecastHour = {
 };
 
 export type HourlyForecast = {
+  /** Center of the Open-Meteo grid cell used for this forecast, when returned. */
+  forecastPoint: LocationCoordinates | null;
   timezone: string;
   currentConditionsTime: number | null;
   /** Current-condition gust estimate, separate from preceding-hour gust maxima. */

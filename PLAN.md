@@ -69,6 +69,10 @@ helps people plan outdoor time around the current and forecast UV index.
   coordinates in the shared header on the first three tabs. Resolve the zone as
   soon as a location is selected, and use it consistently for planner and
   forecast times.
+- When forecast metadata and a nearby place label are available, show a subtle
+  shared-header note naming the forecast grid point and its rounded distance from
+  the selected location. Omit the note if the optional lookup fails; the distance
+  describes the grid-cell-center offset, not a forecast coverage radius.
 - If the user switches from Now to a scheduled outing, offer only future times
   relative to the current time at the selected location.
 - UV Outlook shows a horizontal UV trend from one earlier hourly bin through
