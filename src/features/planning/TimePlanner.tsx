@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { PlanningTimeSelector } from './PlanningTimeSelector';
 import type { TimePlan } from '../../domain/outing/timePlan';
+import { getDurationOptions, getForecastEndTime } from '../../domain/outing/getDurationOptions';
 import { convertInstantPreservingLocalTime, getNextHourInTimeZone } from '../../domain/time/zonedDateTime';
 import { ChoiceOption, choiceFieldLayout, choiceListLayout } from '../../ui/ChoiceOption';
+import { OptionScrollList } from '../../ui/OptionScrollList';
 import { uiColors, uiType } from '../../ui/visualStyle';
 
 type Props = {
@@ -23,8 +25,6 @@ type StartMode = 'now' | 'scheduled';
 type EndMode = 'duration' | 'end-time';
 type OpenSection = 'start' | 'start-time' | 'end' | 'duration' | 'end-time' | null;
 
-const DURATION_OPTIONS = [30, 60, 120, 180, 240];
-
 function formatDuration(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;
 
@@ -39,19 +39,6 @@ function formatPlanTime(value: Date, timeZone: string): string {
   return new Intl.DateTimeFormat('en', {
     weekday: 'short', hour: 'numeric', minute: '2-digit', timeZone,
   }).format(value);
-}
-
-function getCustomDurationMinutes(hoursText: string, minutesText: string): number | null {
-  if (hoursText === '' && minutesText === '') return null;
-
-  const hours = hoursText === '' ? 0 : Number(hoursText);
-  const minutes = minutesText === '' ? 0 : Number(minutesText);
-  if (!Number.isInteger(hours) || hours < 0 || !Number.isInteger(minutes) || minutes < 0 || minutes > 59) {
-    return null;
-  }
-
-  const totalMinutes = hours * 60 + minutes;
-  return totalMinutes > 0 ? totalMinutes : null;
 }
 
 function SelectorRow({
@@ -87,15 +74,17 @@ export function TimePlanner({ onChange, chartSelection, onReset, timeZone }: Pro
   const [startMode, setStartMode] = useState<StartMode>('now');
   const [scheduledStart, setScheduledStart] = useState<Date | null>(null);
   const [endMode, setEndMode] = useState<EndMode>('duration');
-  const [duration, setDuration] = useState<number | null>(240);
-  const [isCustomDuration, setIsCustomDuration] = useState(false);
-  const [customHours, setCustomHours] = useState('');
-  const [customMinutes, setCustomMinutes] = useState('');
+  const [duration, setDuration] = useState(240);
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<OpenSection>(null);
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const previousTimeZone = useRef<string | null>(null);
+  const planStart = startMode === 'now' ? currentTime : scheduledStart;
+  const forecastEndTime = timeZone ? getForecastEndTime(currentTime, timeZone).getTime() : null;
+  const durationOptions = planStart && forecastEndTime !== null
+    ? getDurationOptions(planStart, new Date(forecastEndTime))
+    : [];
 
   const clearPlan = useCallback(() => {
     onChange(null);
@@ -155,21 +144,17 @@ export function TimePlanner({ onChange, chartSelection, onReset, timeZone }: Pro
 
     let end: Date | null = null;
     if (endMode === 'duration') {
-      const minutes = duration ?? (isCustomDuration ? getCustomDurationMinutes(customHours, customMinutes) : NaN);
-      if (isCustomDuration && minutes === null) {
-        const enteredMinutes = customMinutes === '' ? 0 : Number(customMinutes);
-        const invalidInput = (customHours !== '' && (!Number.isInteger(Number(customHours)) || Number(customHours) < 0)) ||
-          (customMinutes !== '' && (!Number.isInteger(enteredMinutes) || enteredMinutes < 0 || enteredMinutes > 59));
-        setError(invalidInput ? 'Enter whole hours and minutes from 0 to 59.' : null);
-        clearPlan();
-        return;
-      }
-      if (minutes === null || !Number.isInteger(minutes) || minutes <= 0) {
+      if (!Number.isInteger(duration) || duration <= 0) {
         setError(null);
         clearPlan();
         return;
       }
-      end = new Date(start.getTime() + minutes * 60 * 1000);
+      end = new Date(start.getTime() + duration * 60 * 1000);
+      if (forecastEndTime !== null && end.getTime() > forecastEndTime) {
+        setError('That duration goes beyond the available forecast. Choose a shorter duration or adjust the start time.');
+        clearPlan();
+        return;
+      }
     } else {
       end = endTime;
       if (!end) {
@@ -195,22 +180,13 @@ export function TimePlanner({ onChange, chartSelection, onReset, timeZone }: Pro
     setError(null);
     const plan = { start, end, durationMinutes };
     onChange(plan);
-  }, [clearPlan, currentTime, customHours, customMinutes, duration, endMode, endTime, isCustomDuration, onChange, scheduledStart, startMode, timeZone]);
-
-  const selectedDuration = duration !== null
-    ? duration
-    : isCustomDuration
-      ? getCustomDurationMinutes(customHours, customMinutes)
-      : null;
+  }, [clearPlan, currentTime, duration, endMode, endTime, forecastEndTime, onChange, scheduledStart, startMode, timeZone]);
 
   function resetPlanner() {
     setStartMode('now');
     setScheduledStart(null);
     setEndMode('duration');
     setDuration(240);
-    setIsCustomDuration(false);
-    setCustomHours('');
-    setCustomMinutes('');
     setEndTime(null);
     setError(null);
     setOpenSection(null);
@@ -316,58 +292,25 @@ export function TimePlanner({ onChange, chartSelection, onReset, timeZone }: Pro
             expanded={openSection === 'duration'}
             label="Duration"
             onPress={() => setOpenSection(openSection === 'duration' ? null : 'duration')}
-            value={selectedDuration ? formatDuration(selectedDuration) : isCustomDuration ? 'Custom' : 'Choose a duration'}
+            value={formatDuration(duration)}
           />
           {openSection === 'duration' && (
-            <View style={choiceListLayout}>
-              {DURATION_OPTIONS.map((minutes) => (
+            <OptionScrollList>
+              {durationOptions.map((minutes) => (
                 <ChoiceOption
                   key={minutes}
                   active={duration === minutes}
                   label={formatDuration(minutes)}
-                  onPress={() => {
-                    setDuration(minutes);
-                    setIsCustomDuration(false);
-                    setCustomHours('');
-                    setCustomMinutes('');
-                  }}
+                  onPress={() => setDuration(minutes)}
                   showDivider
                 />
               ))}
-              <ChoiceOption
-                active={isCustomDuration}
-                label="Custom"
-                onPress={() => {
-                  setDuration(null);
-                  setIsCustomDuration(true);
-                }}
-                showDivider
-              />
-            </View>
-          )}
-          {isCustomDuration && (
-            <View style={styles.customDurationInputs}>
-              <TextInput
-                accessibilityLabel="Custom duration hours"
-                keyboardType="number-pad"
-                maxLength={3}
-                onChangeText={setCustomHours}
-                placeholder="Hours"
-                placeholderTextColor={uiColors.faint}
-                style={styles.customDurationInput}
-                value={customHours}
-              />
-              <TextInput
-                accessibilityLabel="Custom duration minutes, 0 to 59"
-                keyboardType="number-pad"
-                maxLength={2}
-                onChangeText={setCustomMinutes}
-                placeholder="Minutes"
-                placeholderTextColor={uiColors.faint}
-                style={styles.customDurationInput}
-                value={customMinutes}
-              />
-            </View>
+              {durationOptions.length === 0 && (
+                <Text style={styles.hint}>{timeZone
+                  ? 'No half-hour duration fits within the available forecast.'
+                  : 'Loading the selected location\'s time zone...'}</Text>
+              )}
+            </OptionScrollList>
           )}
         </>
       ) : (
@@ -416,17 +359,6 @@ const styles = StyleSheet.create({
   selectorValue: { color: uiColors.secondary, fontSize: 14, flexShrink: 1, textAlign: 'right' },
   selectorChevron: { color: uiColors.secondary, fontSize: 17, lineHeight: 17, minWidth: 16, textAlign: 'center' },
   buttonPressed: { opacity: 0.65 },
-  customDurationInputs: { alignSelf: 'center', gap: 6, marginTop: 8, maxWidth: 180, width: '100%' },
-  customDurationInput: {
-    borderBottomColor: uiColors.line,
-    borderBottomWidth: 1,
-    color: uiColors.ink,
-    fontSize: 14,
-    minHeight: 38,
-    paddingHorizontal: 8,
-    textAlign: 'center',
-    width: '100%',
-  },
   error: { color: uiColors.faint, fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
   hint: { color: uiColors.muted, fontSize: 12, lineHeight: 17, marginTop: 18, textAlign: 'center' },
 });

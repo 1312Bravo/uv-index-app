@@ -19,6 +19,11 @@ attribution, and limitations.
   returned hourly coverage, show the forecast end and ask the user to adjust the
   outing rather than silently changing their selection or treating missing hours
   as zero.
+- Offer outing durations in 30-minute steps up to the last hourly timestamp in
+  the requested two-day forecast, calculated from the selected start time. This
+  uses the provider's actual configured forecast window rather than a fixed
+  duration cap; a plan that later exceeds coverage remains selected and shows an
+  adjustment message.
 - Each bin shows cloud cover and temperature above a UV-height bar, with the UV
   value above the bar. The local hour and day label follow the bar; precipitation
   chance and expected amount appear in two compact rows below. Earlier hours are

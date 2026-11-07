@@ -386,8 +386,9 @@ calculation, supported platform versions, and the final visual polish.
   in the default planner.
 - Default the selected outing to Now for 4 hours; provide only future scheduled
   alternatives and allow users to change the duration or set an end time.
-- Provide duration presets of 30 minutes, 1 hour, 2 hours, 3 hours, and 4 hours,
-  plus custom minutes. Allow the user to switch to an explicit end time instead.
+- Offer duration choices in 30-minute steps, bounded by the selected start time
+  and the latest hourly value available in the two-day forecast. Keep 4 hours as
+  the default and allow the user to switch to an explicit end time.
 - Present planner choices as compact selector rows with vertically revealed
   options, rather than groups of boxed buttons. Keep the selected duration or
   end-time list open until its row is tapped again.
