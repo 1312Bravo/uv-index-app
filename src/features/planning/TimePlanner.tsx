@@ -354,10 +354,9 @@ export function TimePlanner({ onChange, chartSelection, onReset, timeZone }: Pro
                 onChangeText={setCustomHours}
                 placeholder="Hours"
                 placeholderTextColor={uiColors.faint}
-                style={styles.input}
+                style={styles.customDurationInput}
                 value={customHours}
               />
-              <Text style={styles.durationSeparator}>:</Text>
               <TextInput
                 accessibilityLabel="Custom duration minutes, 0 to 59"
                 keyboardType="number-pad"
@@ -365,7 +364,7 @@ export function TimePlanner({ onChange, chartSelection, onReset, timeZone }: Pro
                 onChangeText={setCustomMinutes}
                 placeholder="Minutes"
                 placeholderTextColor={uiColors.faint}
-                style={styles.input}
+                style={styles.customDurationInput}
                 value={customMinutes}
               />
             </View>
@@ -417,9 +416,17 @@ const styles = StyleSheet.create({
   selectorValue: { color: uiColors.secondary, fontSize: 14, flexShrink: 1, textAlign: 'right' },
   selectorChevron: { color: uiColors.secondary, fontSize: 17, lineHeight: 17, minWidth: 16, textAlign: 'center' },
   buttonPressed: { opacity: 0.65 },
-  customDurationInputs: { alignItems: 'center', flexDirection: 'row', gap: 10, marginTop: 10 },
-  input: { borderColor: uiColors.line, borderRadius: 10, borderWidth: 1, color: uiColors.ink, flex: 1, fontSize: 14, minHeight: 48, paddingHorizontal: 12, textAlign: 'center' },
-  durationSeparator: { color: uiColors.secondary, fontSize: 18 },
+  customDurationInputs: { alignSelf: 'center', gap: 6, marginTop: 8, maxWidth: 180, width: '100%' },
+  customDurationInput: {
+    borderBottomColor: uiColors.line,
+    borderBottomWidth: 1,
+    color: uiColors.ink,
+    fontSize: 14,
+    minHeight: 38,
+    paddingHorizontal: 8,
+    textAlign: 'center',
+    width: '100%',
+  },
   error: { color: uiColors.faint, fontSize: 13, lineHeight: 19, marginTop: 12, textAlign: 'center' },
   hint: { color: uiColors.muted, fontSize: 12, lineHeight: 17, marginTop: 18, textAlign: 'center' },
 });
