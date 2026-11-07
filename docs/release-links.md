@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--ukanzs9nz7.expo.app>
+- Latest deployment: <https://uvscout--z6mf13se19.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -19,13 +19,12 @@ The website background was updated 6 November 2026 from source commit
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Restored solid-background logo build (queued, version code 2): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/a1b42ce1-9d64-483b-9936-6c0bba94ca33>
 - APK download: available on the build page when this build finishes
-- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/3dabc3f6-8b22-482b-9ba6-925e3a2bd6d2>
+- Latest Android UI update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/fe7e91b6-8295-4c22-ae37-fc1d1b5be9f1>
 
-The custom outing duration selector was updated on 7 November 2026 from source
-commit `7f3b113`. Hours and minutes are now stacked and use simple underlines on
-both phone and web. The Android update group is
-<https://expo.dev/accounts/bravogroup/projects/uvscout/updates/9d693483-1cf7-4b0a-a0a6-894cfdd5824b>.
-The latest web deployment is listed above.
+The outing duration selector was updated on 7 November 2026 from source commit
+`7451ee3`. It offers half-hour steps through the available two-day forecast
+window. The Android update group is the latest update linked above; the latest
+web deployment is listed above.
 
 The latest chart styling update was published 1 November 2026 from source
 commit `ff14bf3`. Past chart bars and labels are gray. Current and future bars
