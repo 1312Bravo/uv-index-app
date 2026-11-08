@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--0gsv4w2m53.expo.app>
+- Latest deployment: <https://uvscout--sfi0bb9dy4.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -19,7 +19,12 @@ The website background was updated 6 November 2026 from source commit
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Restored solid-background logo build (queued, version code 2): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/a1b42ce1-9d64-483b-9936-6c0bba94ca33>
 - APK download: available on the build page when this build finishes
-- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/e05ae82f-ac8d-4f49-9c6c-7fd3615f740a>
+- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/d1b90f61-9e12-44d9-999e-dc05fe7026c5>
+
+The location source links were grouped beneath the forecast-point note on 8
+November 2026 from source commit `0e309d3`. The web deployment is `sfi0bb9dy4`;
+Android update group `d1b90f61-9e12-44d9-999e-dc05fe7026c5` uses channel
+`preview`, runtime `1.0.0`.
 
 The forecast-point note and updated Sources section were published on 7 November
 2026 from source commit `a5f11de`. When Open-Meteo returns forecast grid
