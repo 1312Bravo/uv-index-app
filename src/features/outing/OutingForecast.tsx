@@ -22,8 +22,7 @@ type PendingChartStart = {
 type Props = {
   latitude: number;
   longitude: number;
-  onTimezoneChange: (timeZone: string) => void;
-  onForecastPointChange: (point: LocationCoordinates | null) => void;
+  onTimezoneChange: (timeZone: string, forecastPoint: LocationCoordinates | null) => void;
   plan: TimePlan;
   pendingChartStart: PendingChartStart | null;
   onChartHourSelect: (time: number, isCurrentHour: boolean) => void;
@@ -152,7 +151,7 @@ function ContextNote({ item, centeredBlock = false }: {
 }
 
 export function OutingForecast({
-  latitude, longitude, onTimezoneChange, onForecastPointChange, plan, pendingChartStart, onChartHourSelect,
+  latitude, longitude, onTimezoneChange, plan, pendingChartStart, onChartHourSelect,
 }: Props) {
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 760;
@@ -172,9 +171,8 @@ export function OutingForecast({
 
   useEffect(() => {
     if (!forecast) return;
-    onTimezoneChange(forecast.timezone);
-    onForecastPointChange(forecast.forecastPoint);
-  }, [forecast, onForecastPointChange, onTimezoneChange]);
+    onTimezoneChange(forecast.timezone, forecast.forecastPoint);
+  }, [forecast, onTimezoneChange]);
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
   const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;

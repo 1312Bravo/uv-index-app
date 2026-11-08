@@ -61,6 +61,11 @@ licensing details.
   coordinate for the app session; on failure, the note is omitted. OpenStreetMap
   attribution is linked below the note. See the source register for provider
   details, limitations, and checked dates.
+- The existing Open-Meteo time-zone request also returns the forecast grid
+  coordinates. The shared location summary can therefore show the optional
+  forecast-point note on Location without waiting for UV Outlook or Plan an
+  Outing to load. If the time-zone request or nearby-place lookup fails, the
+  location selector remains usable and the note is omitted.
 - The shared location summary on Location, UV Outlook, and Plan an Outing shows
   the place, coordinates, and a live local date and time. Open-Meteo resolves
   the time zone from selected coordinates as soon as a location is chosen; the

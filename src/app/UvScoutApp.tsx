@@ -5,7 +5,6 @@ import { useCallback, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import type { SelectedLocation } from '../domain/location/locationTypes';
-import type { LocationCoordinates } from '../domain/location/locationTypes';
 import { getLocationCoordinates } from '../domain/location/getLocationCoordinates';
 import type { TimePlan } from '../domain/outing/timePlan';
 import { HourlyUvChart } from '../features/forecast/HourlyUvChart';
@@ -28,7 +27,6 @@ export function UvScoutApp() {
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [location, setLocation] = useState<SelectedLocation | null>(null);
-  const [forecastPoint, setForecastPoint] = useState<LocationCoordinates | null>(null);
   const [isMapInteracting, setIsMapInteracting] = useState(false);
   const [timePlan, setTimePlan] = useState<TimePlan | null>(null);
   const [chartSelection, setChartSelection] = useState<ChartSelectedTimeRange | null>(null);
@@ -37,12 +35,9 @@ export function UvScoutApp() {
   const coordinates = location ? getLocationCoordinates(location) : null;
   const latitude = coordinates?.latitude;
   const longitude = coordinates?.longitude;
-  const handleForecastPointChange = useCallback((point: LocationCoordinates | null) => {
-    setForecastPoint((current) => current?.latitude === point?.latitude &&
-      current?.longitude === point?.longitude ? current : point);
-  }, []);
   const {
     timeZone: locationTimeZone,
+    forecastPoint,
     unavailable: timeZoneUnavailable,
     updateFromForecast: updateLocationTimeZone,
   } = useLocationTimeZone(latitude, longitude);
@@ -114,12 +109,7 @@ export function UvScoutApp() {
           <LocationPicker
             onMapInteractionChange={setIsMapInteracting}
             onSelect={(selectedLocation) => {
-              const nextCoordinates = selectedLocation ? getLocationCoordinates(selectedLocation) : null;
-              const sameSelectedCoordinates = coordinates && nextCoordinates &&
-                coordinates.latitude === nextCoordinates.latitude &&
-                coordinates.longitude === nextCoordinates.longitude;
               setLocation(selectedLocation);
-              if (!sameSelectedCoordinates) setForecastPoint(null);
               setChartSelection(null);
               setPendingChartStart(null);
             }}
@@ -132,7 +122,6 @@ export function UvScoutApp() {
             latitude={latitude}
             longitude={longitude}
             onTimezoneChange={updateLocationTimeZone}
-            onForecastPointChange={handleForecastPointChange}
           />
         )}
         <View style={page === 'plan' ? undefined : styles.hidden}>
@@ -150,7 +139,6 @@ export function UvScoutApp() {
                 latitude={latitude}
                 longitude={longitude}
                 onTimezoneChange={updateLocationTimeZone}
-                onForecastPointChange={handleForecastPointChange}
                 plan={timePlan}
                 pendingChartStart={pendingChartStart}
                 onChartHourSelect={handleOutingChartHour}

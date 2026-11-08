@@ -1,8 +1,15 @@
+import type { LocationCoordinates } from '../../domain/location/locationTypes';
+
+export type LocationForecastMetadata = {
+  timeZone: string;
+  forecastPoint: LocationCoordinates | null;
+};
+
 export async function getLocationTimeZone(
   latitude: number,
   longitude: number,
   signal?: AbortSignal,
-): Promise<string> {
+): Promise<LocationForecastMetadata> {
   const params = new URLSearchParams({
     latitude: String(latitude),
     longitude: String(longitude),
@@ -20,5 +27,12 @@ export async function getLocationTimeZone(
 
   // Check that the returned zone can be used for local date and time formatting.
   new Intl.DateTimeFormat('en', { timeZone: data.timezone });
-  return data.timezone;
+  const forecastPoint = typeof data.latitude === 'number' && Number.isFinite(data.latitude) &&
+    data.latitude >= -90 && data.latitude <= 90 &&
+    typeof data.longitude === 'number' && Number.isFinite(data.longitude) &&
+    data.longitude >= -180 && data.longitude <= 180
+    ? { latitude: data.latitude, longitude: data.longitude }
+    : null;
+
+  return { timeZone: data.timezone, forecastPoint };
 }

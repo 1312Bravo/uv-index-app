@@ -16,14 +16,13 @@ import type { LocationCoordinates } from '../../domain/location/locationTypes';
 type Props = {
   latitude: number;
   longitude: number;
-  onTimezoneChange: (timeZone: string) => void;
-  onForecastPointChange: (point: LocationCoordinates | null) => void;
+  onTimezoneChange: (timeZone: string, forecastPoint: LocationCoordinates | null) => void;
 };
 
 const INITIAL_SCROLL_HOURS = 2;
 type OutlookTimeMode = 'now' | 'custom';
 
-export function HourlyUvChart({ latitude, longitude, onTimezoneChange, onForecastPointChange }: Props) {
+export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) {
   const [currentTime, setCurrentTime] = useState(() => Date.now());
   const [timeMode, setTimeMode] = useState<OutlookTimeMode>('now');
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
@@ -70,9 +69,8 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange, onForecas
 
   useEffect(() => {
     if (!forecast) return;
-    onTimezoneChange(forecast.timezone);
-    onForecastPointChange(forecast.forecastPoint);
-  }, [forecast, onForecastPointChange, onTimezoneChange]);
+    onTimezoneChange(forecast.timezone, forecast.forecastPoint);
+  }, [forecast, onTimezoneChange]);
 
   return (
     <View style={styles.section}>
