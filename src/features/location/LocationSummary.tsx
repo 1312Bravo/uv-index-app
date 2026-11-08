@@ -65,20 +65,29 @@ export function LocationSummary({ location, timeZone, timeZoneUnavailable, forec
           <View style={styles.divider} />
           <Text style={styles.name}>{getLocationName(location)}</Text>
           <Text style={styles.coordinates}>{formatLocationCoordinates(location)}</Text>
-          {location.source === 'place' && (
-            <SourceAttribution label="Place data by Open-Meteo / GeoNames" url="https://open-meteo.com/en/docs/geocoding-api" />
-          )}
           {forecastPoint && selectedCoordinates && forecastPointName && (
             <Text style={styles.forecastPoint}>
               Forecast point {formatForecastOffset(getDistanceKilometers(selectedCoordinates, forecastPoint))}
               {' from selected location ('}{forecastPointName}{')'}
             </Text>
           )}
-          {(location.source === 'map' || (forecastPoint && forecastPointName)) && (
-            <SourceAttribution
-              label="© OpenStreetMap contributors"
-              url="https://www.openstreetmap.org/copyright"
-            />
+          {(location.source === 'place' || location.source === 'map' || (forecastPoint && forecastPointName)) && (
+            <View style={styles.attributions}>
+              {location.source === 'place' && (
+                <SourceAttribution
+                  compact
+                  label="Place data by Open-Meteo / GeoNames"
+                  url="https://open-meteo.com/en/docs/geocoding-api"
+                />
+              )}
+              {(location.source === 'map' || (forecastPoint && forecastPointName)) && (
+                <SourceAttribution
+                  compact
+                  label="© OpenStreetMap contributors"
+                  url="https://www.openstreetmap.org/copyright"
+                />
+              )}
+            </View>
           )}
         </>
       )}
@@ -112,6 +121,10 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginTop: 5,
     textAlign: 'center',
+  },
+  attributions: {
+    marginTop: 5,
+    rowGap: 2,
   },
   dateTime: {
     color: uiColors.ink,
