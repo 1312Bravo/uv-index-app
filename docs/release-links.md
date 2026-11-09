@@ -5,21 +5,27 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--8gd503fzkg.expo.app>
+- Latest deployment: <https://uvscout--60ckl6wm5a.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
 [`web-release.md`](web-release.md) for deployment instructions.
 
-The website background was updated 6 November 2026 from source commit
-`d416720` to match the app and icon background (`#F5F2EC`).
+The app page, website shell, and PWA theme now use the neutral off-white
+background (`#FAFAF8`), published on 9 November 2026 from source commit
+`d19d07e`. The previous website background update from 6 November matched the
+then-current app and icon background (`#F5F2EC`).
 
 ## Android app
 
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Restored solid-background logo build (queued, version code 2): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/a1b42ce1-9d64-483b-9936-6c0bba94ca33>
 - APK download: available on the build page when this build finishes
-- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/30d1f153-8a20-4b87-9c06-76a7fe6cdf20>
+- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/cd087018-14d6-479f-952d-ab99b77aba55>
+
+The neutral off-white background is live on the website and Android preview.
+The web deployment is `60ckl6wm5a`; Android update group
+`cd087018-14d6-479f-952d-ab99b77aba55` uses channel `preview`, runtime `1.0.0`.
 
 The forecast-point note now loads on the Location page on 8 November 2026 from
 source commit `964a7f5`. It uses coordinates from the existing Open-Meteo
