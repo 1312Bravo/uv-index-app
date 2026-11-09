@@ -27,11 +27,11 @@
     "web": {
       "name": "UV Scout",
       "shortName": "UV Scout",
-      "themeColor": "#F5F2EC",
+      "themeColor": "#FAFAF8",
       "splash": {
         "image": "./assets/splash-icon.png",
         "resizeMode": "contain",
-        "backgroundColor": "#F5F2EC"
+        "backgroundColor": "#FAFAF8"
       }
     },
     "plugins": [
