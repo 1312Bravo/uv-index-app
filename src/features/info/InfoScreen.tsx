@@ -125,7 +125,8 @@ function PrecipitationExplanation() {
       </View>
       <Text style={styles.note}>
         Peak chance is for the highest single hour, not the whole outing. The rain
-        guide applies to one hour, not the outing total.
+        guide applies to one hour, not the outing total. The outing amount adds
+        complete forecast hours only. Partial first and last hours are left out.
       </Text>
     </>
   );

@@ -125,7 +125,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
                 timezone: forecast.timezone,
               } : undefined}
               forecastWeather={timeMode === 'custom' && selectedCustomTime !== null ? {
-                time: selectedCustomTime,
+                time: selectedHour.time,
                 temperature: selectedHour.temperature,
                 cloudCover: selectedHour.hourlyCloudCover ?? selectedHour.cloudCover,
                 precipitationProbability: selectedHour.precipitationProbability,

@@ -40,6 +40,15 @@ helps people plan outdoor time around the current and forecast UV index.
   the original hourly UV, with partial-hour weighting. Temperature, cloud cover,
   and wind retain their separate forward-hour approximation. UV Outlook's
   custom-time smoothing needs a separate review against the provider definition.
+  The guidance names the full interval of the highest hourly UV mean, matching
+  the compact chart's interval-end label.
+- Keep decimal UV category rounding as agreed, with five display levels: Low,
+  Moderate, High, Very high, and Extreme. Intensity wording matches the displayed
+  category. Protection actions use raw UV thresholds at 3 and 8; a brief note
+  appears only when rounding crosses one of those action thresholds.
+- For a custom half-hour UV selection, label weather with its actual hourly
+  timestamp. Show the preceding-hour period for its precipitation amount and
+  chance instead of presenting these values as a half-hour weather forecast.
 - The outing weather summary shows temperature, cloud cover, precipitation, and
   wind in a 2x2 grid after the protection steps. Wind shows an average weighted
   by the selected outing's overlap with each available hourly reading, plus its
@@ -144,7 +153,8 @@ helps people plan outdoor time around the current and forecast UV index.
 - Summarize outings in four compact metrics: UV peak/average, temperature
   average/range, cloud-cover average/range, and expected precipitation with the
   peak hourly chance. Sum rain only across complete preceding-hour intervals;
-  do not prorate partial hours or combine probabilities.
+  do not prorate partial hours or combine probabilities. Label the amount as
+  covering full hours only when partial first or last hours are excluded.
 - Use the same compact hourly UV bar chart in the outlook and outing result, with
   cloud-cover percentage and temperature above each bar, and precipitation values
   and wind speed below each hour label.

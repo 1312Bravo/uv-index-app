@@ -26,6 +26,7 @@ src/
     guidance/hourlyUvGuidance.json Editable single-hour guidance text
     guidance/getHourlyUvGuidance.ts Interprets single-hour UV guidance
     uv/uvCategories.json      Editable UV categories and explanations
+    uv/categoryBoundaryNotes.json Brief notes for rounded category boundaries
     uv/getUvCategory.ts       Validates and interprets the category table
     weather/cloudCoverBands.json Editable cloud-cover descriptions
     weather/getCloudCoverBand.ts Validates and interprets cloud-cover bands
@@ -90,6 +91,10 @@ Keep all five keys unique, the first minimum at zero, and rows in increasing
 threshold order. Labels and thresholds are editable; keys are stable app
 identifiers. Changing the set of keys also requires updating the TypeScript type.
 The interpreter checks the table and rejects invalid UV inputs.
+Edit `src/domain/uv/categoryBoundaryNotes.json` for the small notes shown only
+when rounding crosses the raw UV 3 or 8 protection threshold. The same notes
+appear in UV Outlook and Plan an Outing. Displayed category explanations follow
+the rounded category; protection actions continue to use the raw UV value.
 
 For the Info screen's cloud-cover ranges, edit
 `src/domain/weather/cloudCoverBands.json`. The ranges must be unique, consecutive
@@ -163,16 +168,19 @@ UV Outlook's single-hour advice is separate from the outing profile. Edit
 in `uvScoutRecommendationRules.json` and the existing display categories.
 Those bands are raw UVI below 3, 3 to below 8, and 8 or higher. A cloud
 reminder appears at 76% cover or more only when raw UVI is at least 3;
-cloud cover does not change the protection band. Intensity descriptions use
-the unrounded UV value and the thresholds in `uv/uvCategories.json`, so a value
-below 3 keeps the low-intensity explanation. The displayed category still
-rounds the UV value to a whole number. UV Outlook omits the category-rounding
-note.
+cloud cover does not change the protection band. Intensity descriptions match
+the displayed category from `uv/uvCategories.json`. Protection actions use raw
+UV. When category rounding crosses raw UV 3 or 8, a short note explains the
+different action threshold. The displayed category still rounds the UV value
+to a whole number.
 `src/features/forecast/HourlyUvGuidance.tsx` renders the result above the
 hourly chart. The Now bin uses the provider's current model estimate when
 available. Custom times on the hour use hourly forecast values; half-hour UV
 is estimated by `src/domain/forecast/getUvForecastAtTime.ts` between adjacent
-hourly values. Both the open outlook and the outing forecast refresh every 15
+hourly values. Custom-time weather shows the timestamp of the actual hourly
+weather record, which can be earlier than the selected half-hour UV time.
+Its precipitation amount and chance refer to the hour preceding that weather
+timestamp. Both the open outlook and the outing forecast refresh every 15
 minutes. Forecast attempts time out after 12 seconds and are retried once
 before showing a retry control.
 

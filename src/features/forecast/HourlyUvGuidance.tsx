@@ -81,6 +81,9 @@ export function HourlyUvGuidance({
           <Text style={[styles.readingLabel, styles.uvIndexLabel]}>UV INDEX</Text>
           <Text style={styles.uvValue}>{guidance.uv.toFixed(1)}</Text>
           <Text style={styles.category}>{guidance.category}</Text>
+          {guidance.categoryNote && (
+            <Text style={styles.categoryNote}>{guidance.categoryNote}</Text>
+          )}
           {isCurrent && estimateTime !== null && (
             <Text style={styles.currentEstimateTime}>
               Latest estimate: {formatEstimateTime(estimateTime, timezone)}
@@ -150,6 +153,7 @@ const styles = StyleSheet.create({
   divider: { alignSelf: 'center', backgroundColor: uiColors.line, height: 1, marginVertical: 14, width: 96 },
   weatherSection: { borderTopColor: uiColors.line, borderTopWidth: 1, marginTop: 16 },
   category: { color: uiColors.accent, fontSize: 15, fontWeight: '500' },
+  categoryNote: { color: uiColors.muted, fontSize: 11, marginTop: 4, textAlign: 'center' },
   protection: { alignSelf: 'center', maxWidth: 700, width: '100%' },
   actions: { marginTop: 7, rowGap: 5 },
   // Web-only intrinsic sizing keeps the list left-aligned while centering its widest line.

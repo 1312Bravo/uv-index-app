@@ -16,8 +16,9 @@ See [the timing review](uv-hourly-timing-review.md) for the provider definition.
 
 In Plan an Outing, **UV guidance** shows any forecast-coverage warning
 and a short, untitled bulleted takeaway. For mixed UV, the first bullet gives
-the covered range, duration-weighted average, and peak forecast hour. The
-second bullet follows up to four consecutive forecast windows in local-time
+the covered range, duration-weighted average, and the full preceding-hour
+interval with the highest hourly mean. Its ending time matches the chart label.
+The second bullet follows up to four consecutive forecast windows in local-time
 order. With five or more windows, it groups approximate times by UV band and
 states each matching protection action once. Adjacent
 hours in the same band share one window; gaps in coverage do not merge.
@@ -35,7 +36,9 @@ time at UVI 3+; Strongest hours names the total at UVI 8+. Their exact
 local-time windows remain as quieter lines beneath those actions.
 Cloud and reflective-surface cautions appear below as smaller context notes.
 When a rounded display category crosses a raw-UVI protection boundary, a
-small note explains why the action still follows the unrounded value.
+small note beside the category explains why the action still follows the
+unrounded value. UV Outlook uses the same note and matches its intensity
+description to the displayed category.
 For all-below-3 outings, the opening includes a short protection outcome and
 Protection steps adds a concrete sunscreen action for the covered hours. Both section headings are
 centered. There is no separate Summary at the bottom. The four

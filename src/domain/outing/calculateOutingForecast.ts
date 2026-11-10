@@ -23,6 +23,7 @@ export type OutingForecastSummary = {
   expectedPrecipitationMm: number | null;
   peakHourlyPrecipitationProbability: number | null;
   completePrecipitationHours: number;
+  partialPrecipitationHours: number;
   startSeconds: number;
   endSeconds: number;
   requestedSeconds: number;
@@ -147,6 +148,7 @@ export function summarizeOutingForecast(
   const completePrecipitationHours = precedingHourIntervals.filter(({ hour }) =>
     hour.time - 3600 >= startSeconds && hour.time <= endSeconds,
   );
+  const partialPrecipitationHours = precedingHourIntervals.length - completePrecipitationHours.length;
   const precipitationValues = completePrecipitationHours.map(({ hour }) => hour.precipitation);
   const expectedPrecipitationMm = precipitationValues.length > 0 &&
     precipitationValues.every((value): value is number => value !== null)
@@ -179,6 +181,7 @@ export function summarizeOutingForecast(
       ? Math.max(...precipitationProbabilities)
       : null,
     completePrecipitationHours: completePrecipitationHours.length,
+    partialPrecipitationHours,
     startSeconds,
     endSeconds,
     requestedSeconds,

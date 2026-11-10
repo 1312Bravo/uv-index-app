@@ -98,9 +98,13 @@ export function WeatherMetrics({
   const precipitationDetail = precipitationRange
     ? `${formatInterval(precipitationInterval ?? null)}: ${precipitationRange}`
     : formatInterval(precipitationInterval ?? null);
-  const forecastPrecipitationDetail = precipitationProbability == null
+  const forecastPrecipitationDetail = forecastTime === undefined
     ? 'Hourly chance unavailable'
-    : `Hourly chance: ${Math.round(precipitationProbability)}%`;
+    : `${formatTime(forecastTime - 3600, timezone)}-${formatTime(forecastTime, timezone)}: ${
+      precipitationProbability === null || precipitationProbability === undefined
+        ? 'chance unavailable'
+        : `${Math.round(precipitationProbability)}% chance`
+    }`;
 
   return (
     <View>

@@ -13,7 +13,7 @@
   },
   "profileMessages": {
     "takeawaySteady": "UV stays at {uv} for {coveredDuration}.",
-    "takeawayChanging": "UV ranges from {minimumUv} to {peakUv} (average {averageUv}), with the highest forecast hour at {peakTime}.",
+    "takeawayChanging": "UV ranges from {minimumUv} to {peakUv} (average {averageUv}). The highest hourly UV is for {peakPeriod}.",
     "steady": "UV stays at {uv} across the {coveredDuration} with forecast data, so the average is also {averageUv}.",
     "startEndAverage": "Across the forecasted hours, UV starts at {startUv} and ends at {endUv}. The average is {averageUv}.",
     "highest": "Highest UV is {uv} for about {duration}, during {periods}.",
@@ -62,8 +62,6 @@
     ]
   },
   "messages": {
-    "coverageIncomplete": "Forecast available for {coveredDuration} of the planned {plannedDuration}. The remaining time has no forecast.",
-    "roundedModerateBelowProtection": "The category is rounded for display. The covered forecast hours stay below UV 3, which is the threshold used for protection advice.",
-    "roundedVeryHighBelowExtraProtection": "The category is rounded for display. Extra protection advice starts at the unrounded UV value of 8."
+    "coverageIncomplete": "Forecast available for {coveredDuration} of the planned {plannedDuration}. The remaining time has no forecast."
   }
 }

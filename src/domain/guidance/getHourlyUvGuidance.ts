@@ -1,5 +1,6 @@
 import definitions from './hourlyUvGuidance.json';
 import rules from './uvScoutRecommendationRules.json';
+import boundaryNotes from '../uv/categoryBoundaryNotes.json';
 import { getUvCategory, getUvCategoryDefinitions } from '../uv/getUvCategory';
 
 type UvBandKey = 'below-3' | '3-to-8' | '8-plus';
@@ -8,6 +9,7 @@ export type HourlyUvGuidance = {
   uv: number;
   category: string;
   meaning: string;
+  categoryNote: string | null;
   actions: string[];
   cloudNote: string | null;
 };
@@ -26,6 +28,8 @@ if (
   bandKeys.some((key) => definitions.actions[key].length === 0 ||
     definitions.actions[key].some((action) => !action.trim())) ||
   !definitions.cloudNote.trim() ||
+  !boundaryNotes.belowProtection.trim() ||
+  !boundaryNotes.belowExtraProtection.trim() ||
   !cloudyRule || cloudyRule.whenUvAtOrAbove !== 3 ||
   cloudyRule.whenCloudCoverAtOrAbovePercent !== 76
 ) {
@@ -44,14 +48,21 @@ export function getHourlyUvGuidance(uv: number, cloudCover: number | null): Hour
   if (!band) throw new Error('No protection band covers the current UV value.');
 
   const category = getUvCategory(uv);
-  // Explain the actual UV intensity; rounding the display label must not strengthen the advice.
-  const meaning = getUvCategoryDefinitions().findLast((entry) => uv >= entry.minimumUvInclusive)?.meaning;
+  // Match the displayed category while keeping protection actions on raw UV thresholds.
+  const meaning = getUvCategoryDefinitions().find((entry) => entry.key === category.key)?.meaning;
   if (!meaning) throw new Error('Hourly UV category has no description.');
+
+  const categoryNote = uv < bands[1].minimumUvInclusive && category.key !== 'low'
+    ? boundaryNotes.belowProtection
+    : uv < bands[2].minimumUvInclusive && category.key === 'very-high'
+      ? boundaryNotes.belowExtraProtection
+      : null;
 
   return {
     uv,
     category: category.label,
     meaning,
+    categoryNote,
     actions: definitions.actions[band.key as UvBandKey],
     cloudNote: uv >= cloudyRule!.whenUvAtOrAbove && cloudCover !== null &&
       cloudCover >= cloudyRule!.whenCloudCoverAtOrAbovePercent

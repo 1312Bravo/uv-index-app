@@ -214,7 +214,7 @@ test('UV display category rounds decimal values with .5 upward', () => {
   assert.equal(getUvCategory(5.5).key, 'high');
 });
 
-test('single-hour descriptions and actions follow raw UV even when the displayed category rounds up', () => {
+test('single-hour descriptions match the displayed category while actions use raw UV', () => {
   const belowRoundingBoundary = getHourlyUvGuidance(2.4, 40);
   const atRoundingBoundary = getHourlyUvGuidance(2.5, 40);
   const low = getHourlyUvGuidance(2.9, 40);
@@ -227,21 +227,21 @@ test('single-hour descriptions and actions follow raw UV even when the displayed
   const extreme = getHourlyUvGuidance(11, 40);
 
   assert.equal(atRoundingBoundary.category, 'Moderate');
-  assert.equal(atRoundingBoundary.meaning, belowRoundingBoundary.meaning);
+  assert.equal(atRoundingBoundary.meaning, moderate.meaning);
+  assert.match(atRoundingBoundary.categoryNote, /protection advice starts at UV 3/i);
   assert.equal(low.category, 'Moderate');
-  assert.match(low.meaning, /relatively weak/i);
-  assert.equal(low.meaning, belowRoundingBoundary.meaning);
-  assert.notEqual(low.meaning, moderate.meaning);
+  assert.equal(low.meaning, moderate.meaning);
+  assert.notEqual(low.meaning, belowRoundingBoundary.meaning);
   assert.match(low.actions[0], /no extra sun protection/i);
   assert.match(moderate.actions.join(' '), /SPF 30\+/i);
-  assert.equal(nearHigh.meaning, moderate.meaning);
-  assert.notEqual(nearHigh.meaning, high.meaning);
-  assert.equal(nearVeryHigh.meaning, high.meaning);
-  assert.notEqual(nearVeryHigh.meaning, veryHigh.meaning);
+  assert.equal(nearHigh.meaning, high.meaning);
+  assert.equal(nearHigh.categoryNote, null);
+  assert.equal(nearVeryHigh.meaning, veryHigh.meaning);
+  assert.match(nearVeryHigh.categoryNote, /extra protection starts at UV 8/i);
   assert.doesNotMatch(nearVeryHigh.actions.join(' '), /limit direct sun/i);
   assert.match(veryHigh.actions.join(' '), /limit direct sun/i);
-  assert.equal(nearExtreme.meaning, veryHigh.meaning);
-  assert.notEqual(nearExtreme.meaning, extreme.meaning);
+  assert.equal(nearExtreme.meaning, extreme.meaning);
+  assert.equal(extreme.categoryNote, null);
 });
 
 test('single-hour cloud reminder follows the UV and cloud thresholds', () => {
@@ -321,6 +321,7 @@ test('outing averages weight partial first and last hours by their overlap', () 
   assert.equal(result.averageTemperature, 15);
 
   const insight = getUvScoutInsight(result, 'UTC');
+  assert.match(insight.takeawayBullets[0], /highest hourly UV is for 1:00 AM-2:00 AM/i);
   assert.equal(insight.breakdown.length, 3);
   assert.match(trendLines(insight)[0], /starts at 2\.0 and ends at 6\.0/);
   assert.match(trendLines(insight)[0], /average is 4\.0/);
@@ -430,7 +431,7 @@ test('overnight advice identifies the peak and later sunscreen start by weekday'
     hour(24 * 3600, 6), hour(25 * 3600, 6),
   ], 22 * 3600, 26 * 3600), 'UTC');
 
-  assert.match(insight.takeawayBullets[0], /highest forecast hour at Friday 12:00 AM/i);
+  assert.match(insight.takeawayBullets[0], /highest hourly UV is for Friday 12:00 AM-1:00 AM/i);
   assert.match(actionText(insight, 'Sunscreen'), /first forecast UV 3\+ period begins at Friday 12:00 AM/i);
   assert.match(insight.breakdown[1], /Friday 12:00 AM-2:00 AM/i);
   assert.match(timingLines(insight)[0], /Friday 12:00 AM-2:00 AM/i);
@@ -484,8 +485,21 @@ test('precipitation totals include only complete preceding-hour amounts', () => 
   ], 0, 7200);
 
   assert.equal(result.completePrecipitationHours, 2);
+  assert.equal(result.partialPrecipitationHours, 0);
   assert.equal(result.expectedPrecipitationMm, 1.6);
   assert.equal(result.peakHourlyPrecipitationProbability, 70);
+});
+
+test('outing precipitation marks excluded partial hours', () => {
+  const result = summarize([
+    hour(0, 1, { precipitation: 0.5 }),
+    hour(3600, 2, { precipitation: 1.0 }),
+    hour(7200, 2, { precipitation: 2.0 }),
+  ], 1800, 9000);
+
+  assert.equal(result.completePrecipitationHours, 1);
+  assert.equal(result.partialPrecipitationHours, 2);
+  assert.equal(result.expectedPrecipitationMm, 2.0);
 });
 
 test('action guidance gives concrete protection steps for moderate and very high UV', () => {
@@ -601,10 +615,10 @@ test('rounded categories explain only cross-threshold protection differences', (
   const adviceAt = (uv) => getUvScoutInsight(summarize([hour(0, uv)], 0, 3600), 'UTC');
 
   assert.equal(adviceAt(2.4).categoryNote, null);
-  assert.match(adviceAt(2.9).categoryNote, /covered forecast hours stay below UV 3/i);
+  assert.match(adviceAt(2.9).categoryNote, /protection advice starts at UV 3/i);
   assert.match(adviceAt(2.9).takeaway, /no extra sun protection/i);
   assert.equal(adviceAt(3).categoryNote, null);
-  assert.match(adviceAt(7.9).categoryNote, /unrounded UV value of 8/i);
+  assert.match(adviceAt(7.9).categoryNote, /extra protection starts at UV 8/i);
   assert.equal(adviceAt(7.9).practicalGuidance.some(({ title }) => title === 'Strongest hours'), false);
   assert.equal(adviceAt(8).categoryNote, null);
 });

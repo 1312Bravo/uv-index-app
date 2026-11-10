@@ -36,6 +36,16 @@ without native 15-minute data, such values may be interpolated from hourly
 data. Therefore the label describes the provider's model interval, not a
 rain-gauge measurement or a guaranteed locally observed 15-minute total.
 
+Outing precipitation is a separate sum of hourly forecast amounts. Open-Meteo
+defines each amount as the sum of the preceding hour. UV Scout includes only
+complete hourly intervals inside the outing, without prorating partial hours.
+`src/domain/outing/calculateOutingForecast.ts` counts omitted partial
+intervals, and `src/features/outing/OutingForecastMetrics.tsx` labels the
+amount as covering full hours only when any partial intervals are excluded.
+Info > Precipitation explains that limitation. This is a UV Scout scope and
+display choice, not a provider-issued outing total. The provider definition
+was checked again on 2026-11-10.
+
 Temperature and cloud cover in the same grid are current-condition snapshots
 timestamped by `current.time`; they are not averages over the preceding
 precipitation interval. Each shows `Latest estimate: [time]` with that timestamp. The
@@ -44,7 +54,7 @@ hourly precipitation-probability field, whose meaning is the probability of
 more than 0.1 mm during the preceding hour. Parsing is in
 `src/services/forecast/getHourlyForecast.ts`; interval metadata is carried by
 `src/domain/forecast/forecastTypes.ts` and rendered in
-`src/features/forecast/CurrentWeatherMetrics.tsx`.
+`src/features/forecast/WeatherMetrics.tsx`.
 
 Display update 2026-10-31: Current weather uses a 2x2 grid, with temperature
 and cloud cover above precipitation and wind. Wind reuses the existing
@@ -58,7 +68,7 @@ Current gust addition 2026-10-31: The same forecast request now includes
 lists this variable and describes current conditions as model estimates based
 on 15-minute data (unversioned docs checked 2026-10-31). The service stores
 the returned gust estimate separately as `HourlyForecast.currentWindGust`.
-`HourlyUvChart.tsx` passes it to `CurrentWeatherMetrics.tsx`, which shows wind
+`HourlyUvChart.tsx` passes it to `WeatherMetrics.tsx`, which shows wind
 speed with gusts in parentheses, rounded to whole km/h. This current estimate
 is not the outing's average hourly gust peak. Missing, invalid, or negative
 current gusts display a dash; zero is valid. No hourly gust value substitutes
@@ -118,6 +128,12 @@ Existing model-data, attribution, licence, and local-exposure limits apply.
   cloud reminder trigger, and concise single-hour wording are UV Scout
   choices. Cloud cover never numerically adjusts the forecast UV. This advice
   assumes no activity, duration, personal sensitivity, or measured exposure.
+- Follow-up checked 2026-11-10: `src/domain/uv/categoryBoundaryNotes.json`
+  holds the short notes used by UV Outlook and Plan an Outing when a rounded
+  category crosses the raw UV 3 or 8 action threshold. The single-hour
+  intensity description now follows the displayed category; protection
+  actions still use raw UV. This alignment and note placement are UV Scout
+  presentation choices, not a WHO decimal-rounding rule.
 - UV Scout's Now/Custom controls above the UV reading use the existing two-day
   Open-Meteo response. The chart highlights the choice; earlier model hours
   are shown only as context.
@@ -137,9 +153,14 @@ category still rounds as before; the rounding note was removed from UV Outlook.
 These wording and presentation decisions are UV Scout choices, not a new WHO
 rule or a statement that low UV is harmless. See the
 [detailed wording review](protection-guidance-research.md#uv-outlook-low-uv-wording-review-2026-10-29).
-  Custom half-hour slots appear in one continuous list with local-day labels at
-  date boundaries. This is a presentation choice, not a new provider field or a
-  personal exposure calculation.
+
+The description and note placement from this October review were superseded
+on 2026-11-10 by the follow-up above. The raw protection thresholds and the
+low-UV protection action remain unchanged.
+
+Custom half-hour slots appear in one continuous list with local-day labels at
+date boundaries. This is a presentation choice, not a new provider field or a
+personal exposure calculation.
 
 ## Interactive map providers
 
@@ -292,6 +313,13 @@ hourly value; half-hour UV is interpolated between adjacent hourly values.
 The chart keeps the provider's hourly values and highlights the containing
 hour. The last half-hour choice is omitted when the next hourly value is
 unavailable. These are UV Scout presentation and calculation choices.
+For a custom half-hour selection, `src/features/forecast/HourlyUvChart.tsx`
+now passes the containing hour's actual timestamp to the weather card.
+`src/features/forecast/WeatherMetrics.tsx` labels that hourly weather record
+and the preceding-hour period used by its precipitation amount and chance.
+The selected UV time can therefore differ from the weather record's time;
+UV Scout does not claim a new half-hour weather forecast. Checked against
+the Open-Meteo Forecast API parameter definitions on 2026-11-10.
 The behavior is implemented in `src/features/forecast/OutlookTimeSelector.tsx`
 and `src/features/forecast/HourlyUvChart.tsx`, with the calculation in
 `src/domain/forecast/getUvForecastAtTime.ts`.
@@ -343,6 +371,11 @@ Custom-time smoothing in UV Outlook remains a separate review item.
 See [hourly UV timing review](uv-hourly-timing-review.md)
 for affected code, the reported example, and source facts versus product
 choices. The existing source credit, licence, and model limitations apply.
+
+The outing summary's first guidance bullet now names the full preceding-hour
+interval of its highest hourly UV mean. The compact chart labels the same
+reading by the interval's end time. This is a wording correction based on the
+same provider definition, checked again 2026-11-10.
 
 ### Outing gust summary, checked 2026-10-31
 

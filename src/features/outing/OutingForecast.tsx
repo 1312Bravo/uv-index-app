@@ -209,7 +209,7 @@ export function OutingForecast({
       {forecast && summary && (
         <>
           <Text style={styles.sectionLabel}><Text style={styles.uvAccent}>UV</Text> summary</Text>
-          <OutingUvSummary summary={summary} />
+          <OutingUvSummary summary={summary} categoryNote={guidance?.categoryNote ?? null} />
           <View style={styles.uvSummaryDivider} />
           <OutingUvTimeline
             hours={summary.hours}

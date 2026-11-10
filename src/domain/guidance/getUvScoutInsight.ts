@@ -1,5 +1,6 @@
 import definitions from './uvScoutInsight.json';
 import rules from './uvScoutRecommendationRules.json';
+import boundaryNotes from '../uv/categoryBoundaryNotes.json';
 import { getHourOverlap, type OutingForecastSummary } from '../outing/calculateOutingForecast';
 import cloudCoverBands from '../weather/cloudCoverBands.json';
 
@@ -114,8 +115,8 @@ function validateDefinitions() {
   }
   if (
     !definitions.messages.coverageIncomplete.trim() ||
-    !definitions.messages.roundedModerateBelowProtection.trim() ||
-    !definitions.messages.roundedVeryHighBelowExtraProtection.trim() ||
+    !boundaryNotes.belowProtection.trim() ||
+    !boundaryNotes.belowExtraProtection.trim() ||
     !Number.isInteger(rules.takeawayPresentation.compactWhenWindowCountAtLeast) ||
     rules.takeawayPresentation.compactWhenWindowCountAtLeast < 2 ||
     !Number.isFinite(rules.guidanceTriggers.coverageToleranceSeconds) ||
@@ -396,6 +397,8 @@ function getTakeawayProfile(summary: OutingForecastSummary, timezone: string): s
   const values = summary.hours.map((hour) => Number(hour.uv.toFixed(1)));
   const minimumUv = Math.min(...values);
   const maximumUv = Math.max(...values);
+  const peakHour = summary.hours.find((hour) => hour.uv === summary.highestUv);
+  if (!peakHour) throw new Error('Highest UV has no matching forecast hour.');
   return minimumUv === maximumUv
     ? fillMessage(definitions.profileMessages.takeawaySteady, {
       uv: maximumUv.toFixed(1), coveredDuration: formatDuration(summary.coveredSeconds),
@@ -404,7 +407,10 @@ function getTakeawayProfile(summary: OutingForecastSummary, timezone: string): s
       minimumUv: minimumUv.toFixed(1),
       peakUv: summary.highestUv.toFixed(1),
       averageUv: summary.averageUv.toFixed(1),
-      peakTime: formatRecommendationTime(summary.highestUvTime, summary, timezone),
+      peakPeriod: describePeriods([{
+        start: peakHour.time,
+        end: peakHour.sourceTime,
+      }], summary, timezone),
     });
 }
 
@@ -516,9 +522,9 @@ export function getUvScoutInsight(summary: OutingForecastSummary, timezone: stri
     })
     : null;
   const categoryNote = summary.highestUv < elevatedUv && summary.highestCategory.key !== 'low'
-    ? definitions.messages.roundedModerateBelowProtection
+    ? boundaryNotes.belowProtection
     : summary.highestUv < veryHighUv && summary.highestCategory.key === 'very-high'
-      ? definitions.messages.roundedVeryHighBelowExtraProtection
+      ? boundaryNotes.belowExtraProtection
       : null;
   return {
     practicalGuidance,

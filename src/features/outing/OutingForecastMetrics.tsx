@@ -3,7 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { OutingForecastSummary } from '../../domain/outing/calculateOutingForecast';
 import { uiColors, uiType } from '../../ui/visualStyle';
 
-export function OutingUvSummary({ summary }: { summary: OutingForecastSummary }) {
+export function OutingUvSummary({ summary, categoryNote }: {
+  summary: OutingForecastSummary;
+  categoryNote: string | null;
+}) {
   return (
     <View style={styles.uvSummary}>
       <Text style={styles.uvLabel}>HIGHEST HOURLY UV INDEX</Text>
@@ -12,6 +15,7 @@ export function OutingUvSummary({ summary }: { summary: OutingForecastSummary })
       <Text style={styles.uvAverage}>
         Average: <Text style={styles.uvAccent}>{summary.averageUv.toFixed(1)}</Text>
       </Text>
+      {categoryNote && <Text style={styles.categoryNote}>{categoryNote}</Text>}
     </View>
   );
 }
@@ -101,7 +105,7 @@ export function OutingWeatherSummary({ summary }: { summary: OutingForecastSumma
               ? 'No full forecast hours'
               : amount === null
                 ? 'Amount unavailable'
-                : `Across ${summary.completePrecipitationHours} complete ${summary.completePrecipitationHours === 1 ? 'hour' : 'hours'}`}
+                : `Across ${summary.completePrecipitationHours} full ${summary.completePrecipitationHours === 1 ? 'hour' : 'hours'}${summary.partialPrecipitationHours > 0 ? ' only' : ''}`}
             detail={summary.peakHourlyPrecipitationProbability === null
               ? 'Hourly chance unavailable'
               : `Peak hourly chance: ${Math.round(summary.peakHourlyPrecipitationProbability)}%`}
@@ -120,6 +124,7 @@ const styles = StyleSheet.create({
   uvValue: { color: uiColors.accent, fontSize: 32, lineHeight: 38, textAlign: 'center' },
   uvCategory: { color: uiColors.accent, fontSize: 15, fontWeight: '500', textAlign: 'center' },
   uvAverage: { color: uiColors.secondary, fontSize: 13, marginTop: 4, textAlign: 'center' },
+  categoryNote: { color: uiColors.muted, fontSize: 11, marginTop: 5, textAlign: 'center' },
   uvAccent: { color: uiColors.accent },
   weatherSummary: { borderTopColor: uiColors.line, borderTopWidth: 1, marginTop: 20, paddingTop: 12 },
   heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', textAlign: 'center' },
