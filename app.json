@@ -16,9 +16,9 @@
     },
     "android": {
       "package": "com.bravogroup.uvscout",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
-        "backgroundColor": "#F5F2EC",
+        "backgroundColor": "#FAFAF8",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
@@ -44,7 +44,7 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 250,
           "resizeMode": "contain",
-          "backgroundColor": "#F5F2EC"
+          "backgroundColor": "#FAFAF8"
         }
       ],
       "expo-status-bar"

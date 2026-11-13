@@ -432,13 +432,15 @@ calculation, supported platform versions, and the final visual polish.
   comparison when no earlier future window is available.
 - Show civil dawn, sunrise, sunset, and civil dusk. Mark comparisons that include
   twilight or darkness, and keep daylight comparisons distinct.
-- Use a minimal Warm daylight palette with a warm ivory background across the
+- Use a minimal Warm daylight palette with a neutral off-white background across the
   whole screen, including the title and subtitle. Keep dark readable text,
   subtle warm dividers, a very soft diagonal warm-paper texture, and a restrained
   amber accent for selected states. Fade the texture toward chart-heavy areas so
   labels and forecast values remain visually clear.
 - Use Fruktur from Google Fonts for the UV Scout wordmark and Almendra for the
   calmer, related old-style subtitle.
+- Match the native and web app icons and startup image to the page's off-white
+  background (`#FAFAF8`); keep the UV Scout artwork and typography.
 - Calculate daylight events for the forecast location and local date; align the
   event markers, paired day/night arcs, and time-dependent sun/moon icon with
   hourly chart bins. Calculate the following local date too, so the final night

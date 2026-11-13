@@ -13,6 +13,7 @@ $fruktur = $fontCollection.Families | Where-Object Name -eq 'Fruktur' | Select-O
 if (-not $fruktur) { throw 'Could not load the bundled Fruktur font.' }
 
 $stone = [System.Drawing.Color]::FromArgb(245, 242, 236)
+$page = [System.Drawing.Color]::FromArgb(250, 250, 248)
 $orange = [System.Drawing.Color]::FromArgb(178, 108, 59)
 $brown = [System.Drawing.Color]::FromArgb(41, 36, 30)
 $white = [System.Drawing.Color]::White
@@ -84,14 +85,23 @@ function Save-Png($canvas, [string]$path) {
   $canvas.Bitmap.Dispose()
 }
 
-function New-BrandedIcon([int]$size, [bool]$includeScout) {
-  $canvas = New-Canvas 1024 1024 $stone
+function New-BrandedIcon([int]$size, [bool]$includeScout, [System.Drawing.Color]$background = $stone) {
+  $canvas = New-Canvas 1024 1024 $background
   Draw-CenteredWord $canvas.Graphics 'UV' 42 132 $orange
   Draw-SunTrail $canvas.Graphics 185 500
   if ($includeScout) { Draw-CenteredWord $canvas.Graphics 'Scout' 700 180 $brown }
   if ($size -eq 1024) { return $canvas }
-  $small = New-Canvas $size $size $stone
+  $small = New-Canvas $size $size $background
   $small.Graphics.DrawImage($canvas.Bitmap, 0, 0, $size, $size)
+  if ($background.ToArgb() -eq $page.ToArgb()) {
+    # The scaled canvas can pick up a pale fringe at its outer edge.
+    $edgeBrush = New-Object System.Drawing.SolidBrush($background)
+    $small.Graphics.FillRectangle($edgeBrush, 0, 0, $size, 4)
+    $small.Graphics.FillRectangle($edgeBrush, 0, $size - 4, $size, 4)
+    $small.Graphics.FillRectangle($edgeBrush, 0, 0, 4, $size)
+    $small.Graphics.FillRectangle($edgeBrush, $size - 4, 0, 4, $size)
+    $edgeBrush.Dispose()
+  }
   $canvas.Graphics.Dispose(); $canvas.Bitmap.Dispose()
   return $small
 }
@@ -119,8 +129,8 @@ function New-AdaptiveForeground([int]$size, [bool]$monochrome) {
   return $canvas
 }
 
-function New-MaskableIcon([int]$size) {
-  $canvas = New-Canvas $size $size $stone
+function New-MaskableIcon([int]$size, [System.Drawing.Color]$background = $stone) {
+  $canvas = New-Canvas $size $size $background
   $foreground = New-AdaptiveForeground $size $false
   $canvas.Graphics.DrawImage($foreground.Bitmap, 0, 0, $size, $size)
   $foreground.Graphics.Dispose(); $foreground.Bitmap.Dispose()
@@ -129,9 +139,9 @@ function New-MaskableIcon([int]$size) {
 
 New-Item -ItemType Directory -Force -Path $iconDirectory | Out-Null
 
-Save-Png (New-BrandedIcon 1024 $true) (Join-Path $assetDirectory 'icon.png')
-Save-Png (New-BrandedIcon 512 $true) (Join-Path $assetDirectory 'uv-scout-logo.png')
-Save-Png (New-BrandedIcon 1024 $true) (Join-Path $assetDirectory 'splash-icon.png')
+Save-Png (New-BrandedIcon 1024 $true $page) (Join-Path $assetDirectory 'icon.png')
+Save-Png (New-BrandedIcon 512 $true $page) (Join-Path $assetDirectory 'uv-scout-logo.png')
+Save-Png (New-BrandedIcon 1024 $true $page) (Join-Path $assetDirectory 'splash-icon.png')
 Save-Png (New-AdaptiveForeground 1024 $false) (Join-Path $assetDirectory 'android-icon-foreground.png')
 Save-Png (New-AdaptiveForeground 1024 $true) (Join-Path $assetDirectory 'android-icon-monochrome.png')
 Save-Png (New-BrandedIcon 192 $true) (Join-Path $iconDirectory 'uv-scout-192-v2.png')
@@ -141,10 +151,14 @@ Save-Png (New-BrandedIcon 180 $true) (Join-Path $iconDirectory 'apple-touch-icon
 Save-Png (New-BrandedIcon 192 $true) (Join-Path $iconDirectory 'uv-scout-192-v4.png')
 Save-Png (New-BrandedIcon 512 $true) (Join-Path $iconDirectory 'uv-scout-512-v4.png')
 Save-Png (New-MaskableIcon 512) (Join-Path $iconDirectory 'uv-scout-maskable-512-v4.png')
+Save-Png (New-BrandedIcon 192 $true $page) (Join-Path $iconDirectory 'uv-scout-192-v5.png')
+Save-Png (New-BrandedIcon 512 $true $page) (Join-Path $iconDirectory 'uv-scout-512-v5.png')
+Save-Png (New-MaskableIcon 512 $page) (Join-Path $iconDirectory 'uv-scout-maskable-512-v5.png')
+Save-Png (New-BrandedIcon 180 $true $page) (Join-Path $iconDirectory 'apple-touch-icon-v3.png')
 
 # A wide social preview card with the approved mark and the app's current tagline.
-$card = New-Canvas 1200 630 $stone
-$brand = New-BrandedIcon 490 $true
+$card = New-Canvas 1200 630 $page
+$brand = New-BrandedIcon 490 $true $page
 $card.Graphics.DrawImage($brand.Bitmap, 55, 70, 490, 490)
 $brand.Graphics.Dispose(); $brand.Bitmap.Dispose()
 $dividerPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(220, 207, 190), 2)
@@ -167,7 +181,7 @@ $taglineBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::Fro
 $card.Graphics.DrawString('Plan your time outside based on the UV Index.', $taglineFont, $taglineBrush, [System.Drawing.RectangleF]::new(654, 310, 475, 150))
 
 $uvFont.Dispose(); $scoutFont.Dispose(); $uvBrush.Dispose(); $brownBrush.Dispose(); $wordFormat.Dispose(); $taglineFont.Dispose(); $taglineBrush.Dispose()
-Save-Png $card (Join-Path $iconDirectory 'og-image-v2.png')
+Save-Png $card (Join-Path $iconDirectory 'og-image-v3.png')
 $trailArtwork.Bitmap.Dispose()
 
 Write-Output 'Generated UV Scout app, adaptive, favicon, PWA, Apple touch, and social preview assets.'
