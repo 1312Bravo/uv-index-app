@@ -27,10 +27,10 @@ then-current app and icon background (`#F5F2EC`).
 
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Light-background icon build (version code 3): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/0d8ab723-1fed-4f1f-a378-e09dbff59f2a>
-- APK download: available on the build page when this build finishes
+- APK download: <https://expo.dev/artifacts/eas/eqh_u86xVgb8JjKBysy_f56L8y27rmVFhsvuG8LHDmQ.apk>
 - Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/7c3aa1c0-c9d7-4191-af0b-ab9ac6a019a0>
 
-The 13 November 2026 Android APK build includes the light-background native
+The completed 13 November 2026 Android APK build includes the light-background native
 icon and splash from commit `6664d14`. Its update channel remains `preview`
 with runtime `1.0.0`. Existing version-code-2 installations need this new APK
 to change the icon and startup screen.
