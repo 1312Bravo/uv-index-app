@@ -33,6 +33,15 @@ export function SourcesExplanation() {
         ]}
       />
       <SourceItem
+        text="Open-Meteo supplies the current European Air Quality Index from CAMS air-quality forecast data. The overall index reflects the poorest of five pollutant indices, so it is a model estimate rather than a measurement from a nearby monitoring station."
+        links={[
+          { label: 'Open-Meteo Air Quality API', url: 'https://open-meteo.com/en/docs/air-quality-api' },
+          { label: 'European Air Quality Index and method', url: 'https://airindex.eea.europa.eu/AQI/' },
+          { label: 'CAMS ENSEMBLE', url: 'https://atmosphere.copernicus.eu/' },
+          { label: 'Data licence: CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+        ]}
+      />
+      <SourceItem
         text="Your device supplies coordinates if you use its location. Place search uses Open-Meteo data based on GeoNames. BigDataCloud supplies an approximate place name for device coordinates. Photon uses OpenStreetMap data to find nearby place names for map selections and forecast points."
         links={[
           { label: 'Open-Meteo place search', url: 'https://open-meteo.com/en/docs/geocoding-api' },

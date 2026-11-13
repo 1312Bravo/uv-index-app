@@ -1,7 +1,9 @@
 import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import type { HourlyUvGuidance as HourlyUvGuidanceResult } from '../../domain/guidance/getHourlyUvGuidance';
+import type { CurrentAirQuality as CurrentAirQualityReading } from '../../domain/airQuality/airQualityTypes';
 import { uiColors } from '../../ui/visualStyle';
+import { CurrentAirQuality } from '../airQuality/CurrentAirQuality';
 import { WeatherMetrics } from './WeatherMetrics';
 
 function formatEstimateTime(time: number, timezone: string): string {
@@ -32,6 +34,7 @@ export function HourlyUvGuidance({
   isCurrent,
   isInterpolated,
   timezone,
+  currentAirQuality,
   currentWeather,
   forecastWeather,
 }: {
@@ -41,6 +44,12 @@ export function HourlyUvGuidance({
   isCurrent: boolean;
   isInterpolated: boolean;
   timezone: string;
+  currentAirQuality?: {
+    airQuality: CurrentAirQualityReading | null;
+    error: boolean;
+    loading: boolean;
+    retry: () => void;
+  };
   currentWeather?: {
     temperature: number;
     cloudCover: number | null;
@@ -109,6 +118,12 @@ export function HourlyUvGuidance({
           </View>
         </View>
       </View>
+      {currentAirQuality && (
+        <>
+          <View style={styles.airQualityDivider} />
+          <CurrentAirQuality {...currentAirQuality} />
+        </>
+      )}
       {isCurrent && currentWeather && (
         <View style={styles.weatherSection}>
           <WeatherMetrics mode="current" {...currentWeather} />
@@ -151,6 +166,7 @@ const styles = StyleSheet.create({
   guidanceLabel: { color: uiColors.ink, fontSize: 14, fontWeight: '600', textAlign: 'center' },
   uvAccent: { color: uiColors.accent },
   divider: { alignSelf: 'center', backgroundColor: uiColors.line, height: 1, marginVertical: 14, width: 96 },
+  airQualityDivider: { alignSelf: 'stretch', backgroundColor: uiColors.line, height: 1, marginTop: 16, width: '100%' },
   weatherSection: { borderTopColor: uiColors.line, borderTopWidth: 1, marginTop: 16 },
   category: { color: uiColors.accent, fontSize: 15, fontWeight: '500' },
   categoryNote: { color: uiColors.muted, fontSize: 11, marginTop: 4, textAlign: 'center' },

@@ -2,21 +2,24 @@ import { useState } from 'react';
 import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { getCloudCoverBands } from '../../domain/weather/getCloudCoverBand';
+import { getEuropeanAqiCategoryDefinitions } from '../../domain/airQuality/getEuropeanAqiCategory';
 import { getPrecipitationRateGuide } from '../../domain/weather/getPrecipitationRateGuide';
 import { getWindSpeedBands } from '../../domain/weather/getWindSpeedBands';
 import { getWhoGuidanceTable } from '../../domain/guidance/getWhoGuidance';
 import { getUvCategoryDefinitions } from '../../domain/uv/getUvCategory';
 import { uiColors, uiType } from '../../ui/visualStyle';
+import { AirQualityCategoryGuidance } from '../airQuality/AirQualityCategoryGuidance';
 import { InfoAccordion } from './InfoAccordion';
 import { SourcesExplanation } from './SourcesExplanation';
 
 const uvCategories = getUvCategoryDefinitions();
+const europeanAqiCategories = getEuropeanAqiCategoryDefinitions();
 const cloudCoverBands = getCloudCoverBands();
 const precipitationRateGuide = getPrecipitationRateGuide();
 const windSpeedBands = getWindSpeedBands();
 const whoGuidance = getWhoGuidanceTable();
 
-type InfoTopic = 'uv' | 'clouds' | 'precipitation' | 'wind' | 'sources';
+type InfoTopic = 'uv' | 'air-quality' | 'clouds' | 'precipitation' | 'wind' | 'sources';
 
 function formatUvRange(index: number): string {
   const category = uvCategories[index];
@@ -24,6 +27,14 @@ function formatUvRange(index: number): string {
   return nextCategory
     ? `${category.minimumUvInclusive}-${nextCategory.minimumUvInclusive - 1}`
     : `${category.minimumUvInclusive}+`;
+}
+
+function formatEuropeanAqiRange(index: number): string {
+  const category = europeanAqiCategories[index];
+  const nextCategory = europeanAqiCategories[index + 1];
+  if (!category.minimumInclusive) return `>${category.minimum}`;
+  if (!nextCategory) return `${category.minimum}+`;
+  return `${category.minimum}-${nextCategory.minimum}`;
 }
 
 function formatCloudRange(minimum: number, maximum: number): string {
@@ -66,6 +77,51 @@ function UvIndexExplanation() {
           </View>
         ))}
       </View>
+    </>
+  );
+}
+
+function AirQualityExplanation() {
+  return (
+    <>
+      <Text style={styles.description}>
+        The European Air Quality Index (AQI) describes short-term, hourly air
+        quality using five pollutants: PM2.5, PM10, ozone, nitrogen dioxide,
+        and sulphur dioxide.
+      </Text>
+      <Text style={styles.description}>
+        The recommendations follow EEA advice for most people and for sensitive
+        groups: children and adults with respiratory problems, and adults with
+        heart conditions.
+      </Text>
+      <View style={styles.list}>
+        {europeanAqiCategories.map((category, index) => (
+          <View key={category.key} style={styles.row}>
+            <View style={styles.rangeColumn}>
+              <Text style={styles.range}>{formatEuropeanAqiRange(index)}</Text>
+              <Text style={styles.category}>{category.label}</Text>
+            </View>
+            <View style={styles.categoryDescription}>
+              <AirQualityCategoryGuidance category={category} />
+            </View>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.note}>
+        Values are AQI points, not pollutant concentrations. Exactly 100 is
+        Very poor; Extremely poor begins above 100.
+      </Text>
+      <Text style={styles.note}>
+        This hourly index does not describe long-term air quality or determine
+        legal compliance. These are general recommendations, not individualized
+        medical advice.
+      </Text>
+      <Text style={styles.note}>
+        The AQI uses hourly pollutant estimates from the CAMS European model,
+        with roughly 11 km grid spacing. The model forecast refreshes daily;
+        UV Scout checks for the latest available estimate once an hour. These
+        are model estimates, not readings from a nearby monitoring station.
+      </Text>
     </>
   );
 }
@@ -174,6 +230,13 @@ export function InfoScreen() {
           <UvIndexExplanation />
         </InfoAccordion>
         <InfoAccordion
+          title="Air quality"
+          expanded={openTopic === 'air-quality'}
+          onPress={() => toggleTopic('air-quality')}
+        >
+          <AirQualityExplanation />
+        </InfoAccordion>
+        <InfoAccordion
           title="Cloud cover"
           expanded={openTopic === 'clouds'}
           onPress={() => toggleTopic('clouds')}
@@ -229,7 +292,7 @@ const styles = StyleSheet.create({
   rangeColumn: { alignItems: 'baseline', flexDirection: 'row', gap: 8 },
   range: { color: uiColors.ink, fontSize: 14, fontWeight: '600' },
   category: { color: uiColors.body, fontSize: 13, fontWeight: '600' },
-  categoryDescription: { color: uiColors.secondary, fontSize: uiType.body, lineHeight: 20, marginTop: 6, minWidth: 0 },
+  categoryDescription: { marginTop: 6, minWidth: 0 },
   note: { color: uiColors.muted, fontSize: 12, lineHeight: 18, marginTop: 12 },
   cloudRow: {
     alignItems: 'flex-start',

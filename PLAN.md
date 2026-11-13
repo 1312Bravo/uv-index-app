@@ -20,6 +20,10 @@ helps people plan outdoor time around the current and forecast UV index.
 - UV Scout focuses on UV-aware decisions for outings happening now or planned
   for today or tomorrow within the available local forecast. It is not a
   long-range planner or a general-purpose weather app.
+- Air quality is secondary context inside the existing UV Outlook and Plan an
+  Outing tabs; it does not add a tab or change the app's UV focus. The current
+  European AQI section in UV Outlook is the first slice; outing-specific AQI
+  remains future work.
 - The first version is for general outdoor users, in English.
 - Location should support device location, place search, and map selection on
   Android and web.
@@ -31,10 +35,14 @@ helps people plan outdoor time around the current and forecast UV index.
   Forecast metrics, UV breakdown, and protection guidance use this timeframe.
   The charts include hourly context around it without changing those calculations.
 - UV Outlook stacks the centered UV reading above its guidance on phone and
-  web. Current weather follows in a 2x2 grid: temperature and cloud cover,
-  then precipitation and wind. Wind shows current speed with the current gust
-  estimate in parentheses and a smaller Wind (gusts) label. A short centered
-  rule separates UV from guidance; a full-width rule precedes Current weather.
+  web. A compact Current air quality section follows UV guidance and precedes
+  Current weather. It shows the European AQI, category, population-specific
+  activity advice, a short meaning, its estimate time, and source attribution.
+  Current weather follows in a 2x2 grid:
+  temperature and cloud cover, then precipitation and wind. Wind shows current
+  speed with the current gust estimate in parentheses and a smaller Wind
+  (gusts) label. A short centered rule separates UV from guidance; a full-width
+  rule precedes Current weather.
 - Outing UV readings are means of the preceding hour: 12:00 covers 11:00-12:00.
   Maximum, average, coverage, and protection windows use those intervals and
   the original hourly UV, with partial-hour weighting. Temperature, cloud cover,
@@ -158,8 +166,8 @@ helps people plan outdoor time around the current and forecast UV index.
 - Use the same compact hourly UV bar chart in the outlook and outing result, with
   cloud-cover percentage and temperature above each bar, and precipitation values
   and wind speed below each hour label.
-- Keep a final, always-available Info tab with the UV category mapping and a
-  plain-language guide to cloud cover and wind speeds.
+- Keep a final, always-available Info tab with the UV and European AQI category
+  mappings and plain-language guides to cloud cover and wind speeds.
 - Present Info topics as vertically stacked disclosures, with none expanded at
   first and no more than one topic open at a time.
 - Keep detailed source explanations in a final, collapsed Sources topic within

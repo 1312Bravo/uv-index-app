@@ -12,6 +12,7 @@ import { getForecastHourForTime, getOutlookTimeSlots } from './getOutlookTimeSlo
 import { useHourlyForecast } from './useHourlyForecast';
 import { HourlyUvBarChart } from './HourlyUvBarChart';
 import type { LocationCoordinates } from '../../domain/location/locationTypes';
+import { useCurrentAirQuality } from '../airQuality/useCurrentAirQuality';
 
 type Props = {
   latitude: number;
@@ -28,12 +29,14 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [scrollTarget, setScrollTarget] = useState<{ time: number } | undefined>();
   const refreshSlot = Math.floor(currentTime / (15 * 60_000));
+  const airQualityRefreshSlot = Math.floor(currentTime / (60 * 60_000));
   const { forecast, error, loading, retry } = useHourlyForecast(
     latitude,
     longitude,
     'Could not load the UV forecast. Try another location or try again later.',
     refreshSlot,
   );
+  const currentAirQuality = useCurrentAirQuality(latitude, longitude, airQualityRefreshSlot);
   const currentHour = forecast?.hours.find((hour) => hour.period === 'now');
   const currentUvSourceHour = forecast?.hours.find((hour) => hour.time * 1000 > currentTime);
   const customTimeSlots = useMemo(
@@ -114,6 +117,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
               isCurrent={timeMode === 'now'}
               isInterpolated={customUvForecast?.interpolated ?? false}
               timezone={forecast.timezone}
+              currentAirQuality={currentAirQuality}
               currentWeather={timeMode === 'now' ? {
                 temperature: selectedHour.temperature,
                 cloudCover: selectedHour.cloudCover,

@@ -1,0 +1,56 @@
+[
+  {
+    "key": "good",
+    "label": "Good",
+    "minimum": 0,
+    "minimumInclusive": true,
+    "meaning": "Pollution levels are low.",
+    "generalAdvice": "Continue your usual outdoor activities.",
+    "sensitiveAdvice": "Continue your usual outdoor activities."
+  },
+  {
+    "key": "fair",
+    "label": "Fair",
+    "minimum": 20,
+    "minimumInclusive": true,
+    "meaning": "Air quality is acceptable overall.",
+    "generalAdvice": "Continue your usual outdoor activities.",
+    "sensitiveAdvice": "Continue your usual outdoor activities."
+  },
+  {
+    "key": "moderate",
+    "label": "Moderate",
+    "minimum": 40,
+    "minimumInclusive": true,
+    "meaning": "At least one pollutant has reached a moderate level.",
+    "generalAdvice": "Continue your usual outdoor activities.",
+    "sensitiveAdvice": "Consider reducing intense outdoor activity if you experience symptoms."
+  },
+  {
+    "key": "poor",
+    "label": "Poor",
+    "minimum": 60,
+    "minimumInclusive": true,
+    "meaning": "At least one pollutant has reached a poor level.",
+    "generalAdvice": "If you notice sore eyes, coughing, or a sore throat, consider reducing intense outdoor activity.",
+    "sensitiveAdvice": "Consider reducing physical activity, especially outdoors, particularly if you experience symptoms."
+  },
+  {
+    "key": "very-poor",
+    "label": "Very poor",
+    "minimum": 80,
+    "minimumInclusive": true,
+    "meaning": "At least one pollutant has reached a very poor level.",
+    "generalAdvice": "If you notice sore eyes, coughing, or a sore throat, consider reducing intense outdoor activity.",
+    "sensitiveAdvice": "Reduce physical activity, especially outdoors, particularly if you experience symptoms."
+  },
+  {
+    "key": "extremely-poor",
+    "label": "Extremely poor",
+    "minimum": 100,
+    "minimumInclusive": false,
+    "meaning": "At least one pollutant has reached an extremely poor level.",
+    "generalAdvice": "Reduce physical activity outdoors.",
+    "sensitiveAdvice": "Avoid physical activity outdoors."
+  }
+]
