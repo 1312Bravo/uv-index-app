@@ -85,7 +85,7 @@ function AirQualityExplanation() {
   return (
     <>
       <Text style={styles.description}>
-        The European Air Quality Index (AQI) describes short-term, hourly air
+        The European Air Quality Index (AQI) describes short-term air
         quality using five pollutants: PM2.5, PM10, ozone, nitrogen dioxide,
         and sulphur dioxide.
       </Text>
@@ -117,9 +117,10 @@ function AirQualityExplanation() {
         medical advice.
       </Text>
       <Text style={styles.note}>
-        The AQI uses hourly pollutant estimates from the CAMS European model,
-        with roughly 11 km grid spacing. The model forecast refreshes daily;
-        UV Scout checks for the latest available estimate once an hour. These
+        The AQI uses CAMS model forecasts. In Europe, the model has roughly
+        11 km grid spacing and refreshes daily. Elsewhere, the global model
+        has roughly 45 km grid spacing and refreshes about twice daily. UV
+        Scout checks for the latest available estimate once an hour. These
         are model estimates, not readings from a nearby monitoring station.
       </Text>
     </>

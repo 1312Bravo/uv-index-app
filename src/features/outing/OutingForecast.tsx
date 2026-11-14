@@ -282,6 +282,8 @@ export function OutingForecast({
 
           <OutingAirQualitySummary
             summary={airQualitySummary}
+            selectedPoint={{ latitude, longitude }}
+            forecastPoint={airQualityForecast.forecastPoint}
             loading={airQualityForecast.loading}
             error={airQualityForecast.error}
             onRetry={airQualityForecast.retry}

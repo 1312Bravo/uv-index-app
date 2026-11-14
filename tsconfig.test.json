@@ -15,12 +15,17 @@
     "src/domain/forecast/forecastTypes.ts",
     "src/domain/forecast/getUvForecastAtTime.ts",
     "src/domain/uv/getUvCategory.ts",
+    "src/domain/airQuality/getEuropeanAqiCategory.ts",
+    "src/domain/airQuality/summarizeOutingAirQuality.ts",
+    "src/domain/airQuality/getOutingAirQualityDescription.ts",
     "src/domain/outing/calculateOutingForecast.ts",
     "src/domain/outing/getPlanningTimeSlots.ts",
     "src/domain/guidance/getHourlyUvGuidance.ts",
     "src/domain/guidance/getWhoGuidance.ts",
     "src/domain/guidance/getUvScoutInsight.ts",
     "src/services/forecast/fetchForecastJson.ts",
-    "src/services/forecast/getHourlyForecast.ts"
+    "src/services/forecast/getHourlyForecast.ts",
+    "src/services/airQuality/getCurrentAirQuality.ts",
+    "src/services/airQuality/getHourlyAirQualityForecast.ts"
   ]
 }

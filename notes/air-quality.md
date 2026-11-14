@@ -11,7 +11,8 @@ Plan an Outing adds a separate AQI summary after UV guidance and before outing
 weather. It shows the time-weighted average AQI with the peak in parentheses,
 plus the lowest-to-highest hourly range rounded to whole AQI points for the
 selected outing window. The right side shows the average and peak categories,
-then a short takeaway and audience guidance.
+then a short takeaway and audience guidance. Both AQI sections show the air
+quality forecast point above their source links.
 
 The section shows the European AQI number to one decimal place, its category,
 population-specific activity advice, one short category meaning, the provider
@@ -32,6 +33,12 @@ and UV Outlook.
   supplies `current=european_aqi` with its timestamp for UV Outlook and
   `hourly=european_aqi` for the outing summary (API documentation checked
   2026-11-14).
+- The API returns latitude and longitude for the forecast grid-cell center.
+  That point can differ from the selected location and from the weather
+  forecast point (API documentation checked 2026-11-14). Photon supplies an
+  optional nearby mapped place name using OpenStreetMap data; coordinates
+  remain visible when that lookup is unavailable. When a place name appears,
+  OpenStreetMap credit shares the same source line as Open-Meteo and CAMS.
 - The European AQI is based on five pollutant indices: PM2.5, PM10, ozone,
   nitrogen dioxide, and sulphur dioxide. The overall index uses the poorest
   pollutant level, rather than averaging the five indices, as described by the

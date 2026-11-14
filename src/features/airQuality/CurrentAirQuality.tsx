@@ -1,10 +1,11 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { CurrentAirQuality as CurrentAirQualityReading } from '../../domain/airQuality/airQualityTypes';
+import type { LocationCoordinates } from '../../domain/location/locationTypes';
 import { getEuropeanAqiCategory } from '../../domain/airQuality/getEuropeanAqiCategory';
 import { uiColors } from '../../ui/visualStyle';
 import { AirQualityCategoryGuidance } from './AirQualityCategoryGuidance';
-import { AirQualitySourceAttribution } from './AirQualitySourceAttribution';
+import { AirQualityForecastPoint } from './AirQualityForecastPoint';
 
 function formatTime(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
@@ -20,11 +21,13 @@ export function CurrentAirQuality({
   loading,
   error,
   onRetry,
+  selectedPoint,
 }: {
   airQuality: CurrentAirQualityReading | null;
   loading: boolean;
   error: boolean;
   onRetry: () => void;
+  selectedPoint: LocationCoordinates;
 }) {
   const category = airQuality ? getEuropeanAqiCategory(airQuality.europeanAqi) : null;
 
@@ -61,9 +64,7 @@ export function CurrentAirQuality({
               <AirQualityCategoryGuidance category={category} />
             </View>
           </View>
-          <View style={styles.attribution}>
-            <AirQualitySourceAttribution />
-          </View>
+          <AirQualityForecastPoint selectedPoint={selectedPoint} forecastPoint={airQuality.forecastPoint} />
         </View>
       )}
     </View>
@@ -83,7 +84,6 @@ const styles = StyleSheet.create({
   category: { color: uiColors.ink, fontSize: 13, fontWeight: '500', marginTop: 1 },
   description: { color: uiColors.body, fontSize: 12, lineHeight: 17, textAlign: 'center' },
   estimateTime: { color: uiColors.muted, fontSize: 10, marginTop: 6, textAlign: 'center' },
-  attribution: { alignItems: 'center', marginTop: 5 },
   loading: { marginTop: 10 },
   unavailable: { alignItems: 'center', marginTop: 3 },
   retry: { color: uiColors.muted, fontSize: 11, marginTop: 4, textDecorationLine: 'underline' },

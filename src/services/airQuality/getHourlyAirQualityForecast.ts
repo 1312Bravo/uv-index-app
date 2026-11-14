@@ -1,8 +1,11 @@
-import type { HourlyAirQualityValue } from '../../domain/airQuality/airQualityTypes';
+import type { HourlyAirQualityForecast } from '../../domain/airQuality/airQualityTypes';
 import type { LocationCoordinates } from '../../domain/location/locationTypes';
 import { fetchForecastJson } from '../forecast/fetchForecastJson';
+import { getAirQualityForecastPoint } from './getAirQualityForecastPoint';
 
 type OpenMeteoAirQualityData = {
+  latitude?: unknown;
+  longitude?: unknown;
   hourly?: {
     time?: unknown;
     european_aqi?: unknown;
@@ -16,7 +19,7 @@ function isNumber(value: unknown): value is number {
 export async function getHourlyAirQualityForecast(
   coordinates: LocationCoordinates,
   signal?: AbortSignal,
-): Promise<HourlyAirQualityValue[]> {
+): Promise<HourlyAirQualityForecast> {
   const params = new URLSearchParams({
     latitude: String(coordinates.latitude),
     longitude: String(coordinates.longitude),
@@ -42,8 +45,11 @@ export async function getHourlyAirQualityForecast(
     throw new Error('Hourly air-quality forecast data is incomplete.');
   }
 
-  return times.map((time, index) => ({
-    time,
-    europeanAqi: values[index] as number | null,
-  }));
+  return {
+    hours: times.map((time, index) => ({
+      time,
+      europeanAqi: values[index] as number | null,
+    })),
+    forecastPoint: getAirQualityForecastPoint(data),
+  };
 }

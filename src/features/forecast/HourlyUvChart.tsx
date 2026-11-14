@@ -117,7 +117,7 @@ export function HourlyUvChart({ latitude, longitude, onTimezoneChange }: Props) 
               isCurrent={timeMode === 'now'}
               isInterpolated={customUvForecast?.interpolated ?? false}
               timezone={forecast.timezone}
-              currentAirQuality={currentAirQuality}
+              currentAirQuality={{ ...currentAirQuality, selectedPoint: { latitude, longitude } }}
               currentWeather={timeMode === 'now' ? {
                 temperature: selectedHour.temperature,
                 cloudCover: selectedHour.cloudCover,

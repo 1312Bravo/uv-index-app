@@ -34,6 +34,9 @@ licensing details.
   When any location is selected, label the search field `Search a different location`.
 - The first version does not save location history or coordinates.
 - Manual place search uses Open-Meteo geocoding for this non-commercial prototype.
+- Search keeps English country names and requests Slovenian spellings for
+  Slovenian result names and regions when available. Other results remain in
+  English; a failed optional localization request keeps the original result.
 - Place suggestions appear while typing after three characters and a short pause;
   the user chooses a result from the list.
 - Place results come from GeoNames via Open-Meteo and receive in-app attribution.
@@ -41,7 +44,8 @@ licensing details.
 - When device location is selected, use the keyless BigDataCloud client-side
   reverse-geocoding endpoint for a best-effort locality label. Its fair-use terms
   only allow coordinates from the calling device's current location obtained
-  with permission. Keep the exact coordinates visible and fall back to
+  with permission. Request the country's administrative language for native
+  place spellings when available. Keep the exact coordinates visible and fall back to
   `Current location` if lookup fails.
 - For a map-selected point, use Komoot Photon with OpenStreetMap data for a
   best-effort locality label. Photon may return a nearby mapped place rather

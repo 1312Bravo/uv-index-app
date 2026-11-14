@@ -33,7 +33,7 @@ export function SourcesExplanation() {
         ]}
       />
       <SourceItem
-        text="Open-Meteo supplies the current European Air Quality Index from CAMS air-quality forecast data. The overall index reflects the poorest of five pollutant indices, so it is a model estimate rather than a measurement from a nearby monitoring station."
+        text="Open-Meteo supplies current and hourly European Air Quality Index estimates from CAMS forecast data. UV Scout calculates the outing average, peak, and range from the hourly values. The overall index reflects the poorest of five pollutant indices; it is not a measurement from a nearby monitoring station."
         links={[
           { label: 'Open-Meteo Air Quality API', url: 'https://open-meteo.com/en/docs/air-quality-api' },
           { label: 'European Air Quality Index and method', url: 'https://airindex.eea.europa.eu/AQI/' },
@@ -52,7 +52,7 @@ export function SourcesExplanation() {
         ]}
       />
       <SourceItem
-        text="Open-Meteo returns the center coordinates of the forecast grid cell used. When Photon can find a nearby mapped place, UV Scout shows that place and the approximate distance from your selected location to the forecast point. This distance is not a forecast coverage radius. If the place lookup is unavailable, this note is not shown."
+        text="Open-Meteo returns the center coordinates of the weather and air-quality forecast grid cells. UV Scout shows their approximate distance from your selected location. Photon can add a nearby mapped place name; the air-quality note shows coordinates if that lookup is unavailable. The distance is not a forecast coverage radius."
         links={[{ label: 'Open-Meteo forecast documentation', url: 'https://open-meteo.com/en/docs' }]}
       />
       <SourceItem

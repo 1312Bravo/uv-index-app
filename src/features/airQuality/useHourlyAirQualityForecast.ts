@@ -6,6 +6,7 @@ import { getHourlyAirQualityForecast } from '../../services/airQuality/getHourly
 
 type HourlyAirQualityForecastState = {
   hours: HourlyAirQualityValue[] | null;
+  forecastPoint: LocationCoordinates | null;
   error: boolean;
   loading: boolean;
   retry: () => void;
@@ -17,6 +18,7 @@ export function useHourlyAirQualityForecast(
   refreshKey: number,
 ): HourlyAirQualityForecastState {
   const [hours, setHours] = useState<HourlyAirQualityValue[] | null>(null);
+  const [forecastPoint, setForecastPoint] = useState<LocationCoordinates | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
@@ -25,12 +27,16 @@ export function useHourlyAirQualityForecast(
   useEffect(() => {
     const controller = new AbortController();
     setHours(null);
+    setForecastPoint(null);
     setError(false);
     setLoading(true);
 
     void getHourlyAirQualityForecast({ latitude, longitude } satisfies LocationCoordinates, controller.signal)
       .then((result) => {
-        if (!controller.signal.aborted) setHours(result);
+        if (!controller.signal.aborted) {
+          setHours(result.hours);
+          setForecastPoint(result.forecastPoint);
+        }
       })
       .catch((cause: unknown) => {
         if (controller.signal.aborted) return;
@@ -44,5 +50,5 @@ export function useHourlyAirQualityForecast(
     return () => controller.abort();
   }, [latitude, longitude, refreshKey, retryCount]);
 
-  return { hours, error, loading, retry };
+  return { hours, forecastPoint, error, loading, retry };
 }

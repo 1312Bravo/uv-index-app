@@ -2,6 +2,7 @@ import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-nat
 
 import type { HourlyUvGuidance as HourlyUvGuidanceResult } from '../../domain/guidance/getHourlyUvGuidance';
 import type { CurrentAirQuality as CurrentAirQualityReading } from '../../domain/airQuality/airQualityTypes';
+import type { LocationCoordinates } from '../../domain/location/locationTypes';
 import { uiColors } from '../../ui/visualStyle';
 import { CurrentAirQuality } from '../airQuality/CurrentAirQuality';
 import { WeatherMetrics } from './WeatherMetrics';
@@ -46,6 +47,7 @@ export function HourlyUvGuidance({
   timezone: string;
   currentAirQuality?: {
     airQuality: CurrentAirQualityReading | null;
+    selectedPoint: LocationCoordinates;
     error: boolean;
     loading: boolean;
     retry: () => void;
@@ -126,6 +128,7 @@ export function HourlyUvGuidance({
             loading={currentAirQuality.loading}
             error={currentAirQuality.error}
             onRetry={currentAirQuality.retry}
+            selectedPoint={currentAirQuality.selectedPoint}
           />
         </>
       )}

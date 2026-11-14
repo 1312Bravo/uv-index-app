@@ -1,8 +1,11 @@
 import type { CurrentAirQuality } from '../../domain/airQuality/airQualityTypes';
 import type { LocationCoordinates } from '../../domain/location/locationTypes';
 import { fetchForecastJson } from '../forecast/fetchForecastJson';
+import { getAirQualityForecastPoint } from './getAirQualityForecastPoint';
 
 type OpenMeteoAirQualityData = {
+  latitude?: unknown;
+  longitude?: unknown;
   timezone?: unknown;
   current?: {
     time?: unknown;
@@ -44,5 +47,6 @@ export async function getCurrentAirQuality(
     europeanAqi: current.european_aqi,
     time: current.time,
     timezone: data.timezone,
+    forecastPoint: getAirQualityForecastPoint(data),
   };
 }

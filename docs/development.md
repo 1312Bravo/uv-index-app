@@ -51,7 +51,10 @@ UV Outlook also shows the current European Air Quality Index between the UV
 guidance and Current weather. It comes from Open-Meteo's Air Quality API using
 CAMS forecast data, so it is a model estimate rather than a nearby station
 reading. Plan an Outing also requests hourly AQI values and summarizes the peak
-and time-weighted average over the selected outing window. The category labels,
+and time-weighted average over the selected outing window. Each AQI section
+shows the returned air-quality forecast point's approximate distance and a
+nearby mapped place name directly above its source links. Coordinates appear
+when place lookup is unavailable. The category labels,
 numeric boundaries, activity advice, and short explanations are editable in
 `src/domain/airQuality/europeanAqiCategories.json`; the TypeScript
 module beside it validates the table and interprets each value. See

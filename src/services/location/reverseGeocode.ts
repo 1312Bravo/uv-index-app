@@ -12,7 +12,7 @@ function isReverseGeocodeResponse(value: unknown): value is ReverseGeocodeRespon
 export async function reverseGeocodePlace(latitude: number, longitude: number, signal?: AbortSignal): Promise<string | null> {
   const params = new URLSearchParams({
     latitude: String(latitude),
-    localityLanguage: 'en',
+    localityLanguage: 'default',
     longitude: String(longitude),
   });
   const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?${params.toString()}`, { signal });
