@@ -21,7 +21,7 @@ The central list of tester links is in [`release-links.md`](release-links.md).
 
 The startup splash, standard icon, and adaptive icon background use the page
 color (`#FAFAF8`). These native changes need a new APK; an EAS JavaScript
-update cannot replace them in an already installed APK. The next build uses
+update cannot replace them in an already installed APK. The released build uses
 Android version code 3.
 
 ## Current setup state
