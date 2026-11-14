@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import { summarizeOutingAirQuality } from '../../domain/airQuality/summarizeOutingAirQuality';
 import { getUvScoutInsight, type UvScoutInsightItem } from '../../domain/guidance/getUvScoutInsight';
+import { summarizeOutingForecast } from '../../domain/outing/calculateOutingForecast';
 import { HourlyUvBarChart } from '../forecast/HourlyUvBarChart';
 import { ForecastError } from '../forecast/ForecastError';
 import { useHourlyForecast } from '../forecast/useHourlyForecast';
-import { summarizeOutingForecast } from '../../domain/outing/calculateOutingForecast';
+import { useHourlyAirQualityForecast } from '../airQuality/useHourlyAirQualityForecast';
 import type { TimePlan } from '../../domain/outing/timePlan';
 import type { HourlyForecast } from '../../domain/forecast/forecastTypes';
 import type { LocationCoordinates } from '../../domain/location/locationTypes';
@@ -13,6 +15,7 @@ import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors, uiType } from '../../ui/visualStyle';
 import { OutingUvTimeline } from './OutingUvTimeline';
 import { OutingUvSummary, OutingWeatherSummary } from './OutingForecastMetrics';
+import { OutingAirQualitySummary } from './OutingAirQualitySummary';
 
 type PendingChartStart = {
   hourTime: number;
@@ -157,12 +160,14 @@ export function OutingForecast({
   const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [currentTime, setCurrentTime] = useState(() => Date.now());
   const refreshSlot = Math.floor(currentTime / (15 * 60_000));
+  const airQualityRefreshSlot = Math.floor(currentTime / (60 * 60_000));
   const { forecast, error, loading, retry } = useHourlyForecast(
     latitude,
     longitude,
     'Could not load the forecast for this outing.',
     refreshSlot,
   );
+  const airQualityForecast = useHourlyAirQualityForecast(latitude, longitude, airQualityRefreshSlot);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(Date.now()), 60_000);
@@ -175,6 +180,9 @@ export function OutingForecast({
   }, [forecast, onTimezoneChange]);
 
   const summary = forecast ? summarizeOutingForecast(forecast, plan.start, plan.end) : null;
+  const airQualitySummary = airQualityForecast.hours
+    ? summarizeOutingAirQuality(airQualityForecast.hours, plan.start, plan.end)
+    : null;
   const guidance = summary ? getUvScoutInsight(summary, forecast?.timezone ?? 'UTC') : null;
   const forecastLimitMessage = forecast ? getForecastLimitMessage(forecast, plan.end) : null;
   const selectableHourTimes = useMemo(() => {
@@ -271,6 +279,13 @@ export function OutingForecast({
               </View>
             </View>
           )}
+
+          <OutingAirQualitySummary
+            summary={airQualitySummary}
+            loading={airQualityForecast.loading}
+            error={airQualityForecast.error}
+            onRetry={airQualityForecast.retry}
+          />
 
           <OutingWeatherSummary summary={summary} />
 

@@ -50,8 +50,10 @@ any commercial release.
 UV Outlook also shows the current European Air Quality Index between the UV
 guidance and Current weather. It comes from Open-Meteo's Air Quality API using
 CAMS forecast data, so it is a model estimate rather than a nearby station
-reading. The category labels, numeric boundaries, and short explanations are
-editable in `src/domain/airQuality/europeanAqiCategories.json`; the TypeScript
+reading. Plan an Outing also requests hourly AQI values and summarizes the peak
+and time-weighted average over the selected outing window. The category labels,
+numeric boundaries, activity advice, and short explanations are editable in
+`src/domain/airQuality/europeanAqiCategories.json`; the TypeScript
 module beside it validates the table and interprets each value. See
 `notes/air-quality.md` and `notes/data-sources.md` before changing the source,
 category boundaries, or wording.
@@ -61,11 +63,26 @@ app, `minimum` is an AQI point value, and `minimumInclusive` defines how an
 exact boundary is assigned. `meaning` is the subtle category explanation shown
 beside AQI advice in UV Outlook and below it in smaller text in Info.
 `generalAdvice` and `sensitiveAdvice` are EEA-based activity guidance shown in
-both places with inline audience labels and matching text colors. Keep the six entries ordered
+UV Outlook and Info with inline audience labels and matching text colors. Keep
+the six entries ordered
 from Good through Extremely poor. A value
 of exactly 100 is Very poor; only values above 100 are Extremely poor. Info
 shows bands with shared endpoints, such as 0-20 and 20-40. The category for an
 exact endpoint follows the `minimumInclusive` thresholds in this table.
+
+Plan an Outing requests hourly AQI separately and calculates the peak,
+time-weighted average, and low-to-high hourly range for the selected interval
+in `src/domain/airQuality/summarizeOutingAirQuality.ts`. Category comparison
+copy is in `src/domain/airQuality/outingAirQualityDescriptions.json`. The
+right column keeps the average and peak categories, then shows a short takeaway
+and audience advice. `getOutingAirQualityDescription.ts` fills the numeric
+takeaway template.
+The takeaway uses rounded range endpoints but checks categories with unrounded
+values. Audience advice comes from `europeanAqiCategories.json`; when average
+and peak advice differ, `differentAdvice` ties the peak advice to the peak AQI.
+The summary treats
+each hourly sample as representing its timestamped hour and notes incomplete
+coverage.
 
 If the phone cannot connect on the same Wi-Fi network, stop the server with
 Ctrl+C and run `pnpm start --tunnel`. Tunnel mode can be slower.

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { OutingForecastSummary } from '../../domain/outing/calculateOutingForecast';
-import { uiColors, uiType } from '../../ui/visualStyle';
+import { uiColors } from '../../ui/visualStyle';
 
 export function OutingUvSummary({ summary, categoryNote }: {
   summary: OutingForecastSummary;
@@ -127,13 +127,13 @@ const styles = StyleSheet.create({
   categoryNote: { color: uiColors.muted, fontSize: 11, marginTop: 5, textAlign: 'center' },
   uvAccent: { color: uiColors.accent },
   weatherSummary: { borderTopColor: uiColors.line, borderTopWidth: 1, marginTop: 20, paddingTop: 12 },
-  heading: { color: uiColors.ink, fontSize: uiType.sectionHeading, fontWeight: '600', textAlign: 'center' },
+  heading: { color: uiColors.ink, fontSize: 14, fontWeight: '600', textAlign: 'center' },
   weatherGrid: { alignSelf: 'center', marginTop: 12, maxWidth: 900, width: '100%' },
   weatherRow: { alignItems: 'stretch', flexDirection: 'row' },
   metric: { alignItems: 'center', flex: 1, paddingHorizontal: 4, paddingVertical: 7 },
   divider: { alignSelf: 'stretch', backgroundColor: uiColors.line, marginHorizontal: 4, marginVertical: 4, width: 1 },
   horizontalDivider: { backgroundColor: uiColors.line, height: 1, marginVertical: 6 },
-  label: { color: uiColors.secondary, fontSize: 9, letterSpacing: 0.4, minHeight: 26, textAlign: 'center' },
+  label: { color: uiColors.secondary, fontSize: 9, letterSpacing: 0.4, textAlign: 'center' },
   value: { color: uiColors.ink, fontSize: 18, marginTop: 4, textAlign: 'center' },
   windReading: { lineHeight: 22 },
   gustValue: { fontSize: 16 },

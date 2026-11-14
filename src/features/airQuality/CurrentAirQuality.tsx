@@ -2,9 +2,9 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 
 import type { CurrentAirQuality as CurrentAirQualityReading } from '../../domain/airQuality/airQualityTypes';
 import { getEuropeanAqiCategory } from '../../domain/airQuality/getEuropeanAqiCategory';
-import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors } from '../../ui/visualStyle';
 import { AirQualityCategoryGuidance } from './AirQualityCategoryGuidance';
+import { AirQualitySourceAttribution } from './AirQualitySourceAttribution';
 
 function formatTime(time: number, timezone: string): string {
   return new Intl.DateTimeFormat('en', {
@@ -52,30 +52,17 @@ export function CurrentAirQuality({
                 {airQuality.europeanAqi.toFixed(1)}
               </Text>
               <Text style={styles.category}>{category.label}</Text>
-            </View>
-            <View style={styles.columnDivider} />
-            <View style={styles.guidanceColumn}>
-              <AirQualityCategoryGuidance category={category} />
               <Text style={styles.estimateTime}>
                 Latest estimate: {formatTime(airQuality.time, airQuality.timezone)}
               </Text>
             </View>
+            <View style={styles.columnDivider} />
+            <View style={styles.guidanceColumn}>
+              <AirQualityCategoryGuidance category={category} />
+            </View>
           </View>
           <View style={styles.attribution}>
-            <View style={styles.sourceLinks}>
-              <Text style={styles.attributionLabel}>Data: </Text>
-              <SourceAttribution
-                compact
-                label="Open-Meteo"
-                url="https://open-meteo.com/en/docs/air-quality-api"
-              />
-              <Text style={styles.attributionSeparator}>·</Text>
-              <SourceAttribution
-                compact
-                label="CAMS ENSEMBLE"
-                url="https://atmosphere.copernicus.eu/"
-              />
-            </View>
+            <AirQualitySourceAttribution />
           </View>
         </View>
       )}
@@ -97,9 +84,6 @@ const styles = StyleSheet.create({
   description: { color: uiColors.body, fontSize: 12, lineHeight: 17, textAlign: 'center' },
   estimateTime: { color: uiColors.muted, fontSize: 10, marginTop: 6, textAlign: 'center' },
   attribution: { alignItems: 'center', marginTop: 5 },
-  sourceLinks: { alignItems: 'center', flexDirection: 'row', justifyContent: 'center' },
-  attributionLabel: { color: uiColors.muted, fontSize: 10 },
-  attributionSeparator: { color: uiColors.muted, fontSize: 11, marginHorizontal: 5 },
   loading: { marginTop: 10 },
   unavailable: { alignItems: 'center', marginTop: 3 },
   retry: { color: uiColors.muted, fontSize: 11, marginTop: 4, textDecorationLine: 'underline' },

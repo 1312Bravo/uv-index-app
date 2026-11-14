@@ -1,15 +1,17 @@
 # Air quality
 
-## First UV Outlook slice
+## UV Outlook and Plan an Outing
 
-The first air-quality feature is a compact current European AQI section in UV
-Outlook. It appears after the selected UV reading and guidance and before the
-weather metrics. It does not add a tab or rename an existing tab. The same
-section remains visible when the UV time selector is set to a future time; the
-air-quality value itself remains the current estimate.
+The current European AQI section appears after the selected UV reading and
+guidance and before Current weather. It does not add a tab or rename an existing
+tab. The section remains visible when the UV time selector is set to a future
+time; the air-quality value itself remains the current estimate.
 
-Plan an Outing will eventually show AQI for the selected outing window. That
-time-window summary is not part of this first slice.
+Plan an Outing adds a separate AQI summary after UV guidance and before outing
+weather. It shows the time-weighted average AQI with the peak in parentheses,
+plus the lowest-to-highest hourly range rounded to whole AQI points for the
+selected outing window. The right side shows the average and peak categories,
+then a short takeaway and audience guidance.
 
 The section shows the European AQI number to one decimal place, its category,
 population-specific activity advice, one short category meaning, the provider
@@ -27,8 +29,9 @@ and UV Outlook.
 ## Source-backed facts
 
 - Open-Meteo's [Air Quality API](https://open-meteo.com/en/docs/air-quality-api)
-  supplies `current=european_aqi` and its current timestamp in the selected
-  location's time zone (API documentation checked 2026-11-13).
+  supplies `current=european_aqi` with its timestamp for UV Outlook and
+  `hourly=european_aqi` for the outing summary (API documentation checked
+  2026-11-14).
 - The European AQI is based on five pollutant indices: PM2.5, PM10, ozone,
   nitrogen dioxide, and sulphur dioxide. The overall index uses the poorest
   pollutant level, rather than averaging the five indices, as described by the
@@ -59,11 +62,10 @@ and UV Outlook.
 
 - Use European AQI consistently for the first implementation, matching the
   European index discussed for the product.
-- Request only the current AQI for the UV Outlook card. Hourly outlooks and
-  selected-outing summaries remain future feature work. Refresh the request
-  when the location changes and in one-hour intervals, not on the UV forecast's
-  15-minute refresh cycle. This checks for the latest available estimate hourly;
-  the CAMS European forecast itself is updated daily.
+- Request current AQI for UV Outlook and hourly AQI for Plan an Outing. Refresh
+  air-quality requests when the location changes and in one-hour intervals, not
+  on the UV forecast's 15-minute refresh cycle. This checks for the latest
+  available estimate hourly; the CAMS European forecast itself is updated daily.
 - Classify the unrounded API value, display one decimal place, and use the
   editable category table in `src/domain/airQuality/europeanAqiCategories.json`.
 - In that table, `key` is the stable identifier, `label` is the user-facing
@@ -71,10 +73,21 @@ and UV Outlook.
   exact-boundary assignment, and `meaning` is the short display description.
   Keep entries in the defined Good-to-Extremely-poor order.
 - Keep short category meanings in that JSON file for the UV Outlook card and as
-  secondary text in Info. Info shows paraphrased EEA activity guidance with
-  inline audience labels for most people and sensitive groups. Both advice
-  lines use matching text colors. The guidance is general, not individualized
-  medical advice.
+  secondary text in Info. Info and UV Outlook show paraphrased EEA activity
+  guidance with inline audience labels for most people and sensitive groups.
+  Plan an Outing uses the advice for the peak category, naming the peak when
+  that advice differs from the average category's advice. Matching advice is
+  shown once. All guidance is general, not individualized medical advice.
+- For the outing summary, include hourly AQI samples whose hours overlap the
+  selected window. The peak is the highest overlapping value. Treat each sample
+  as representing its hour and weight the average by the selected minutes in
+  that hour; this is a UV Scout summary convention, not an EEA-defined outing
+  index. Show the fraction of the selected window covered when data are missing.
+- Plan an Outing labels the two categories as `Average` and `Peak`. Its
+  right-column takeaway summarizes the rounded hourly range, one-decimal average,
+  and peak category using templates in `outingAirQualityDescriptions.json`.
+  It says the category stays steady only when the unrounded minimum and peak
+  fall in the same category. The audience lines reuse Info's editable advice.
 - Keep the air-quality request separate from the UV/weather request so its
   errors do not block those existing results.
 

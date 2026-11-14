@@ -1,0 +1,7 @@
+{
+  "sameCategory": "AQI ranges from {low} to {high} (average {average}), staying {category} across the forecast hours.",
+  "higherPeakCategory": "AQI ranges from {low} to {high} (average {average}), reaching {peakCategory} at its peak.",
+  "singleRoundedValue": "AQI is around {value} (average {average}), staying {category} across the forecast hours.",
+  "singleRoundedValueHigherPeak": "AQI is around {value} (average {average}), reaching {peakCategory} at its peak.",
+  "differentAdvice": "At the peak, {peakAdvice}"
+}

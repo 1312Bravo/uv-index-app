@@ -22,8 +22,8 @@ helps people plan outdoor time around the current and forecast UV index.
   long-range planner or a general-purpose weather app.
 - Air quality is secondary context inside the existing UV Outlook and Plan an
   Outing tabs; it does not add a tab or change the app's UV focus. The current
-  European AQI section in UV Outlook is the first slice; outing-specific AQI
-  remains future work.
+  European AQI appears in UV Outlook, and Plan an Outing summarizes AQI across
+  the selected outing window.
 - The first version is for general outdoor users, in English.
 - Location should support device location, place search, and map selection on
   Android and web.
@@ -33,6 +33,11 @@ helps people plan outdoor time around the current and forecast UV index.
   shade use without treating it as a numeric UV adjustment.
 - Plan an Outing defaults to a selected timeframe from Now for 4 hours.
   Forecast metrics, UV breakdown, and protection guidance use this timeframe.
+  A separate air-quality summary follows UV guidance and precedes outing
+  weather. It uses hourly AQI estimates across this same selected window,
+  showing the time-weighted average, peak in parentheses, and rounded whole-number
+  hourly range. Its right column shows average and peak categories, followed by
+  a numeric takeaway and audience guidance.
   The charts include hourly context around it without changing those calculations.
 - UV Outlook stacks the centered UV reading above its guidance on phone and
   web. A compact Current air quality section follows UV guidance and precedes

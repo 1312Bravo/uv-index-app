@@ -121,7 +121,12 @@ export function HourlyUvGuidance({
       {currentAirQuality && (
         <>
           <View style={styles.airQualityDivider} />
-          <CurrentAirQuality {...currentAirQuality} />
+          <CurrentAirQuality
+            airQuality={currentAirQuality.airQuality}
+            loading={currentAirQuality.loading}
+            error={currentAirQuality.error}
+            onRetry={currentAirQuality.retry}
+          />
         </>
       )}
       {isCurrent && currentWeather && (
