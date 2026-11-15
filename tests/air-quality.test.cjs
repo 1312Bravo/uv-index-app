@@ -38,6 +38,7 @@ test('outing description distinguishes a steady category from a higher peak', ()
   );
   assert.match(steady.takeaway, /ranges from 25 to 34 \(average 29\.7\), staying Fair/);
   assert.equal(steady.generalAdvice, steady.sensitiveAdvice);
+  assert.equal(steady.meaning, fair.meaning);
 
   const changing = getOutingAirQualityDescription(
     { lowestAqi: 25, peakAqi: 45, averageAqi: 35, coverageFraction: 1 }, fair, moderate,
@@ -45,6 +46,7 @@ test('outing description distinguishes a steady category from a higher peak', ()
   assert.match(changing.takeaway, /reaching Moderate at its peak/);
   assert.equal(changing.generalAdvice, fair.generalAdvice);
   assert.match(changing.sensitiveAdvice, /^At the peak, consider reducing intense outdoor activity/);
+  assert.equal(changing.meaning, moderate.meaning);
 });
 
 test('air-quality requests keep the returned grid point separate from requested coordinates', async (t) => {

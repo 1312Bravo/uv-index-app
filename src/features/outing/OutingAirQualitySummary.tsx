@@ -21,7 +21,7 @@ function OutingGuidanceText({ takeaway, generalAdvice, sensitiveAdvice }: {
   const sharedAdvice = generalAdvice === sensitiveAdvice;
   return (
     <Text style={styles.guidanceText}>
-      {takeaway}{'\n'}
+      <Text style={styles.takeawayText}>{takeaway}</Text>{'\n'}
       <Text style={styles.adviceLabel}>{sharedAdvice ? 'Everyone: ' : 'Most people: '}</Text>
       {generalAdvice}
       {!sharedAdvice && (
@@ -94,6 +94,7 @@ export function OutingAirQualitySummary({ summary, loading, error, onRetry, sele
               </View>
               <View style={styles.guidance}>
                 <OutingGuidanceText {...guidance} />
+                <Text style={styles.meaning}>{guidance.meaning}</Text>
               </View>
             </View>
           </View>
@@ -133,6 +134,8 @@ const styles = StyleSheet.create({
   category: { color: uiColors.ink, fontSize: 12, fontWeight: '500' },
   guidance: { marginTop: 10 },
   guidanceText: { color: uiColors.body, fontSize: 13, includeFontPadding: false, lineHeight: 19 },
+  takeawayText: { fontSize: 11, lineHeight: 16 },
   adviceLabel: { color: uiColors.ink, fontWeight: '600' },
+  meaning: { color: uiColors.muted, fontSize: 11, lineHeight: 16, marginTop: 4 },
   note: { color: uiColors.muted, fontSize: 11, lineHeight: 16, marginTop: 6, textAlign: 'center' },
 });

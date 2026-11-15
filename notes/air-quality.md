@@ -95,6 +95,8 @@ and UV Outlook.
   and peak category using templates in `outingAirQualityDescriptions.json`.
   It says the category stays steady only when the unrounded minimum and peak
   fall in the same category. The audience lines reuse Info's editable advice.
+  A smaller meaning line below the advice uses the peak category's short meaning,
+  so a higher peak is not described by the average category alone.
 - Keep the air-quality request separate from the UV/weather request so its
   errors do not block those existing results.
 

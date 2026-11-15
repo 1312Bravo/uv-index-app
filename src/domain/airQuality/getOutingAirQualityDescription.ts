@@ -31,7 +31,7 @@ export function getOutingAirQualityDescription(
   summary: OutingAirQualitySummary,
   averageCategory: EuropeanAqiCategory,
   peakCategory: EuropeanAqiCategory,
-): { takeaway: string; generalAdvice: string; sensitiveAdvice: string } {
+): { takeaway: string; generalAdvice: string; sensitiveAdvice: string; meaning: string } {
   const lowestCategory = getEuropeanAqiCategory(summary.lowestAqi);
   const low = Math.round(summary.lowestAqi).toString();
   const high = Math.round(summary.peakAqi).toString();
@@ -52,5 +52,6 @@ export function getOutingAirQualityDescription(
     takeaway,
     generalAdvice: getAudienceAdvice(averageCategory.generalAdvice, peakCategory.generalAdvice),
     sensitiveAdvice: getAudienceAdvice(averageCategory.sensitiveAdvice, peakCategory.sensitiveAdvice),
+    meaning: peakCategory.meaning,
   };
 }
