@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   categoryLabel: { color: uiColors.secondary, fontSize: 11 },
   category: { color: uiColors.ink, fontSize: 12, fontWeight: '500' },
   guidance: { marginTop: 10 },
-  guidanceText: { color: uiColors.body, fontSize: 11, includeFontPadding: false, lineHeight: 16 },
+  guidanceText: { color: uiColors.body, fontSize: 13, includeFontPadding: false, lineHeight: 19 },
   adviceLabel: { color: uiColors.ink, fontWeight: '600' },
   note: { color: uiColors.muted, fontSize: 11, lineHeight: 16, marginTop: 6, textAlign: 'center' },
 });
