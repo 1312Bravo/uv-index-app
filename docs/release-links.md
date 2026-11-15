@@ -5,11 +5,16 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--74q95hxt5x.expo.app>
+- Latest deployment: <https://uvscout--dw76826lx9.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
 [`web-release.md`](web-release.md) for deployment instructions.
+
+The Plan an Outing air-quality description now matches the UV Outlook text size.
+This was published on 15 November 2026 from source commit `3fee0c2`. The web
+deployment is `dw76826lx9`; the Android `preview` update group is
+`eb2146c5-f8b1-4389-a15d-cbaa93113fdc` with runtime `1.0.0`.
 
 Air quality in UV Outlook, Plan an Outing, and Info, along with native spelling
 for selected location names, was published on 14 November 2026 from source
@@ -34,7 +39,7 @@ then-current app and icon background (`#F5F2EC`).
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
 - Light-background icon build (version code 3): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/0d8ab723-1fed-4f1f-a378-e09dbff59f2a>
 - APK download: <https://expo.dev/artifacts/eas/eqh_u86xVgb8JjKBysy_f56L8y27rmVFhsvuG8LHDmQ.apk>
-- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/5403f727-3efa-4f67-a0ec-d0e0afb7b92b>
+- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/eb2146c5-f8b1-4389-a15d-cbaa93113fdc>
 
 The completed 13 November 2026 Android APK build includes the light-background native
 icon and splash from commit `6664d14`. Its update channel remains `preview`
