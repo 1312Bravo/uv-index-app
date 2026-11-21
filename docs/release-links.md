@@ -48,9 +48,15 @@ then-current app and icon background (`#F5F2EC`).
 ## Android app
 
 - EAS project builds: <https://expo.dev/accounts/bravogroup/projects/uvscout/builds>
+- Latest APK build (version code 4): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/8ade2912-0fe2-421d-b60a-2c0258cc7c02>
+- APK download: <https://expo.dev/artifacts/eas/jZv6HjuB206_cUWAjKFB5-HNcC15xx8DmCxtvDeYygc.apk>
 - Light-background icon build (version code 3): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/0d8ab723-1fed-4f1f-a378-e09dbff59f2a>
-- APK download: <https://expo.dev/artifacts/eas/eqh_u86xVgb8JjKBysy_f56L8y27rmVFhsvuG8LHDmQ.apk>
 - Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/94d4ac6a-bc02-4f07-a967-1ac7bb2eea76>
+
+The 21 November 2026 preview APK adds saved locations and includes the native
+AsyncStorage dependency. It was built from commit `d407506` as version code 4,
+with runtime `1.0.0`. Install this APK over version code 3 to update existing
+Android installations.
 
 The completed 13 November 2026 Android APK build includes the light-background native
 icon and splash from commit `6664d14`. Its update channel remains `preview`
