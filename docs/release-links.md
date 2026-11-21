@@ -5,11 +5,15 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--j3pinmq5yg.expo.app>
+- Latest deployment: <https://uvscout--tnra3b6jp7.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
 [`web-release.md`](web-release.md) for deployment instructions.
+
+Saved locations are now available in the Location tab and persist in the
+current app or browser profile. The web update was published on 21 November
+2026 from source commit `857c03f`. The web deployment is `tnra3b6jp7`.
 
 The Plan an Outing AQI range summary is small again, while the audience advice
 remains larger. A new small meaning line follows the highest category reached.
