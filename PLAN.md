@@ -12,6 +12,9 @@ helps people plan outdoor time around the current and forecast UV index.
   with temperature, cloud cover, precipitation, and hourly wind context are
   implemented.
 - The app should support Android and web from the beginning.
+- Users can save selected places or coordinate points locally and select them
+  again from a collapsible Saved locations section. Saved entries are explicit
+  user choices stored on that app/browser installation, with no account sync.
 - Keep the phone layout unchanged. On wider web screens, use more of the
   available width. Keep Location, Plan an Outing, and Info in centered,
   single-column layouts with wider content than on the phone.
@@ -622,6 +625,10 @@ calculation, supported platform versions, and the final visual polish.
 - The earlier prototype had a four-option shade selector; it has now been
   removed so recommendations do not depend on unmeasured, user-selected route
   shade.
+- Added a collapsible Saved locations section under the location controls.
+  The shared location summary now offers the primary Save location action;
+  users can reselect and remove entries from the section. AsyncStorage keeps
+  them local to the Android app or web browser profile.
 - Added a selected-outing result with peak and duration-weighted average UV,
   average temperature and range, with guidance still based on peak UV. The
   outing chart highlights all selected hours and uses equal, faint context

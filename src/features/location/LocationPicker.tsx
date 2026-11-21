@@ -2,6 +2,7 @@ import * as Location from 'expo-location';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Keyboard,
   Platform,
   Pressable,
   StyleSheet,
@@ -25,13 +26,24 @@ import { uiColors, uiType } from '../../ui/visualStyle';
 import { formatPlaceName } from './formatLocation';
 import { LocationMap } from './LocationMap';
 import { LocationUnavailableNotice } from './LocationUnavailableNotice';
+import { LocationActionLabel } from './LocationActionLabel';
+import { SavedLocations } from './SavedLocations';
 
 type Props = {
   onSelect: (location: SelectedLocation | null) => void;
   onMapInteractionChange: (isInteracting: boolean) => void;
+  savedLocations: SelectedLocation[];
+  savedLocationsLoaded: boolean;
+  onRemoveSavedLocation: (location: SelectedLocation) => void;
 };
 
-export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
+export function LocationPicker({
+  onSelect,
+  onMapInteractionChange,
+  savedLocations,
+  savedLocationsLoaded,
+  onRemoveSavedLocation,
+}: Props) {
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 760;
   const [query, setQuery] = useState('');
@@ -53,7 +65,10 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
     setHasSearched(false);
     setIsSearching(false);
 
-    if (term.length < 3 || selected?.source === 'place') {
+    const selectedLabel = selected?.source === 'place'
+      ? formatPlaceName(selected.place)
+      : selected?.placeName;
+    if (term.length < 3 || term === selectedLabel) {
       return;
     }
 
@@ -82,13 +97,14 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [query, selected?.source]);
+  }, [query, selected]);
 
   const useDeviceLocation = useCallback(async (
     requestPermission = true,
     showUnavailableNotice = false,
     browserPosition?: Promise<GeolocationPosition>,
   ) => {
+    Keyboard.dismiss();
     const requestId = ++locationRequest.current;
     let hasCachedPosition = false;
     setIsLocating(true);
@@ -253,19 +269,19 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
   }, [useDeviceLocation]);
 
   function selectPlace(place: Place) {
+    Keyboard.dismiss();
     locationRequest.current += 1;
     const location: SelectedLocation = { source: 'place', place };
     setSelected(location);
     onSelect(location);
-    // The selected place is displayed above the search controls. Keep the input
-    // empty so its centered caret does not jump to the end of the place name.
-    setQuery('');
+    setQuery(formatPlaceName(place));
     setResults([]);
     setHasSearched(false);
     setError(null);
   }
 
   async function selectMapCoordinates(latitude: number, longitude: number) {
+    Keyboard.dismiss();
     const requestId = ++locationRequest.current;
     const location: SelectedLocation = { source: 'map', latitude, longitude };
     setSelected(location);
@@ -287,59 +303,83 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
     }
   }
 
+  function selectLocationFromSavedList(location: SelectedLocation) {
+    Keyboard.dismiss();
+    locationRequest.current += 1;
+    setSelected(location);
+    onSelect(location);
+    setQuery(location.source === 'place' ? formatPlaceName(location.place) : location.placeName ?? '');
+    setResults([]);
+    setHasSearched(false);
+    setError(null);
+  }
+
   return (
     <View>
       <Text style={styles.heading}>Location</Text>
       <View>
         <View style={isWideWeb ? styles.webSearch : undefined}>
           <View style={styles.locationMethods}>
-            {Platform.OS === 'web' ? (
-              <button
-                ref={browserLocationButton}
-                type="button"
-                disabled={isLocating}
-                style={{
-                  alignItems: 'center',
-                  background: 'transparent',
-                  border: 0,
-                  color: uiColors.ink,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: 15,
-                  fontWeight: 500,
-                  justifyContent: 'center',
-                  minHeight: 48,
-                  opacity: isLocating ? 0.45 : 1,
-                  padding: 0,
-                  textDecoration: 'underline',
-                  width: '100%',
-                }}
-              >
-                {isLocating ? <ActivityIndicator color={uiColors.accent} /> : (
-                  selected?.source === 'device' ? 'Current location selected' : 'Use my location'
-                )}
-              </button>
-            ) : (
-              <Pressable
-                accessibilityRole="button"
-                disabled={isLocating}
-                onPress={() => { void useDeviceLocation(true, true); }}
-                style={({ pressed }) => [
-                  styles.locationButton,
-                  pressed && styles.locationButtonPressed,
-                  isLocating && styles.buttonDisabled,
-                ]}
-              >
-                {isLocating ? (
-                  <ActivityIndicator color={uiColors.accent} />
-                ) : (
-                  <Text style={styles.locationButtonText}>
-                    {selected?.source === 'device' ? 'Current location selected' : 'Use my location'}
-                  </Text>
-                )}
-              </Pressable>
-            )}
+            <View style={styles.locationOption}>
+              {Platform.OS === 'web' ? (
+                <button
+                  ref={browserLocationButton}
+                  type="button"
+                  disabled={isLocating}
+                  style={{
+                    alignItems: 'center',
+                    background: 'transparent',
+                    border: 0,
+                    color: uiColors.ink,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    minHeight: 48,
+                    opacity: isLocating ? 0.45 : 1,
+                    padding: 0,
+                    width: '100%',
+                  }}
+                >
+                  {isLocating ? <ActivityIndicator color={uiColors.accent} /> : (
+                    <LocationActionLabel
+                      label={selected?.source === 'device' ? 'Current location selected' : 'Use my location'}
+                    />
+                  )}
+                </button>
+              ) : (
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={isLocating}
+                  onPress={() => { void useDeviceLocation(true, true); }}
+                  style={({ pressed }) => [
+                    styles.locationButton,
+                    pressed && styles.locationButtonPressed,
+                    isLocating && styles.buttonDisabled,
+                  ]}
+                >
+                  {isLocating ? (
+                    <ActivityIndicator color={uiColors.accent} />
+                  ) : (
+                    <LocationActionLabel
+                      label={selected?.source === 'device' ? 'Current location selected' : 'Use my location'}
+                    />
+                  )}
+                </Pressable>
+              )}
+            </View>
+
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.or}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <SavedLocations
+              isLoaded={savedLocationsLoaded}
+              locations={savedLocations}
+              onRemove={onRemoveSavedLocation}
+              onSelect={selectLocationFromSavedList}
+            />
 
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
@@ -357,22 +397,20 @@ export function LocationPicker({ onSelect, onMapInteractionChange }: Props) {
                   setQuery(value);
                   setResults([]);
                   setHasSearched(false);
-                  setSelected(null);
-                  onSelect(null);
                   setError(null);
                 }}
                 onFocus={() => setIsSearchFocused(true)}
                 cursorColor={uiColors.accent}
+                placeholder={isSearchFocused ? '' : selected ? 'Search a different location' : 'Search location'}
+                placeholderTextColor={uiColors.faint}
                 returnKeyType="done"
                 selectionColor={uiColors.accent}
-                style={[styles.input, Platform.OS === 'web' && styles.webInput]}
+                style={[
+                  styles.input,
+                  Platform.OS === 'web' && styles.webInput,
+                ]}
                 value={query}
               />
-              {!query && !isSearchFocused && (
-                <Text pointerEvents="none" style={styles.searchPrompt}>
-                  {selected ? 'Search a different location' : 'Search location'}
-                </Text>
-              )}
             </View>
           </View>
 
@@ -422,7 +460,7 @@ const styles = StyleSheet.create({
     color: uiColors.ink,
     fontSize: uiType.sectionHeading,
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: 8,
     textAlign: 'center',
   },
   mapHint: {
@@ -445,26 +483,13 @@ const styles = StyleSheet.create({
   },
   searchField: { justifyContent: 'center', minHeight: 48 },
   webInput: { outlineColor: 'transparent', outlineStyle: 'solid', outlineWidth: 0 },
-  searchPrompt: {
-    color: uiColors.faint,
-    fontSize: 15,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    textAlign: 'center',
-  },
   locationButton: {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 48,
+    width: '100%',
   },
   locationButtonPressed: { opacity: 0.6 },
-  locationButtonText: {
-    color: uiColors.ink,
-    fontSize: 15,
-    fontWeight: '500',
-    textDecorationLine: 'underline',
-  },
   locationMethods: {
     alignSelf: 'stretch',
     backgroundColor: 'transparent',
@@ -473,6 +498,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
   },
+  locationOption: { minHeight: 48 },
   divider: {
     alignItems: 'center',
     flexDirection: 'row',

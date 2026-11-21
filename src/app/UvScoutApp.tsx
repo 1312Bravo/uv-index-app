@@ -11,6 +11,7 @@ import { HourlyUvChart } from '../features/forecast/HourlyUvChart';
 import { InfoScreen } from '../features/info/InfoScreen';
 import { LocationPicker } from '../features/location/LocationPicker';
 import { LocationSummary } from '../features/location/LocationSummary';
+import { getSavedLocationId, useSavedLocations } from '../features/location/useSavedLocations';
 import { useLocationTimeZone } from '../features/location/useLocationTimeZone';
 import { OutingForecast } from '../features/outing/OutingForecast';
 import { TimePlanner, type ChartSelectedTimeRange } from '../features/planning/TimePlanner';
@@ -32,6 +33,15 @@ export function UvScoutApp() {
   const [chartSelection, setChartSelection] = useState<ChartSelectedTimeRange | null>(null);
   const [pendingChartStart, setPendingChartStart] = useState<PendingOutingChartStart | null>(null);
   const [page, setPage] = useState<AppPage>('location');
+  const {
+    isLoaded: savedLocationsLoaded,
+    locations: savedLocations,
+    removeLocation: removeSavedLocation,
+    saveLocation,
+  } = useSavedLocations();
+  const isLocationSaved = location
+    ? savedLocations.some((saved) => getSavedLocationId(saved) === getSavedLocationId(location))
+    : false;
   const coordinates = location ? getLocationCoordinates(location) : null;
   const latitude = coordinates?.latitude;
   const longitude = coordinates?.longitude;
@@ -92,12 +102,23 @@ export function UvScoutApp() {
         <TopTabs activePage={page} hasLocation={location !== null} onSelect={setPage} />
 
         {page === 'location' && !location && (
-          <LocationSummary location={null} timeZone={null} timeZoneUnavailable={false} forecastPoint={null} />
+          <LocationSummary
+            forecastPoint={null}
+            isLocationSaved={false}
+            location={null}
+            onSaveLocation={saveLocation}
+            showSaveAction={false}
+            timeZone={null}
+            timeZoneUnavailable={false}
+          />
         )}
         {location && page !== 'info' && (
           <LocationSummary
             forecastPoint={forecastPoint}
+            isLocationSaved={isLocationSaved}
             location={location}
+            onSaveLocation={saveLocation}
+            showSaveAction={page === 'location'}
             timeZone={locationTimeZone}
             timeZoneUnavailable={timeZoneUnavailable}
           />
@@ -108,11 +129,14 @@ export function UvScoutApp() {
         >
           <LocationPicker
             onMapInteractionChange={setIsMapInteracting}
+            onRemoveSavedLocation={removeSavedLocation}
             onSelect={(selectedLocation) => {
               setLocation(selectedLocation);
               setChartSelection(null);
               setPendingChartStart(null);
             }}
+            savedLocations={savedLocations}
+            savedLocationsLoaded={savedLocationsLoaded}
           />
         </View>
 

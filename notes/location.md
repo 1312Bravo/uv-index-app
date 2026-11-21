@@ -11,7 +11,8 @@ licensing details.
   location moves the map to that selection and zooms in.
 - Map selection stores the tapped coordinates in app state and requests an
   optional best-effort locality label. If lookup fails, the coordinates remain
-  usable and visible. Coordinates are not persisted.
+  usable and visible. Selecting a point does not save it unless the user
+  explicitly adds it to Saved locations.
 - Android and iOS use Leaflet in `react-native-webview`; web uses the bundled
   React Leaflet implementation. Both display OpenStreetMap standard raster
   tiles, keep attribution visible, and return tapped coordinates to the app.
@@ -32,7 +33,17 @@ licensing details.
   in the background so reverse geocoding does not delay the selected location.
 - When device location is selected, label its control `Current location selected`.
   When any location is selected, label the search field `Search a different location`.
-- The first version does not save location history or coordinates.
+- The app does not keep automatic location history. It stores coordinates only
+  when the user explicitly saves a location.
+- Users can explicitly save the selected location using the Save location
+  action beside its name and coordinates in the shared location summary. The
+  collapsible Saved locations list is for reselecting and removing entries.
+  Saved entries persist locally through
+  AsyncStorage on Android and web; they are not account-synced and are separate
+  between browser profiles, app installs, and devices. Saving a device location
+  stores a coordinate snapshot, not a live location subscription. Users can
+  remove entries from the same list. Ordinary selections are not added
+  automatically.
 - Manual place search uses Open-Meteo geocoding for this non-commercial prototype.
 - Search keeps English country names and requests Slovenian spellings for
   Slovenian result names and regions when available. Other results remain in
@@ -53,7 +64,8 @@ licensing details.
   coordinates and omit the optional name. See the source register for Photon
   public-instance usage limits and attribution.
 - Selected coordinates feed the Open-Meteo UV and temperature forecast. The app
-  does not persist them.
+  does not persist them automatically; a user may save a selected location for
+  later use.
 - Open-Meteo returns the center coordinates of the forecast grid cell used for
   its forecast, which may be a few kilometres from the selected point. The app
   calculates the great-circle distance between those coordinates and the

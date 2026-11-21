@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { SelectedLocation } from '../../domain/location/locationTypes';
 import type { LocationCoordinates } from '../../domain/location/locationTypes';
@@ -12,6 +12,9 @@ import { formatLocationCoordinates, getLocationName } from './formatLocation';
 
 type Props = {
   location: SelectedLocation | null;
+  isLocationSaved: boolean;
+  showSaveAction: boolean;
+  onSaveLocation: (location: SelectedLocation) => void;
   timeZone: string | null;
   timeZoneUnavailable: boolean;
   forecastPoint: LocationCoordinates | null;
@@ -22,7 +25,15 @@ function formatForecastOffset(distanceKilometers: number): string {
   return `about ${Math.round(distanceKilometers)} km`;
 }
 
-export function LocationSummary({ location, timeZone, timeZoneUnavailable, forecastPoint }: Props) {
+export function LocationSummary({
+  location,
+  isLocationSaved,
+  showSaveAction,
+  onSaveLocation,
+  timeZone,
+  timeZoneUnavailable,
+  forecastPoint,
+}: Props) {
   const [now, setNow] = useState(() => Date.now());
   const [forecastPointName, setForecastPointName] = useState<string | null>(null);
   const selectedCoordinates = location ? getLocationCoordinates(location) : null;
@@ -65,6 +76,18 @@ export function LocationSummary({ location, timeZone, timeZoneUnavailable, forec
           <View style={styles.divider} />
           <Text style={styles.name}>{getLocationName(location)}</Text>
           <Text style={styles.coordinates}>{formatLocationCoordinates(location)}</Text>
+          {showSaveAction && <Pressable
+            accessibilityLabel={isLocationSaved ? 'Saved location' : 'Add this location to saved locations'}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: isLocationSaved }}
+            disabled={isLocationSaved}
+            onPress={() => onSaveLocation(location)}
+            style={({ pressed }) => [styles.saveLocationButton, pressed && !isLocationSaved && styles.saveLocationButtonPressed]}
+          >
+            <Text style={[styles.saveLocationText, isLocationSaved && styles.savedLocationText]}>
+              {isLocationSaved ? '✓ Saved location' : '+ Add to saved locations'}
+            </Text>
+          </Pressable>}
           {forecastPoint && selectedCoordinates && forecastPointName && (
             <Text style={styles.forecastPoint}>
               Forecast point {formatForecastOffset(getDistanceKilometers(selectedCoordinates, forecastPoint))}
@@ -100,8 +123,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomColor: uiColors.line,
     borderBottomWidth: 1,
-    marginTop: 18,
-    paddingBottom: 18,
+    marginTop: 10,
+    paddingBottom: 10,
   },
   name: {
     color: uiColors.ink,
@@ -115,15 +138,29 @@ const styles = StyleSheet.create({
     marginTop: 3,
     textAlign: 'center',
   },
+  saveLocationButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 32,
+    paddingHorizontal: 12,
+  },
+  saveLocationButtonPressed: { opacity: 0.65 },
+  saveLocationText: {
+    color: uiColors.muted,
+    fontSize: 12,
+    fontWeight: '400',
+    textDecorationLine: 'underline',
+  },
+  savedLocationText: { textDecorationLine: 'none' },
   forecastPoint: {
     color: uiColors.muted,
     fontSize: 12,
     lineHeight: 16,
-    marginTop: 5,
+    marginTop: 3,
     textAlign: 'center',
   },
   attributions: {
-    marginTop: 5,
+    marginTop: 2,
     rowGap: 2,
   },
   dateTime: {
