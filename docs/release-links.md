@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--u9n2g1awhj.expo.app>
+- Latest deployment: <https://uvscout--4ukcgv8i4j.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -22,6 +22,10 @@ from source commit `a777ee7`. The web deployment is `8b1iz8zn8e`.
 Removed the border around the saved-location name field. This web update was
 published on 23 November 2026 from source commit `1d2c997`. The web deployment
 is `u9n2g1awhj`.
+
+The saved-location name is now underlined, with a short divider and reduced
+space before Cancel and Save. This web update was published on 23 November 2026
+from source commit `d67efef`. The web deployment is `4ukcgv8i4j`.
 
 The Plan an Outing AQI range summary is small again, while the audience advice
 remains larger. A new small meaning line follows the highest category reached.
@@ -59,7 +63,12 @@ then-current app and icon background (`#F5F2EC`).
 - Latest APK build (version code 4): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/8ade2912-0fe2-421d-b60a-2c0258cc7c02>
 - APK download: <https://expo.dev/artifacts/eas/jZv6HjuB206_cUWAjKFB5-HNcC15xx8DmCxtvDeYygc.apk>
 - Light-background icon build (version code 3): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/0d8ab723-1fed-4f1f-a378-e09dbff59f2a>
-- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/ea45170b-b394-4f22-87a6-901e0c96c7e1>
+- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/84a6be24-3c46-47fc-a3d6-5304a57c6893>
+
+The 23 November 2026 `preview` OTA update underlines the saved-location name
+and adds a short divider while reducing the space before Cancel and Save. It
+was published from source commit `d67efef` with runtime `1.0.0`. Update group
+`84a6be24-3c46-47fc-a3d6-5304a57c6893` uses channel `preview`.
 
 The 23 November 2026 `preview` OTA update adds the saved-location naming
 dialog and custom saved names, keeping coordinates unchanged. It was published
