@@ -2,15 +2,16 @@ import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { SelectedLocation } from '../../domain/location/locationTypes';
+import type { SavedLocation } from '../../domain/location/savedLocationTypes';
 import { uiColors } from '../../ui/visualStyle';
-import { formatLocationCoordinates, getLocationName } from './formatLocation';
+import { formatLocationCoordinates } from './formatLocation';
 import { LocationActionLabel } from './LocationActionLabel';
 import { getSavedLocationId } from './useSavedLocations';
 
 type Props = {
   onSelect: (location: SelectedLocation) => void;
   onRemove: (location: SelectedLocation) => void;
-  locations: SelectedLocation[];
+  locations: SavedLocation[];
   isLoaded: boolean;
 };
 
@@ -78,30 +79,24 @@ export function SavedLocations({ isLoaded, locations, onRemove, onSelect }: Prop
             </Text>
           )}
 
-          {locations.map((location, index) => (
-            <View key={getSavedLocationId(location)}>
+          {locations.map((savedLocation, index) => (
+            <View key={getSavedLocationId(savedLocation.location)}>
               <View style={styles.row}>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={() => onSelect(location)}
+                  onPress={() => onSelect(savedLocation.location)}
                   style={({ pressed }) => [styles.selectButton, pressed && styles.pressed]}
                 >
-                  {location.source === 'place' || location.placeName?.trim() ? (
-                    <>
-                      <Text numberOfLines={1} style={styles.locationName}>
-                        {getLocationName(location)}
-                      </Text>
-                      <Text style={styles.coordinates}>{formatLocationCoordinates(location)}</Text>
-                    </>
-                  ) : (
-                    <Text style={styles.locationName}>{formatLocationCoordinates(location)}</Text>
-                  )}
+                  <Text numberOfLines={1} style={styles.locationName}>
+                    {savedLocation.name}
+                  </Text>
+                  <Text style={styles.coordinates}>{formatLocationCoordinates(savedLocation.location)}</Text>
                 </Pressable>
                 <Pressable
-                  accessibilityLabel={`Remove ${getLocationName(location)} from saved locations`}
+                  accessibilityLabel={`Remove ${savedLocation.name} from saved locations`}
                   accessibilityRole="button"
                   hitSlop={8}
-                  onPress={() => onRemove(location)}
+                  onPress={() => onRemove(savedLocation.location)}
                   style={({ pressed }) => [styles.removeButton, pressed && styles.pressed]}
                 >
                   <Text style={styles.removeText}>×</Text>

@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import type { Place, SelectedLocation } from '../../domain/location/locationTypes';
+import type { SavedLocation } from '../../domain/location/savedLocationTypes';
 import {
   BrowserGeolocationError,
   getBrowserCurrentPosition,
@@ -32,7 +33,7 @@ import { SavedLocations } from './SavedLocations';
 type Props = {
   onSelect: (location: SelectedLocation | null) => void;
   onMapInteractionChange: (isInteracting: boolean) => void;
-  savedLocations: SelectedLocation[];
+  savedLocations: SavedLocation[];
   savedLocationsLoaded: boolean;
   onRemoveSavedLocation: (location: SelectedLocation) => void;
 };

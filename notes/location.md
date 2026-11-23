@@ -36,12 +36,15 @@ licensing details.
 - The app does not keep automatic location history. It stores coordinates only
   when the user explicitly saves a location.
 - Users can explicitly save the selected location using the Save location
-  action beside its name and coordinates in the shared location summary. The
-  collapsible Saved locations list is for reselecting and removing entries.
-  Saved entries persist locally through
+  action beside its name and coordinates in the shared location summary. Saving
+  opens a dialog with the map-derived name prefilled; users can change that name
+  while the selected coordinates remain unchanged. The Saved locations list
+  shows the saved name and original coordinates, and is for reselecting and
+  removing entries. Saved entries persist locally through
   AsyncStorage on Android and web; they are not account-synced and are separate
   between browser profiles, app installs, and devices. Saving a device location
-  stores a coordinate snapshot, not a live location subscription. Users can
+  stores a coordinate snapshot, not a live location subscription. Existing
+  unnamed saved entries use their map-derived label during migration. Users can
   remove entries from the same list. Ordinary selections are not added
   automatically.
 - Manual place search uses Open-Meteo geocoding for this non-commercial prototype.

@@ -9,12 +9,13 @@ import { reverseGeocodeOsmPoint } from '../../services/location/reverseGeocodeOs
 import { SourceAttribution } from '../../ui/SourceAttribution';
 import { uiColors } from '../../ui/visualStyle';
 import { formatLocationCoordinates, getLocationName } from './formatLocation';
+import { SaveLocationDialog } from './SaveLocationDialog';
 
 type Props = {
   location: SelectedLocation | null;
   isLocationSaved: boolean;
   showSaveAction: boolean;
-  onSaveLocation: (location: SelectedLocation) => void;
+  onSaveLocation: (location: SelectedLocation, name: string) => void;
   timeZone: string | null;
   timeZoneUnavailable: boolean;
   forecastPoint: LocationCoordinates | null;
@@ -36,6 +37,7 @@ export function LocationSummary({
 }: Props) {
   const [now, setNow] = useState(() => Date.now());
   const [forecastPointName, setForecastPointName] = useState<string | null>(null);
+  const [locationPendingSave, setLocationPendingSave] = useState<SelectedLocation | null>(null);
   const selectedCoordinates = location ? getLocationCoordinates(location) : null;
 
   useEffect(() => {
@@ -81,13 +83,26 @@ export function LocationSummary({
             accessibilityRole="button"
             accessibilityState={{ disabled: isLocationSaved }}
             disabled={isLocationSaved}
-            onPress={() => onSaveLocation(location)}
+            onPress={() => setLocationPendingSave(location)}
             style={({ pressed }) => [styles.saveLocationButton, pressed && !isLocationSaved && styles.saveLocationButtonPressed]}
           >
             <Text style={[styles.saveLocationText, isLocationSaved && styles.savedLocationText]}>
               {isLocationSaved ? '✓ Saved location' : '+ Add to saved locations'}
             </Text>
           </Pressable>}
+          {showSaveAction && (
+            <SaveLocationDialog
+              coordinates={locationPendingSave ? formatLocationCoordinates(locationPendingSave) : ''}
+              defaultName={locationPendingSave ? getLocationName(locationPendingSave) : ''}
+              onCancel={() => setLocationPendingSave(null)}
+              onSave={(name) => {
+                if (!locationPendingSave) return;
+                onSaveLocation(locationPendingSave, name);
+                setLocationPendingSave(null);
+              }}
+              visible={locationPendingSave !== null}
+            />
+          )}
           {forecastPoint && selectedCoordinates && forecastPointName && (
             <Text style={styles.forecastPoint}>
               Forecast point {formatForecastOffset(getDistanceKilometers(selectedCoordinates, forecastPoint))}

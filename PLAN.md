@@ -15,6 +15,8 @@ helps people plan outdoor time around the current and forecast UV index.
 - Users can save selected places or coordinate points locally and select them
   again from a collapsible Saved locations section. Saved entries are explicit
   user choices stored on that app/browser installation, with no account sync.
+  Saving asks for a display name, defaults to the map-derived label, and keeps
+  the selected coordinates unchanged.
 - Keep the phone layout unchanged. On wider web screens, use more of the
   available width. Keep Location, Plan an Outing, and Info in centered,
   single-column layouts with wider content than on the phone.

@@ -40,7 +40,7 @@ export function UvScoutApp() {
     saveLocation,
   } = useSavedLocations();
   const isLocationSaved = location
-    ? savedLocations.some((saved) => getSavedLocationId(saved) === getSavedLocationId(location))
+    ? savedLocations.some((saved) => getSavedLocationId(saved.location) === getSavedLocationId(location))
     : false;
   const coordinates = location ? getLocationCoordinates(location) : null;
   const latitude = coordinates?.latitude;
