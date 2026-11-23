@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { uiColors } from '../../ui/visualStyle';
 import { LocationActionLabel } from './LocationActionLabel';
@@ -51,7 +51,8 @@ export function SaveLocationDialog({ coordinates, defaultName, onCancel, onSave,
             returnKeyType="done"
             selectionColor={uiColors.muted}
             selection={selection}
-            style={styles.input}
+            style={[styles.input, Platform.OS === 'web' && styles.webInput]}
+            underlineColorAndroid="transparent"
             value={name}
           />
           <View style={styles.actions}>
@@ -120,8 +121,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: 'transparent',
-    borderBottomColor: uiColors.line,
-    borderBottomWidth: 1,
+    borderWidth: 0,
     color: uiColors.ink,
     fontSize: 15,
     marginTop: 2,
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     textAlign: 'center',
   },
+  webInput: { outlineColor: 'transparent', outlineStyle: 'solid', outlineWidth: 0 },
   actions: {
     flexDirection: 'row',
     justifyContent: 'center',
