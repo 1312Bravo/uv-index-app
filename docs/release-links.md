@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--4ukcgv8i4j.expo.app>
+- Latest deployment: <https://uvscout--reb87q8llc.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -26,6 +26,10 @@ is `u9n2g1awhj`.
 The saved-location name is now underlined, with a short divider and reduced
 space before Cancel and Save. This web update was published on 23 November 2026
 from source commit `d67efef`. The web deployment is `4ukcgv8i4j`.
+
+The saved-location dialog divider now spans the dialog content width and sits
+closer to the name field. This web update was published on 23 November 2026
+from source commit `fcce7b2`. The web deployment is `reb87q8llc`.
 
 The Plan an Outing AQI range summary is small again, while the audience advice
 remains larger. A new small meaning line follows the highest category reached.
@@ -63,7 +67,12 @@ then-current app and icon background (`#F5F2EC`).
 - Latest APK build (version code 4): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/8ade2912-0fe2-421d-b60a-2c0258cc7c02>
 - APK download: <https://expo.dev/artifacts/eas/jZv6HjuB206_cUWAjKFB5-HNcC15xx8DmCxtvDeYygc.apk>
 - Light-background icon build (version code 3): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/0d8ab723-1fed-4f1f-a378-e09dbff59f2a>
-- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/84a6be24-3c46-47fc-a3d6-5304a57c6893>
+- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/119ecaa8-c673-48f0-a50e-f3fafe24704e>
+
+The 23 November 2026 `preview` OTA update makes the saved-location dialog
+divider span the content width and moves it closer to the name field. It was
+published from source commit `fcce7b2` with runtime `1.0.0`. Update group
+`119ecaa8-c673-48f0-a50e-f3fafe24704e` uses channel `preview`.
 
 The 23 November 2026 `preview` OTA update underlines the saved-location name
 and adds a short divider while reducing the space before Cancel and Save. It
