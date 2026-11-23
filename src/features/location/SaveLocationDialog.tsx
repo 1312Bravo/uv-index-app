@@ -55,6 +55,7 @@ export function SaveLocationDialog({ coordinates, defaultName, onCancel, onSave,
             underlineColorAndroid="transparent"
             value={name}
           />
+          <View style={styles.divider} />
           <View style={styles.actions}>
             <Pressable
               accessibilityRole="button"
@@ -128,12 +129,20 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 4,
     textAlign: 'center',
+    textDecorationLine: 'underline',
   },
   webInput: { outlineColor: 'transparent', outlineStyle: 'solid', outlineWidth: 0 },
+  divider: {
+    alignSelf: 'center',
+    backgroundColor: uiColors.line,
+    height: 1,
+    marginTop: 4,
+    width: 48,
+  },
   actions: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 18,
+    marginTop: 10,
   },
   actionButton: {
     alignItems: 'center',
