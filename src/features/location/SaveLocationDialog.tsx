@@ -129,14 +129,13 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 4,
     textAlign: 'center',
-    textDecorationLine: 'underline',
   },
   webInput: { outlineColor: 'transparent', outlineStyle: 'solid', outlineWidth: 0 },
   divider: {
     alignSelf: 'stretch',
     backgroundColor: uiColors.line,
     height: 1,
-    marginTop: 0,
+    marginTop: -8,
   },
   actions: {
     flexDirection: 'row',
