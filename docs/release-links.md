@@ -5,7 +5,7 @@ Use this page as the central place to find the links shared with testers.
 ## Web app
 
 - Public production app: <https://uvscout.expo.app>
-- Latest deployment: <https://uvscout--8b1iz8zn8e.expo.app>
+- Latest deployment: <https://uvscout--u9n2g1awhj.expo.app>
 - EAS Hosting deployments: <https://expo.dev/projects/16af89d2-ff27-4f27-9586-517473700c63/hosting/deployments>
 
 The production URL is the stable link to share with anyone. See
@@ -18,6 +18,10 @@ current app or browser profile. The web update was published on 21 November
 Saved locations now prompt for an editable map-derived name while preserving
 the selected coordinates. This web update was published on 23 November 2026
 from source commit `a777ee7`. The web deployment is `8b1iz8zn8e`.
+
+Removed the border around the saved-location name field. This web update was
+published on 23 November 2026 from source commit `1d2c997`. The web deployment
+is `u9n2g1awhj`.
 
 The Plan an Outing AQI range summary is small again, while the audience advice
 remains larger. A new small meaning line follows the highest category reached.
@@ -55,11 +59,15 @@ then-current app and icon background (`#F5F2EC`).
 - Latest APK build (version code 4): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/8ade2912-0fe2-421d-b60a-2c0258cc7c02>
 - APK download: <https://expo.dev/artifacts/eas/jZv6HjuB206_cUWAjKFB5-HNcC15xx8DmCxtvDeYygc.apk>
 - Light-background icon build (version code 3): <https://expo.dev/accounts/bravogroup/projects/uvscout/builds/0d8ab723-1fed-4f1f-a378-e09dbff59f2a>
-- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/e2509772-d6ce-40d2-906c-5e187fdf420a>
+- Latest Android update: <https://expo.dev/accounts/bravogroup/projects/uvscout/updates/ea45170b-b394-4f22-87a6-901e0c96c7e1>
 
 The 23 November 2026 `preview` OTA update adds the saved-location naming
 dialog and custom saved names, keeping coordinates unchanged. It was published
 from source commit `a777ee7` with runtime `1.0.0`.
+
+The saved-location name field border was removed on 23 November 2026 from
+source commit `1d2c997`. Android update group `ea45170b-b394-4f22-87a6-901e0c96c7e1`
+uses channel `preview` and runtime `1.0.0`.
 
 The 21 November 2026 preview APK adds saved locations and includes the native
 AsyncStorage dependency. It was built from commit `d407506` as version code 4,
